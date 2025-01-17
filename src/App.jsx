@@ -7,9 +7,9 @@ import {Header, Footer} from "antd/es/layout/layout.js";
 function App() {
     return (
         <div className="bg-gray-100 font-mono">
-            <Header className="flex justify-between items-center bg-blue-600 rounded-lg">
+            <Header className="flex justify-between items-center bg-blue-600 rounded-lg ps-10 pe-4">
                 <div className="text-white text-3xl font-bold">Restauracja</div>
-                <div className="text-white  font-bold">+48 123-123-123</div>
+                <div className="text-white font-bold">+48 123-123-123</div>
             </Header>
 
             <OnlineMenu/>

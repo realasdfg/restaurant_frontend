@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Layout, Typography, Spin, Divider, Input} from 'antd';
+import {Layout, Typography, Spin, Divider, Input, Modal} from 'antd';
 import axios from 'axios';
 import 'tailwindcss/tailwind.css';
 
@@ -13,6 +13,7 @@ const OnlineMenu = () => {
     const [filteredItems, setFilteredItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,6 +51,14 @@ const OnlineMenu = () => {
         }
     };
 
+    const handleItemClick = (item) => {
+        setSelectedItem(item);
+    };
+
+    const handleModalClose = () => {
+        setSelectedItem(null);
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -80,20 +89,21 @@ const OnlineMenu = () => {
                         }
 
                         return (
-                            <div key={category.id} className="mb-8 ">
+                            <div key={category.id}>
                                 <Title level={3} className="text-blue-400">{category.name}</Title>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 ">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                                     {categoryItems.map((item) => (
                                         <div key={item.id}
-                                             className="flex flex-col justify-between border rounded-lg p-4 bg-gray-100 shadow hover:shadow-lg transition-shadow">
+                                             className="flex flex-col justify-between border rounded-lg p-2 bg-gray-100 shadow hover:shadow-lg transition-shadow cursor-pointer"
+                                             onClick={() => handleItemClick(item)}>
                                             <div>
                                                 <img src={item.image} alt={item.name}
-                                                     className="w-full rounded aspect-square object-cover rounded-t-md"/>
-                                                <div className="mt-2 font-semibold text-lg">{item.name}</div>
-                                                <div className="text-gray-600 line-clamp-3">{item.description}</div>
+                                                     className="w-full rounded-lg aspect-square object-cover"/>
+                                                <div className="mt-2 font-semibold text-lg m-1">{item.name}</div>
+                                                <div className="text-gray-600 line-clamp-3 m-1">{item.description}</div>
                                             </div>
                                             <div
-                                                className="text-blue-600 font-bold mt-2 ">{item.price} zł {item.type === 'by_weight' ? 'za 100g' : ''}
+                                                className="text-blue-600 font-bold mt-2 m-1">{item.price} zł {item.type === 'by_weight' ? 'za 100g' : ''}
                                             </div>
                                         </div>
                                     ))}
@@ -104,6 +114,25 @@ const OnlineMenu = () => {
                     })}
                 </div>
             </div>
+
+            <Modal
+                open={!!selectedItem}
+                onCancel={handleModalClose}
+                footer={null}
+                centered
+                className="bg-gray-100 font-mono rounded-lg"
+            >
+                {selectedItem && (
+                    <div className="flex flex-col items-center text-base">
+                        <img src={selectedItem.image} alt={selectedItem.name}
+                             className="w-full rounded-lg max-w-xs aspect-square object-cover"/>
+                        <div className="mt-4 text-lg font-semibold">{selectedItem.name}</div>
+                        <div className="mt-2 text-gray-600">{selectedItem.description}</div>
+                        <div
+                            className="mt-2 text-blue-600 font-bold">{selectedItem.price} zł {selectedItem.type === 'by_weight' ? 'za 100g' : ''}</div>
+                    </div>
+                )}
+            </Modal>
         </Content>
     );
 };
