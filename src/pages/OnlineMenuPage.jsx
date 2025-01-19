@@ -1,8 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Layout, Typography, Spin, Divider, Input, Modal} from 'antd';
+import {Layout, Typography, Divider, Input} from 'antd';
 import 'tailwindcss/tailwind.css';
-import {Header, Footer} from "antd/es/layout/layout.js";
 import {fetchCategories, fetchMenuItems} from "../services/api.js";
+import OnlineMenuHeader from "../components/OnlineMenu/OnlineMenuHeader.jsx";
+import OnlineMenuFooter from "../components/OnlineMenu/OnlineMenuFooter.jsx";
+import LoadingSpinner from "../components/shared/LoadingSpinner.jsx";
+import MenuItemModal from "../components/OnlineMenu/MenuItemModal.jsx";
 
 
 const {Content} = Layout;
@@ -63,19 +66,13 @@ const OnlineMenuPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <Spin size="large"/>
-            </div>
+            <LoadingSpinner/>
         );
     }
 
     return (
         <div className="bg-gray-100 font-mono">
-            <Header className="flex justify-between items-center bg-blue-600 rounded-lg ps-10 pe-4">
-                <div className="text-white text-3xl font-bold">Restauracja</div>
-                <div className="text-white font-bold">+48 123-123-123</div>
-            </Header>
-
+            <OnlineMenuHeader/>
             <Content className="min-h-screen flex flex-col p-1 pt-3 pb-3 ">
                 <div className="flex flex-grow justify-center">
                     <div className="max-w-screen-lg w-full bg-gray-200 p-5 rounded-lg">
@@ -125,29 +122,9 @@ const OnlineMenuPage = () => {
                     </div>
                 </div>
 
-                <Modal
-                    open={!!selectedItem}
-                    onCancel={handleModalClose}
-                    footer={null}
-                    centered
-                    className="bg-gray-100 font-mono rounded-lg"
-                >
-                    {selectedItem && (
-                        <div className="flex flex-col items-center text-base">
-                            <img src={selectedItem.image} alt={selectedItem.name}
-                                 className="w-full rounded-lg max-w-xs aspect-square object-cover"/>
-                            <div className="mt-4 text-lg font-semibold">{selectedItem.name}</div>
-                            <div className="mt-2 text-gray-600">{selectedItem.description}</div>
-                            <div
-                                className="mt-2 text-blue-600 font-bold">{selectedItem.price} zł {selectedItem.type === 'by_weight' ? 'za 100g' : ''}</div>
-                        </div>
-                    )}
-                </Modal>
+                <MenuItemModal selectedItem={selectedItem} onClose={handleModalClose}/>
             </Content>
-
-            <Footer className="text-center bg-blue-600 text-white py-4 rounded-lg">
-                <div>© 2025 Restauracja. All rights reserved.</div>
-            </Footer>
+            <OnlineMenuFooter/>
         </div>
     );
 };
