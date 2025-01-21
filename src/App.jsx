@@ -2,6 +2,9 @@ import React from "react";
 
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import OnlineMenuPage from "./pages/OnlineMenuPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+// import ProtectedRoute from "./utils/ProtectedRoute.jsx";
+// import StaffPage from "./pages/StaffPage.jsx";
 
 
 function App() {
@@ -9,8 +12,8 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<OnlineMenuPage/>}/>
-                {/*<Route path="/waiter" element={<WaiterPage/>}/>*/}
-                {/*<Route path="/admin" element={<AdminPage/>}/>*/}
+                <Route path="/staff/login" element={<LoginPage/>}/>
+                {/*<Route path="/staff" element={<ProtectedRoute><StaffPage/></ProtectedRoute>}/>*/}
             </Routes>
         </Router>
     )
