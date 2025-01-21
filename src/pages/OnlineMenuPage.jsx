@@ -73,53 +73,51 @@ const OnlineMenuPage = () => {
     return (
         <div className="bg-gray-100 font-mono">
             <OnlineMenuHeader/>
-            <Content className="min-h-screen flex flex-col p-1 pt-3 pb-3 ">
-                <div className="flex flex-grow justify-center">
-                    <div className="max-w-screen-lg w-full bg-gray-200 p-5 rounded-lg">
-                        <div className="mb-6">
-                            <Search
-                                placeholder="Wyszukaj pozycji..."
-                                value={searchQuery}
-                                onChange={(e) => handleSearch(e.target.value)}
-                                enterButton
-                                className="w-full max-w-md mx-auto"
-                            />
-                        </div>
-
-                        {categories.map((category) => {
-                            const categoryItems = filteredItems.filter((item) => item.category_id === category.id);
-
-                            if (categoryItems.length === 0) {
-                                return null;
-                            }
-
-                            return (
-                                <div key={category.id}>
-                                    <Title level={3} className="text-blue-400">{category.name}</Title>
-                                    <div
-                                        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                        {categoryItems.map((item) => (
-                                            <div key={item.id}
-                                                 className="flex flex-col justify-between border rounded-lg p-2 bg-gray-100 shadow hover:shadow-lg transition-shadow cursor-pointer"
-                                                 onClick={() => handleItemClick(item)}>
-                                                <div>
-                                                    <img src={item.image} alt={item.name}
-                                                         className="w-full rounded-lg aspect-square object-cover"/>
-                                                    <div className="mt-2 font-semibold text-lg m-1">{item.name}</div>
-                                                    <div
-                                                        className="text-gray-600 line-clamp-3 m-1">{item.description}</div>
-                                                </div>
-                                                <div
-                                                    className="text-blue-600 font-bold mt-2 m-1">{item.price} zł {item.type === 'by_weight' ? 'za 100g' : ''}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <Divider/>
-                                </div>
-                            );
-                        })}
+            <Content className="flex justify-center min-h-screen p-1 pt-3 pb-3 ">
+                <div className="max-w-screen-lg bg-gray-200 p-5 rounded-lg">
+                    <div className="mb-6">
+                        <Search
+                            placeholder="Wyszukaj pozycji..."
+                            value={searchQuery}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            enterButton
+                            className="w-full max-w-md mx-auto"
+                        />
                     </div>
+
+                    {categories.map((category) => {
+                        const categoryItems = filteredItems.filter((item) => item.category_id === category.id);
+
+                        if (categoryItems.length === 0) {
+                            return null;
+                        }
+
+                        return (
+                            <div key={category.id}>
+                                <Title level={3} className="text-blue-400">{category.name}</Title>
+                                <div
+                                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    {categoryItems.map((item) => (
+                                        <div key={item.id}
+                                             className="flex flex-col justify-between border rounded-lg p-2 bg-gray-100 shadow hover:shadow-lg transition-shadow cursor-pointer"
+                                             onClick={() => handleItemClick(item)}>
+                                            <div>
+                                                <img src={item.image} alt={item.name}
+                                                     className="w-full rounded-lg aspect-square object-cover"/>
+                                                <div className="mt-2 font-semibold text-lg m-1">{item.name}</div>
+                                                <div
+                                                    className="text-gray-600 line-clamp-3 m-1">{item.description}</div>
+                                            </div>
+                                            <div
+                                                className="text-blue-600 font-bold mt-2 m-1">{item.price} zł {item.type === 'by_weight' ? 'za 100g' : ''}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <Divider/>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <MenuItemModal selectedItem={selectedItem} onClose={handleModalClose}/>
