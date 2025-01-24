@@ -1,11 +1,19 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Form, Input, Button, message} from 'antd';
 import {login} from '../services/api.js';
+import LoadingSpinner from "../components/shared/LoadingSpinner.jsx";
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            navigate('/staff');
+        }
+    }, [navigate]);
 
     const onFinish = async (values) => {
         setLoading(true);
@@ -17,11 +25,21 @@ const LoginPage = () => {
             message.success('Pomyślne logowanie!');
             navigate('/staff');
         } catch (error) {
-            message.error(error.response?.data?.detail || 'Nieprawidłowy login lub hasło.');
+            if (error.response.status === 404) {
+                message.error('Nieprawidłowy login lub hasło.');
+            } else {
+                message.error(error.response?.data?.detail)
+            }
         } finally {
             setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <LoadingSpinner/>
+        );
+    }
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100 font-mono">
