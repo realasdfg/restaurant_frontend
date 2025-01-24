@@ -67,3 +67,11 @@ export const fetchCategories = async () => {
 export const fetchMenuItems = async () => {
     return API.get('/menu/items');
 };
+
+export const fetchTables = async () => {
+    return API.get('/tables');
+};
+
+export const fetchOrders = async (current_only) => {
+    return API.get('/orders', {params: {current_only: current_only}});
+};
