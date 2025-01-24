@@ -14,7 +14,7 @@ const SHeader = () => {
     };
 
     return (
-        <Header className="flex justify-end items-center bg-blue-500 rounded-t-lg pe-4">
+        <Header className="flex justify-end items-center bg-blue-500 rounded-lg pe-4 mb-3">
             <Button type="primary" danger onClick={handleLogout}>
                 Wyloguj się
             </Button>
