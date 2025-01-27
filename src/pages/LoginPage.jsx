@@ -11,7 +11,7 @@ const LoginPage = () => {
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         if (token) {
-            navigate('/staff');
+            navigate('/orders');
         }
     }, [navigate]);
 
@@ -23,7 +23,7 @@ const LoginPage = () => {
             localStorage.setItem('refresh_token', response.refresh_token);
 
             message.success('Pomyślne logowanie!');
-            navigate('/staff');
+            navigate('/orders');
         } catch (error) {
             if (error.response.status === 404) {
                 message.error('Nieprawidłowy login lub hasło.');
@@ -35,11 +35,7 @@ const LoginPage = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <LoadingSpinner/>
-        );
-    }
+    if (loading) return <LoadingSpinner />;
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100 font-mono">

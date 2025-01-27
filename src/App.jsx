@@ -13,7 +13,8 @@ function App() {
             <Routes>
                 <Route path="/" element={<OnlineMenuPage/>}/>
                 <Route path="/staff/login" element={<LoginPage/>}/>
-                <Route path="/staff" element={<ProtectedRoute><StaffPage/></ProtectedRoute>}/>
+                <Route path="/orders" element={<ProtectedRoute><StaffPage/></ProtectedRoute>}/>
+                <Route path="/orders/:orderId" element={<ProtectedRoute><StaffPage/></ProtectedRoute>}/>
             </Routes>
         </Router>
     )

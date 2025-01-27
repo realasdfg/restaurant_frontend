@@ -53,8 +53,6 @@ API.interceptors.response.use(
 );
 
 
-export default API;
-
 export const login = async (username, password) => {
     const response = await API.post('/auth/login', {username, password});
     return response.data;
@@ -74,4 +72,13 @@ export const fetchTables = async () => {
 
 export const fetchOrders = async (current_only) => {
     return API.get('/orders', {params: {current_only: current_only}});
+};
+
+export const fetchOrderById = async (id) => {
+    return API.get(`/orders/${id}`);
+};
+
+export const createOrder = async (orderData) => {
+    const response = await API.post('/orders', orderData);
+    return response.data;
 };

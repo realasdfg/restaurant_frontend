@@ -64,26 +64,20 @@ const OnlineMenuPage = () => {
         setSelectedItem(null);
     };
 
-    if (loading) {
-        return (
-            <LoadingSpinner/>
-        );
-    }
+    if (loading) return <LoadingSpinner/>;
 
     return (
         <div className="bg-gray-100 font-mono">
             <OnlineMenuHeader/>
             <Content className="flex justify-center min-h-screen p-1 pt-3 pb-3 ">
-                <div className="max-w-screen-lg bg-gray-200 p-5 rounded-lg">
-                    <div className="mb-6">
-                        <Search
-                            placeholder="Wyszukaj pozycji..."
-                            value={searchQuery}
-                            onChange={(e) => handleSearch(e.target.value)}
-                            enterButton
-                            className="w-full max-w-md mx-auto"
-                        />
-                    </div>
+                <div className="max-w-screen-lg bg-gray-200 p-5 rounded-lg lg:w-4/5 sm:w-4/5 xs:w-4/5">
+                    <Search
+                        placeholder="Wyszukaj pozycji..."
+                        value={searchQuery}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        enterButton
+                        className="w-full"
+                    />
 
                     {categories.map((category) => {
                         const categoryItems = filteredItems.filter((item) => item.category_id === category.id);
