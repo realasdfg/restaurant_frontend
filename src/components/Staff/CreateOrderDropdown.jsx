@@ -27,8 +27,13 @@ const CreateOrderDropdown = () => {
             setIsModalOpen(false);
             navigate(`/orders/${response.id}`);
         } catch (error) {
-            message.error('Błąd podczas tworzenia zamówienia');
-            console.error(error);
+            if (error.response?.status === 400) {
+                await openModal()
+                message.error('Stół już jest zajęty!');
+            } else {
+                message.error('Błąd podczas tworzenia zamówienia');
+                console.error(error);
+            }
         }
     };
 
