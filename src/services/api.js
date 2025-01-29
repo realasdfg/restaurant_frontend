@@ -59,15 +59,19 @@ export const login = async (username, password) => {
 };
 
 export const fetchCategories = async () => {
-    return API.get('/menu/categories');
+    return API.get('/menu-categories');
 };
 
 export const fetchMenuItems = async () => {
-    return API.get('/menu/items');
+    return API.get('/menu-items');
 };
 
 export const fetchTables = async () => {
     return API.get('/tables');
+};
+
+export const fetchTableById = async (id) => {
+    return API.get(`/tables/${id}`);
 };
 
 export const fetchOrders = async (current_only) => {
