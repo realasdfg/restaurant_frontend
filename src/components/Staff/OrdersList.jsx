@@ -57,7 +57,7 @@ const OrdersList = () => {
             dataIndex: 'type',
             key: 'type',
             render: (type) => (
-                <Tag color={type === 'dinein' ? 'green' : 'blue'}>{type.toUpperCase()}</Tag>
+                <Tag color={type === 'dinein' ? 'green' : 'blue'}>{type === 'dinein' ? 'W RESTAURACJI' : 'NA WYNOS'}</Tag>
             ),
         },
         {

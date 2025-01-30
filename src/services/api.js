@@ -66,6 +66,10 @@ export const fetchMenuItems = async () => {
     return API.get('/menu-items');
 };
 
+export const fetchMenuItemById = async (id) => {
+    return API.get(`/menu-items/${id}`);
+};
+
 export const fetchTables = async () => {
     return API.get('/tables');
 };
@@ -85,4 +89,8 @@ export const fetchOrderById = async (id) => {
 export const createOrder = async (orderData) => {
     const response = await API.post('/orders', orderData);
     return response.data;
+};
+
+export const fetchOrderItemsById = async (id) => {
+    return API.get(`/orders/${id}/menu-items`);
 };

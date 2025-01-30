@@ -9,6 +9,7 @@ const OrdersTable = ({dataSource, columns, onRow}) => (
             rowKey={(record) => record.id}
             onRow={onRow}
             pagination={false}
+            locale={{ emptyText: 'Tu będą widoczne zamówienia' }}
         />
     )
 ;
