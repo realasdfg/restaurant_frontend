@@ -59,31 +59,31 @@ export const login = async (username, password) => {
 };
 
 export const fetchCategories = async () => {
-    return API.get('/menu-categories');
+    return await API.get('/menu-categories');
 };
 
 export const fetchMenuItems = async () => {
-    return API.get('/menu-items');
+    return await API.get('/menu-items');
 };
 
 export const fetchMenuItemById = async (id) => {
-    return API.get(`/menu-items/${id}`);
+    return await API.get(`/menu-items/${id}`);
 };
 
 export const fetchTables = async () => {
-    return API.get('/tables');
+    return await API.get('/tables');
 };
 
 export const fetchTableById = async (id) => {
-    return API.get(`/tables/${id}`);
+    return await API.get(`/tables/${id}`);
 };
 
 export const fetchOrders = async (current_only) => {
-    return API.get('/orders', {params: {current_only: current_only}});
+    return await API.get('/orders', {params: {current_only: current_only}});
 };
 
 export const fetchOrderById = async (id) => {
-    return API.get(`/orders/${id}`);
+    return await API.get(`/orders/${id}`);
 };
 
 export const createOrder = async (orderData) => {
@@ -91,6 +91,11 @@ export const createOrder = async (orderData) => {
     return response.data;
 };
 
-export const fetchOrderItemsById = async (id) => {
-    return API.get(`/orders/${id}/menu-items`);
+export const fetchOrderItemsByOrderId = async (id) => {
+    return await API.get(`/orders/${id}/menu-items`);
+};
+
+export const updateOrderItemQuantity = async (orderId, itemId, quantity) => {
+    const response = await API.patch(`/orders/${orderId}/menu-items/${itemId}`, null, {params: {quantity: quantity}});
+    return response.data;
 };
