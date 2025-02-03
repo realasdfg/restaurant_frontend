@@ -13,7 +13,7 @@ const CreateOrderDropdown = () => {
     const handleCreateTogoOrder = async () => {
         try {
             const response = await createOrder({type: 'togo'});
-            navigate(`/orders/${response.id}`);
+            navigate(`/orders/${response.data.id}`);
         } catch (error) {
             message.error('Błąd podczas tworzenia zamówienia');
             console.error(error);
@@ -25,7 +25,7 @@ const CreateOrderDropdown = () => {
         try {
             const response = await createOrder({type: 'dinein', table_id: table.id});
             setIsModalOpen(false);
-            navigate(`/orders/${response.id}`);
+            navigate(`/orders/${response.data.id}`);
         } catch (error) {
             if (error.response?.status === 400) {
                 await openModal()

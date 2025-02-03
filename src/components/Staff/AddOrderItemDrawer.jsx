@@ -1,21 +1,33 @@
-import React, {useEffect, useRef, useState} from "react";
-import {Button, List, Input, Drawer} from "antd";
-import {CloseCircleOutlined} from "@ant-design/icons";
-import {fetchCategories, fetchMenuItems} from "../../services/api";
+import React, { useEffect, useState, useRef } from "react";
+import { Button, List, Input, Drawer, Modal } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
+import { fetchCategories, fetchMenuItems } from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 
-const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
+const AddOrderItemDrawer = ({ visible, onClose, onAddItem }) => {
     const [categories, setCategories] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const [weightModalVisible, setWeightModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [weight, setWeight] = useState("");
+
+    const weightInputRef = useRef(null);
+
     useEffect(() => {
         if (visible) {
             loadData();
         }
     }, [visible]);
+
+    useEffect(() => {
+        if (weightModalVisible && weightInputRef.current) {
+            setTimeout(() => weightInputRef.current.focus(), 100);
+        }
+    }, [weightModalVisible]);
 
     const loadData = async () => {
         setLoading(true);
@@ -35,22 +47,50 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
         }
     };
 
+    const handleAddItem = (item) => {
+        if (item.type === "by_quantity") {
+            onAddItem(item.id, 1);
+        } else if (item.type === "by_weight") {
+            setSelectedItem(item);
+            setWeight("");
+            setWeightModalVisible(true);
+        }
+    };
+
+    const handleConfirmWeight = () => {
+        const weightValue = parseInt(weight);
+        if (isNaN(weightValue) || weightValue <= 0) return;
+
+        onAddItem(selectedItem.id, weightValue);
+        setWeightModalVisible(false);
+        setSelectedItem(null);
+    };
+
+    const handleWeightKeyPress = (e) => {
+        if (e.key === "Enter") {
+            handleConfirmWeight();
+        }
+    };
+
     const filteredMenuItems = searchQuery
-        ? menuItems.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        ? menuItems.filter((item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
         : selectedCategory
             ? menuItems.filter((item) => item.category_id === selectedCategory.id)
             : [];
 
-    if (loading) return <LoadingSpinner/>;
+    if (loading) return <LoadingSpinner />;
 
     return (
-        <div >
+        <div>
             <Drawer
                 title="Dodaj pozycję"
                 placement="bottom"
                 open={visible}
                 onClose={onClose}
-                size={'large'}
+                size={"large"}
+                className="h-[80vh] overflow-hidden"
             >
                 <Input
                     placeholder="Wyszukaj pozycję..."
@@ -62,46 +102,71 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                     className="mb-3"
                     suffix={
                         <CloseCircleOutlined
-                            className={`text-gray-500 cursor-pointer ${searchQuery ? 'visible' : 'invisible'}`}
+                            className={`text-gray-500 cursor-pointer ${
+                                searchQuery ? "visible" : "invisible"
+                            }`}
                             onClick={() => setSearchQuery("")}
                         />
                     }
                 />
 
-                {!searchQuery && !selectedCategory ? (
-                    <List
-                        bordered
-                        dataSource={categories}
-                        renderItem={(category) => (
-                            <List.Item onClick={() => setSelectedCategory(category)} className="cursor-pointer">
-                                {category.name}
-                            </List.Item>
-                        )}
-                    />
-                ) : (
-                    <>
-                        {!searchQuery && (
-                            <Button onClick={() => setSelectedCategory(null)} className="mb-2">
-                                ← Wróć
-                            </Button>
-                        )}
-
+                <div className="h-[calc(100%-60px)] overflow-auto">
+                    {!searchQuery && !selectedCategory ? (
                         <List
                             bordered
-                            dataSource={filteredMenuItems}
-                            renderItem={(item) => (
+                            dataSource={categories}
+                            renderItem={(category) => (
                                 <List.Item
-                                    onClick={() => onAddItem(item)}
-                                    className="cursor-pointer flex justify-between"
+                                    onClick={() => setSelectedCategory(category)}
+                                    className="cursor-pointer"
                                 >
-                                    <span>{item.name}</span>
-                                    <span className="text-gray-600">{item.price} zł</span>
+                                    {category.name}
                                 </List.Item>
                             )}
                         />
-                    </>
-                )}
+                    ) : (
+                        <>
+                            {!searchQuery && (
+                                <Button onClick={() => setSelectedCategory(null)} className="mb-2">
+                                    ← Wróć
+                                </Button>
+                            )}
+
+                            <List
+                                bordered
+                                dataSource={filteredMenuItems}
+                                locale={{ emptyText: 'Błąd wyszukiwania' }}
+                                renderItem={(item) => (
+                                    <List.Item
+                                        onClick={() => handleAddItem(item)}
+                                        className="cursor-pointer flex justify-between"
+                                    >
+                                        <span>{item.name}</span>
+                                        <span className="text-gray-600">{item.price} zł</span>
+                                    </List.Item>
+                                )}
+                            />
+                        </>
+                    )}
+                </div>
             </Drawer>
+
+            <Modal
+                title="Podaj wagę (g)"
+                open={weightModalVisible}
+                onCancel={() => setWeightModalVisible(false)}
+                onOk={handleConfirmWeight}
+            >
+                <Input
+                    ref={weightInputRef}
+                    type="number"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    onKeyDown={handleWeightKeyPress}
+                    placeholder="Wprowadź wagę w gramach"
+                    min={1}
+                />
+            </Modal>
         </div>
     );
 };

@@ -91,8 +91,7 @@ export const fetchOrderById = async (id) => {
 };
 
 export const createOrder = async (orderData) => {
-    const response = await API.post('/orders', orderData);
-    return response.data;
+    return await API.post('/orders', orderData);
 };
 
 export const fetchOrderItemsByOrderId = async (id) => {
@@ -100,6 +99,5 @@ export const fetchOrderItemsByOrderId = async (id) => {
 };
 
 export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity) => {
-    const response = await API.patch(`/orders/${orderId}/menu-items/${itemId}`, null, {params: {quantity: quantity}});
-    return response.data;
+    return await API.patch(`/orders/${orderId}/menu-items/${itemId}`, null, {params: {quantity: quantity}});
 };

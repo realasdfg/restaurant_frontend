@@ -61,10 +61,31 @@ const OrderDetails = ({orderId}) => {
                         : item
                 )
             );
-            message.success('Ilość zaktualizowana');
         } catch (error) {
             message.error('Błąd aktualizacji ilości');
             console.error('Update quantity error:', error);
+        }
+    };
+
+    const handleAddItem = async (menuItemId, menuItemAddQuantity) => {
+        try {
+            const orderItem = orderItems.find((item) => item.menu_item_id === menuItemId);
+            let itemName;
+            if (orderItem) {
+                itemName = orderItem.menuItem.name;
+                await handleQuantityChange(orderItem.id, menuItemId, orderItem.quantity + menuItemAddQuantity);
+            } else {
+                const response = await addOrUpdateOrderItemQuantity(orderId, menuItemId, menuItemAddQuantity);
+                const menuItemResponse = await fetchMenuItemById(response.data.menu_item_id);
+                const itemWithDetails = {...response.data, menuItem: menuItemResponse.data}
+                setOrderItems([...orderItems, itemWithDetails]);
+
+                itemName = menuItemResponse.data.name;
+            }
+            message.success(`${itemName} został(a) dodana!`);
+        } catch (error) {
+            message.error('Błąd dodawania pozycji');
+            console.error('Add item error:', error);
         }
     };
 
@@ -92,11 +113,6 @@ const OrderDetails = ({orderId}) => {
                 return newQuantities;
             });
         }
-    };
-
-    const handleAddItem = (menuItem) => {
-        console.log("Додано позицію:", menuItem);
-        setIsModalOpen(false);
     };
 
     const columns = [
