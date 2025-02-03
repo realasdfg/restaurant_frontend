@@ -30,6 +30,7 @@ const OnlineMenuHeader = ({categories, onCategoryClick}) => {
                 onClose={closeDrawer}
                 open={visible}
                 className="lg:hidden"
+                styles={{ body: { backgroundColor: "rgb(243, 244, 246)" }, header: {backgroundColor: "rgb(243, 244, 246)"} }}
             >
                 <Menu
                     mode="inline"
@@ -39,10 +40,10 @@ const OnlineMenuHeader = ({categories, onCategoryClick}) => {
                     }}
                     items={categories.map(category => ({
                         key: category.id,
-                        label: category.name
+                        label: '• ' + category.name
                     }))}
                     selectedKeys={[]}
-                    className="font-mono text-base"
+                    className="font-mono text-base bg-gray-100"
                 />
             </Drawer>
         </>

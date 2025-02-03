@@ -182,7 +182,7 @@ const OrderDetails = ({orderId}) => {
     if (loading) return <LoadingSpinner/>;
     return (
         <div className="flex justify-center flex-1 mb-4 m-3">
-            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 xl:w-2/5">
+            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/6 xl:w-2/5">
                 <div className="p-4">
                     <div className="flex justify-between items-center mb-2">
                         <span className="text-xl font-bold">Zamówienie #{orderId}</span>

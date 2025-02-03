@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Button, List, Input, Drawer, Modal } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
-import { fetchCategories, fetchMenuItems } from "../../services/api";
+import React, {useEffect, useState, useRef} from "react";
+import {Button, List, Input, Drawer, Modal} from "antd";
+import {CloseCircleOutlined} from "@ant-design/icons";
+import {fetchCategories, fetchMenuItems} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 
-const AddOrderItemDrawer = ({ visible, onClose, onAddItem }) => {
+const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
     const [categories, setCategories] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -80,76 +80,79 @@ const AddOrderItemDrawer = ({ visible, onClose, onAddItem }) => {
             ? menuItems.filter((item) => item.category_id === selectedCategory.id)
             : [];
 
-    if (loading) return <LoadingSpinner />;
+    if (loading) return <LoadingSpinner/>;
 
     return (
-        <div>
+        <>
             <Drawer
                 title="Dodaj pozycję"
                 placement="bottom"
                 open={visible}
                 onClose={onClose}
-                size={"large"}
-                className="h-[80vh] overflow-hidden"
+                size="large"
+                styles={{
+                    body: {backgroundColor: "rgb(243, 244, 246)"},
+                    header: {backgroundColor: "rgb(249, 250, 251)"}
+                }}
             >
-                <Input
-                    placeholder="Wyszukaj pozycję..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setSelectedCategory(null);
-                    }}
-                    className="mb-3"
-                    suffix={
-                        <CloseCircleOutlined
-                            className={`text-gray-500 cursor-pointer ${
-                                searchQuery ? "visible" : "invisible"
-                            }`}
-                            onClick={() => setSearchQuery("")}
+                <div className="flex flex-col items-center">
+                    <div className="w-full lg:w-3/6 xl:w-2/5">
+                        <Input
+                            placeholder="Wyszukaj pozycję..."
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setSelectedCategory(null);
+                            }}
+                            className="mb-3 w-full bg-gray-50"
+                            suffix={
+                                <CloseCircleOutlined
+                                    className={`text-gray-500 cursor-pointer ${searchQuery ? "visible" : "invisible"}`}
+                                    onClick={() => setSearchQuery("")}
+                                />
+                            }
                         />
-                    }
-                />
 
-                <div className="h-[calc(100%-60px)] overflow-auto">
-                    {!searchQuery && !selectedCategory ? (
-                        <List
-                            bordered
-                            dataSource={categories}
-                            renderItem={(category) => (
-                                <List.Item
-                                    onClick={() => setSelectedCategory(category)}
-                                    className="cursor-pointer"
-                                >
-                                    {category.name}
-                                </List.Item>
-                            )}
-                        />
-                    ) : (
-                        <>
-                            {!searchQuery && (
-                                <Button onClick={() => setSelectedCategory(null)} className="mb-2">
-                                    ← Wróć
-                                </Button>
-                            )}
-
+                        {!searchQuery && !selectedCategory ? (
                             <List
                                 bordered
-                                dataSource={filteredMenuItems}
-                                locale={{ emptyText: 'Błąd wyszukiwania' }}
-                                renderItem={(item) => (
-                                    <List.Item
-                                        onClick={() => handleAddItem(item)}
-                                        className="cursor-pointer flex justify-between"
-                                    >
-                                        <span>{item.name}</span>
-                                        <span className="text-gray-600">{item.price} zł</span>
+                                className="w-full"
+                                dataSource={categories}
+                                renderItem={(category) => (
+                                    <List.Item onClick={() => setSelectedCategory(category)}
+                                               className="cursor-pointer bg-gray-50">
+                                        {category.name}
                                     </List.Item>
                                 )}
                             />
-                        </>
-                    )}
+                        ) : (
+                            <>
+                                {!searchQuery && (
+                                    <Button onClick={() => setSelectedCategory(null)}
+                                            className="mb-2 w-full bg-gray-50">
+                                        ← Wróć
+                                    </Button>
+                                )}
+
+                                <List
+                                    bordered
+                                    className="w-full"
+                                    dataSource={filteredMenuItems}
+                                    locale={{emptyText: "Błąd wyszukiwania"}}
+                                    renderItem={(item) => (
+                                        <List.Item onClick={() => handleAddItem(item)}
+                                                   className="cursor-pointer bg-gray-50">
+                                            <span>{item.name}</span>
+                                            <span className="text-gray-600">{item.price} zł</span>
+                                        </List.Item>
+                                    )}
+                                />
+                            </>
+                        )}
+                    </div>
                 </div>
             </Drawer>
+
 
             <Modal
                 title="Podaj wagę (g)"
@@ -167,7 +170,7 @@ const AddOrderItemDrawer = ({ visible, onClose, onAddItem }) => {
                     min={1}
                 />
             </Modal>
-        </div>
+        </>
     );
 };
 

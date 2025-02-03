@@ -8,3 +8,8 @@ html, body {
     height: 100%;
     width: 100%;
 }
+
+/* Antd drawer right side closer */
+.ant-drawer-header-title {
+    flex-direction: row-reverse;
+}
