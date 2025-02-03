@@ -101,3 +101,7 @@ export const fetchOrderItemsByOrderId = async (id) => {
 export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity) => {
     return await API.patch(`/orders/${orderId}/menu-items/${itemId}`, null, {params: {quantity: quantity}});
 };
+
+export const deleteOrderItem = async (orderId, itemId) => {
+    return await API.delete(`/orders/${orderId}/menu-items/${itemId}`);
+};

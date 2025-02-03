@@ -4,11 +4,12 @@ import {
     fetchOrderItemsByOrderId,
     fetchTableById,
     fetchMenuItemById,
-    addOrUpdateOrderItemQuantity
+    addOrUpdateOrderItemQuantity, deleteOrderItem
 } from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import {Button, InputNumber, Table, Tag, message} from "antd";
 import AddOrderItemDrawer from "./AddOrderItemDrawer.jsx";
+import {CloseOutlined} from "@ant-design/icons";
 
 const OrderDetails = ({orderId}) => {
     const [order, setOrder] = useState(null);
@@ -53,14 +54,18 @@ const OrderDetails = ({orderId}) => {
 
     const handleQuantityChange = async (orderItemId, menuItemId, newQuantity) => {
         try {
-            await addOrUpdateOrderItemQuantity(orderId, menuItemId, newQuantity);
-            setOrderItems((prev) =>
-                prev.map((item) =>
-                    item.id === orderItemId
-                        ? {...item, quantity: newQuantity !== undefined ? newQuantity : item.quantity + 1}
-                        : item
-                )
-            );
+            if (newQuantity === 0) {
+                await handleRemoveItem(orderItems.find(item => item.id === orderItemId));
+            } else {
+                await addOrUpdateOrderItemQuantity(orderId, menuItemId, newQuantity);
+                setOrderItems((prev) =>
+                    prev.map((item) =>
+                        item.id === orderItemId
+                            ? {...item, quantity: newQuantity !== undefined ? newQuantity : item.quantity + 1}
+                            : item
+                    )
+                );
+            }
         } catch (error) {
             message.error('Błąd aktualizacji ilości');
             console.error('Update quantity error:', error);
@@ -86,6 +91,16 @@ const OrderDetails = ({orderId}) => {
         } catch (error) {
             message.error('Błąd dodawania pozycji');
             console.error('Add item error:', error);
+        }
+    };
+
+    const handleRemoveItem = async (orderItem) => {
+        try {
+            await deleteOrderItem(orderId, orderItem.menu_item_id);
+            setOrderItems(orderItems.filter(item => item !== orderItem));
+        } catch (error) {
+            message.error('Błąd usuwania pozycji');
+            console.error('Remove item error:', error);
         }
     };
 
@@ -174,6 +189,16 @@ const OrderDetails = ({orderId}) => {
                     {record.menuItem.type === 'by_quantity'
                         ? (record.quantity * record.menuItem.price).toFixed(2)
                         : (record.quantity / 100 * record.menuItem.price).toFixed(2)}
+                </div>
+            ),
+        },
+        {
+            title: <div>Usuń</div>,
+            key: 'delete',
+            className: 'hidden md:table-cell w-1',
+            render: (_, orderItem) => (
+                <div className="justify-self-center">
+                    <CloseOutlined onClick={() => handleRemoveItem(orderItem)}/>
                 </div>
             ),
         }
