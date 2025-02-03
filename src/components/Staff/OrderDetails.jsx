@@ -16,7 +16,6 @@ const OrderDetails = ({orderId}) => {
     const [table, setTable] = useState(null);
     const [orderItems, setOrderItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [editedQuantities, setEditedQuantities] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
@@ -104,29 +103,14 @@ const OrderDetails = ({orderId}) => {
         }
     };
 
-    const handleInputChange = (orderItemId, value) => {
-        setEditedQuantities((prev) => ({...prev, [orderItemId]: value}));
-    };
-
-    const handlePressEnter = async (orderItemId, menuItemId) => {
-        if (editedQuantities[orderItemId] !== undefined) {
-            await handleQuantityChange(orderItemId, menuItemId, editedQuantities[orderItemId]);
-            setEditedQuantities((prev) => {
-                const newQuantities = {...prev};
-                delete newQuantities[orderItemId];
-                return newQuantities;
-            });
-        }
-    };
-
-    const handleBlur = async (orderItemId, menuItemId) => {
-        if (editedQuantities[orderItemId] !== undefined) {
-            await handleQuantityChange(orderItemId, menuItemId, editedQuantities[orderItemId]);
-            setEditedQuantities((prev) => {
-                const newQuantities = {...prev};
-                delete newQuantities[orderItemId];
-                return newQuantities;
-            });
+    const handleQuantityInputConfirm = async (orderItemId, menuItemId, newQuantity) => {
+        const orderItem = orderItems.find(item => item.id === orderItemId);
+        if (newQuantity) {
+            if (orderItem.quantity !== newQuantity) {
+                await handleQuantityChange(orderItemId, menuItemId, newQuantity);
+            }
+        } else {
+            await handleRemoveItem(orderItem);
         }
     };
 
@@ -159,10 +143,7 @@ const OrderDetails = ({orderId}) => {
                     orderItems={orderItems}
                     handleQuantityChange={handleQuantityChange}
                     handleRemoveItem={handleRemoveItem}
-                    editedQuantities={editedQuantities}
-                    handleInputChange={handleInputChange}
-                    handlePressEnter={handlePressEnter}
-                    handleBlur={handleBlur}
+                    handleQuantityInputConfirm={handleQuantityInputConfirm}
                 />
             </div>
         </div>
