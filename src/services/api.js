@@ -62,6 +62,10 @@ export const fetchCategories = async () => {
     return await API.get('/menu-categories');
 };
 
+export const fetchMenuItemsByCategoryId = async (categoryId) => {
+    return await API.get(`/menu-categories/${categoryId}/menu-items`);
+};
+
 export const fetchMenuItems = async () => {
     return await API.get('/menu-items');
 };
@@ -95,7 +99,7 @@ export const fetchOrderItemsByOrderId = async (id) => {
     return await API.get(`/orders/${id}/menu-items`);
 };
 
-export const updateOrderItemQuantity = async (orderId, itemId, quantity) => {
+export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity) => {
     const response = await API.patch(`/orders/${orderId}/menu-items/${itemId}`, null, {params: {quantity: quantity}});
     return response.data;
 };

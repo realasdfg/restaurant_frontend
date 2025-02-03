@@ -56,25 +56,29 @@ const OrdersList = () => {
             title: 'Typ',
             dataIndex: 'type',
             key: 'type',
+            className: 'w-1/3',
             render: (type) => (
-                <Tag color={type === 'dinein' ? 'green' : 'blue'}>{type === 'dinein' ? 'W RESTAURACJI' : 'NA WYNOS'}</Tag>
+                <Tag
+                    color={type === 'dinein' ? 'green' : 'blue'}>{type === 'dinein' ? 'W RESTAURACJI' : 'NA WYNOS'}</Tag>
             ),
         },
         {
             title: 'Stolik',
             dataIndex: 'table_id',
             key: 'table_id',
+            className: 'w-1/3',
             sorter: (a, b) => {
                 const nameA = tableMap[a.table_id] || '';
                 const nameB = tableMap[b.table_id] || '';
-                return nameA.localeCompare(nameB, undefined, { numeric: true });
+                return nameA.localeCompare(nameB, undefined, {numeric: true});
             },
-            render: (tableId) => tableId ? tableMap[tableId]  : '-',
+            render: (tableId) => tableId ? tableMap[tableId] : '-',
         },
         {
             title: 'Utworzono',
             dataIndex: 'created_at',
             key: 'created_at',
+            className: 'w-1/3',
             render: (date) => calculateMinutesAgo(date) + ' min',
         },
     ];
@@ -105,9 +109,9 @@ const OrdersList = () => {
     if (loading) return <LoadingSpinner/>;
 
     return (
-        <div className="flex justify-center min-h-screen">
-            <div className="bg-gray-100 p-4 m-2 rounded-lg shadow w-full lg:w-4/5 xl:w-4/5">
-                <Title level={2} className="text-center">Aktualne zamówienia</Title>
+        <div className="flex justify-center flex-1 mb-4 m-3">
+            <div className="bg-gray-100 p-4 shadow w-full rounded-lg lg:w-4/6">
+                <Title level={2} className="text-center m-1">Aktualne zamówienia</Title>
                 <Tabs defaultActiveKey="1" items={tabs}/>
             </div>
         </div>

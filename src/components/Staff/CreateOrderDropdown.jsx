@@ -78,7 +78,6 @@ const CreateOrderDropdown = () => {
                 title="Wybierz stół"
                 open={isModalOpen}
                 onCancel={handleModalCancel}
-                getContainer={false}
                 footer={null}
             >
                 <List

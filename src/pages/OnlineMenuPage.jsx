@@ -81,7 +81,7 @@ const OnlineMenuPage = () => {
     if (loading) return <LoadingSpinner/>;
 
     return (
-        <div className="bg-gray-100 font-mono min-h-screen">
+        <div className="bg-gray-100 font-mono">
             <OnlineMenuHeader categories={categories} onCategoryClick={handleCategoryClick}/>
             <div className="flex justify-center p-3">
                 <div className="flex lg:w-3/4 gap-3">
@@ -103,7 +103,7 @@ const OnlineMenuPage = () => {
                         selectedKeys={[]}
                     />
 
-                    <Content className="flex w-full">
+                    <Content className="flex w-full min-h-screen">
                         <div className="bg-gray-200 p-5 rounded-lg w-full">
                             <Search
                                 placeholder="Wyszukaj pozycji..."

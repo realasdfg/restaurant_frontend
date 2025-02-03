@@ -18,7 +18,7 @@ const SHeader = () => {
     };
 
     return (
-        <Header className="flex justify-between items-center bg-blue-500 rounded-lg pe-4 ps-4 mb-3">
+        <Header className="flex justify-between items-center bg-blue-500 pe-4 ps-4">
             <div>
                 <Button color="primary" variant="outlined" onClick={handleOrdersClick}>
                     Zamówienia

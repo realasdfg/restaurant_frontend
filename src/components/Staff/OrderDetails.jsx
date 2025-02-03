@@ -4,10 +4,11 @@ import {
     fetchOrderItemsByOrderId,
     fetchTableById,
     fetchMenuItemById,
-    updateOrderItemQuantity
+    addOrUpdateOrderItemQuantity
 } from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import {Button, InputNumber, Table, Tag, message} from "antd";
+import AddOrderItemDrawer from "./AddOrderItemDrawer.jsx";
 
 const OrderDetails = ({orderId}) => {
     const [order, setOrder] = useState(null);
@@ -15,6 +16,7 @@ const OrderDetails = ({orderId}) => {
     const [orderItems, setOrderItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editedQuantities, setEditedQuantities] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,11 +51,9 @@ const OrderDetails = ({orderId}) => {
         fetchData();
     }, [orderId]);
 
-    if (loading) return <LoadingSpinner/>;
-
     const handleQuantityChange = async (orderItemId, menuItemId, newQuantity) => {
         try {
-            await updateOrderItemQuantity(orderId, menuItemId, newQuantity);
+            await addOrUpdateOrderItemQuantity(orderId, menuItemId, newQuantity);
             setOrderItems((prev) =>
                 prev.map((item) =>
                     item.id === orderItemId
@@ -92,6 +92,11 @@ const OrderDetails = ({orderId}) => {
                 return newQuantities;
             });
         }
+    };
+
+    const handleAddItem = (menuItem) => {
+        console.log("Додано позицію:", menuItem);
+        setIsModalOpen(false);
     };
 
     const columns = [
@@ -141,7 +146,7 @@ const OrderDetails = ({orderId}) => {
             key: 'price',
             render: (menuItem) => (
                 <div className="justify-self-end">
-                    {menuItem.price + (menuItem.type === 'by_weight' ? ' / 100g' : '')}
+                    {menuItem.price}
                 </div>
             ),
         },
@@ -158,20 +163,29 @@ const OrderDetails = ({orderId}) => {
         }
     ];
 
+    if (loading) return <LoadingSpinner/>;
     return (
-        <div className="flex justify-center min-h-screen">
+        <div className="flex justify-center flex-1 mb-4 m-3">
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 xl:w-2/5">
                 <div className="p-4">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Zamówienie #{orderId}</h2>
-                        {order.type === 'dinein' ? <Tag color='green'>W RESTAURACJI</Tag> :
-                            <Tag color='blue'>NA WYNOS</Tag>}
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-xl font-bold">Zamówienie #{orderId}</span>
+                        {order.type === 'dinein' ? <Tag color='green' className="text-sm">W RESTAURACJI</Tag> :
+                            <Tag color='blue' className="text-sm">NA WYNOS</Tag>}
                     </div>
                     <div className="flex justify-between items-center">
-                        {order.type === 'dinein' && <div><strong>Stolik:</strong> {table.name}</div>}
-                        <div><strong>Utworzone:</strong> {new Date(order.created_at).toLocaleString()}</div>
+                        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+                            Dodaj pozycję
+                        </Button>
+                        {order.type === 'dinein' && <div><strong>Stolik:</strong><Tag color="green"
+                                                                                      className="text-sm"> {table.name}</Tag>
+                        </div>}
                     </div>
-                    <Button type="primary" className="mt-3 mb-3">Dodaj pozycję</Button>
+                    <AddOrderItemDrawer
+                        visible={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onAddItem={handleAddItem}
+                    />
                 </div>
 
                 <Table

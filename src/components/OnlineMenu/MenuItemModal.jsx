@@ -6,7 +6,6 @@ const MenuItemModal = ({ selectedItem, onClose }) => (
         open={!!selectedItem}
         onCancel={onClose}
         footer={null}
-        getContainer={false}
         centered
         className="bg-gray-100 font-mono rounded-lg"
     >

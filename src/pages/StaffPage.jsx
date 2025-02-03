@@ -9,9 +9,9 @@ const StaffPage = () => {
     const {orderId} = useParams();
 
     return (
-        <div className="bg-gray-200 font-mono min-h-screen">
+        <div className="bg-gray-200 font-mono min-h-screen flex flex-col">
             <SHeader/>
-            <div className="font-mono min-h-screen">
+            <div className="flex-1 flex">
                 {orderId ? (
                     <OrderDetails orderId={orderId}/>
                 ) : (
