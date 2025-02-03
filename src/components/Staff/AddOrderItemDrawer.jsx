@@ -156,6 +156,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
 
             <Modal
                 title="Podaj wagę (g)"
+                centered
                 open={weightModalVisible}
                 onCancel={() => setWeightModalVisible(false)}
                 onOk={handleConfirmWeight}

@@ -76,6 +76,7 @@ const CreateOrderDropdown = () => {
             </Dropdown>
             <Modal
                 title="Wybierz stół"
+                centered
                 open={isModalOpen}
                 onCancel={handleModalCancel}
                 footer={null}
