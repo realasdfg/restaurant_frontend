@@ -51,6 +51,38 @@ const OrderDetails = ({orderId}) => {
         fetchData();
     }, [orderId]);
 
+
+    const handleAddItem = async (menuItemId, menuItemAddQuantity) => {
+        try {
+            if (menuItemAddQuantity > 9999999) {
+                message.error('Za duża ilość pozycji');
+                return;
+            }
+            const orderItem = orderItems.find((item) => item.menu_item_id === menuItemId);
+            let itemName;
+            if (orderItem) {
+                itemName = orderItem.menuItem.name;
+                let newQuantity = orderItem.quantity + menuItemAddQuantity;
+                if (newQuantity > 9999999) {
+                    message.error('Za duża ilość pozycji');
+                    return;
+                }
+                await handleQuantityChange(orderItem.id, menuItemId, newQuantity);
+            } else {
+                const response = await addOrUpdateOrderItemQuantity(orderId, menuItemId, menuItemAddQuantity);
+                const menuItemResponse = await fetchMenuItemById(response.data.menu_item_id);
+                const itemWithDetails = {...response.data, menuItem: menuItemResponse.data}
+                setOrderItems([...orderItems, itemWithDetails]);
+
+                itemName = menuItemResponse.data.name;
+            }
+            message.success(`${itemName} został(a) dodana!`);
+        } catch (error) {
+            message.error('Błąd dodawania pozycji');
+            console.error('Add item error:', error);
+        }
+    };
+
     const handleQuantityChange = async (orderItemId, menuItemId, newQuantity) => {
         try {
             if (newQuantity === 0) {
@@ -71,25 +103,18 @@ const OrderDetails = ({orderId}) => {
         }
     };
 
-    const handleAddItem = async (menuItemId, menuItemAddQuantity) => {
-        try {
-            const orderItem = orderItems.find((item) => item.menu_item_id === menuItemId);
-            let itemName;
-            if (orderItem) {
-                itemName = orderItem.menuItem.name;
-                await handleQuantityChange(orderItem.id, menuItemId, orderItem.quantity + menuItemAddQuantity);
-            } else {
-                const response = await addOrUpdateOrderItemQuantity(orderId, menuItemId, menuItemAddQuantity);
-                const menuItemResponse = await fetchMenuItemById(response.data.menu_item_id);
-                const itemWithDetails = {...response.data, menuItem: menuItemResponse.data}
-                setOrderItems([...orderItems, itemWithDetails]);
-
-                itemName = menuItemResponse.data.name;
+    const handleQuantityInputConfirm = async (orderItemId, menuItemId, newQuantity) => {
+        const orderItem = orderItems.find(item => item.id === orderItemId);
+        if (newQuantity) {
+            if (newQuantity > 9999999){
+                message.error('Za duża ilość pozycji');
+                return;
             }
-            message.success(`${itemName} został(a) dodana!`);
-        } catch (error) {
-            message.error('Błąd dodawania pozycji');
-            console.error('Add item error:', error);
+            if (orderItem.quantity !== newQuantity) {
+                await handleQuantityChange(orderItemId, menuItemId, newQuantity);
+            }
+        } else {
+            await handleRemoveItem(orderItem);
         }
     };
 
@@ -103,48 +128,86 @@ const OrderDetails = ({orderId}) => {
         }
     };
 
-    const handleQuantityInputConfirm = async (orderItemId, menuItemId, newQuantity) => {
-        const orderItem = orderItems.find(item => item.id === orderItemId);
-        if (newQuantity) {
-            if (orderItem.quantity !== newQuantity) {
-                await handleQuantityChange(orderItemId, menuItemId, newQuantity);
-            }
-        } else {
-            await handleRemoveItem(orderItem);
-        }
-    };
+    const totalAmount = orderItems.reduce((sum, item) => {
+        const itemTotal = item.menuItem.type === "by_quantity"
+            ? item.quantity * item.menuItem.price
+            : (item.quantity / 100) * item.menuItem.price;
+        return sum + itemTotal;
+    }, 0).toFixed(2);
 
     if (loading) return <LoadingSpinner/>;
 
     return (
-        <div className="flex justify-center flex-1 mb-4 m-3">
-            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/6 xl:w-2/5">
+        <div className="flex justify-center mb-4 m-3">
+            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/6 xl:w-2/5 flex flex-col mb-14 sm:mb-0">
                 <div className="p-4">
                     <div className="flex justify-between items-center mb-2">
                         <span className="text-xl font-bold">Zamówienie #{orderId}</span>
-                        {order.type === 'dinein' ? <Tag color='green' className="text-sm">W RESTAURACJI</Tag> :
-                            <Tag color='blue' className="text-sm">NA WYNOS</Tag>}
+                        {order.type === 'dinein' ? (
+                            <Tag color="green" className="text-sm">
+                                W RESTAURACJI
+                            </Tag>
+                        ) : (
+                            <Tag color="blue" className="text-sm">
+                                NA WYNOS
+                            </Tag>
+                        )}
                     </div>
-                    <div className="flex justify-between items-center">
-                        <Button type="primary" onClick={() => setIsModalOpen(true)}>
-                            Dodaj pozycję
-                        </Button>
-                        {order.type === 'dinein' && <div><strong>Stolik:</strong><Tag color="green"
-                                                                                      className="text-sm"> {table.name}</Tag>
-                        </div>}
+                    <div className="text-end items-center">
+                        {order.type === 'dinein' && (
+                            <div>
+                                <strong>Stolik:</strong>
+                                <Tag color="green" className="text-sm">
+                                    {table.name}
+                                </Tag>
+                            </div>
+                        )}
                     </div>
+
                     <AddOrderItemDrawer
                         visible={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         onAddItem={handleAddItem}
                     />
                 </div>
-                <OrderItemsTable
-                    orderItems={orderItems}
-                    handleQuantityChange={handleQuantityChange}
-                    handleRemoveItem={handleRemoveItem}
-                    handleQuantityInputConfirm={handleQuantityInputConfirm}
-                />
+                <div className="overflow-x-auto">
+                    <OrderItemsTable
+                        orderItems={orderItems}
+                        handleQuantityChange={handleQuantityChange}
+                        handleQuantityInputConfirm={handleQuantityInputConfirm}
+                        handleRemoveItem={handleRemoveItem}
+                    />
+                </div>
+
+                {/* Large screens */}
+                <div
+                    className="hidden sm:flex sticky -bottom-0.5 justify-between items-center bg-blue-500 shadow-md p-3">
+                    <Button color="primary" variant="outlined" onClick={() => setIsModalOpen(true)}>
+                        Dodaj
+                    </Button>
+                    <div>
+                        <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                        <Button color="primary" variant="outlined"
+                                className="w-24 h-10 font-bold text-base shadow ml-2">
+                            Zamknij
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Small screens */}
+                <div
+                    className="sm:hidden fixed left-0 w-full -bottom-0.5 flex justify-between items-center bg-blue-500 shadow-md p-3">
+                    <Button color="primary" variant="outlined" onClick={() => setIsModalOpen(true)}>
+                        Dodaj
+                    </Button>
+                    <div className="mr-6">
+                        <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                        <Button color="primary" variant="outlined"
+                                className="w-24 h-10 font-bold text-base shadow ml-2">
+                            Zamknij
+                        </Button>
+                    </div>
+                </div>
             </div>
         </div>
     );

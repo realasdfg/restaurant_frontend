@@ -11,7 +11,7 @@ const StaffPage = () => {
     return (
         <div className="bg-gray-200 font-mono min-h-screen flex flex-col">
             <SHeader/>
-            <div className="flex-1 flex">
+            <div>
                 {orderId ? (
                     <OrderDetails orderId={orderId}/>
                 ) : (

@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
-import {Button, List, Input, Drawer, Modal} from "antd";
+import {Button, List, Input, Drawer, Modal, InputNumber} from "antd";
 import {CloseCircleOutlined} from "@ant-design/icons";
 import {fetchCategories, fetchMenuItems} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
@@ -64,12 +64,6 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
         onAddItem(selectedItem.id, weightValue);
         setWeightModalVisible(false);
         setSelectedItem(null);
-    };
-
-    const handleWeightKeyPress = (e) => {
-        if (e.key === "Enter") {
-            handleConfirmWeight();
-        }
     };
 
     const filteredMenuItems = searchQuery
@@ -161,14 +155,16 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                 onCancel={() => setWeightModalVisible(false)}
                 onOk={handleConfirmWeight}
             >
-                <Input
+                <InputNumber
                     ref={weightInputRef}
                     type="number"
                     value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    onKeyDown={handleWeightKeyPress}
+                    onChange={(value) => setWeight(value)}
+                    onPressEnter={handleConfirmWeight}
                     placeholder="Wprowadź wagę w gramach"
                     min={1}
+                    max={9999999}
+                    className="w-full"
                 />
             </Modal>
         </>
