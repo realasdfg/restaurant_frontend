@@ -13,17 +13,32 @@ const CurrentOrders = () => {
     const [tableMap, setTableMap] = useState({});
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [_, setTimeUpdated] = useState(Date.now());
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8000/ws/orders");
+
         ws.onmessage = (event) => {
-            const newOrder = JSON.parse(JSON.parse(event.data));
-            console.log('New order received', newOrder);
-            setOrders((prevOrders) => [newOrder, ...prevOrders]);
+            const order = JSON.parse(JSON.parse(event.data));
+            console.log('New order received', order);
+
+            setOrders((prevOrders) => {
+                if (order.paid) {
+                    return prevOrders.filter(o => o.id !== order.id);
+                }
+
+                const orderIndex = prevOrders.findIndex(o => o.id === order.id);
+                if (orderIndex !== -1) {
+                    return prevOrders.map(o => (o.id === order.id ? order : o));
+                } else {
+                    return [order, ...prevOrders];
+                }
+            });
         };
 
         return () => ws.close();
     }, []);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -51,16 +66,19 @@ const CurrentOrders = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTimeUpdated(Date.now());
+        }, 10000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const calculateMinutesAgo = (createdAt) => {
         const now = new Date();
         const createdTime = new Date(createdAt);
         const differenceInMinutes = Math.floor((now - createdTime) / (1000 * 60));
         return differenceInMinutes > 120 ? "120+" : `${differenceInMinutes}`;
-    };
-
-    const getFilteredOrders = (type) => {
-        if (!type) return orders;
-        return orders.filter((order) => order.type === type);
     };
 
     const handleOrderUpdate = (orderId, data) => {
@@ -118,19 +136,18 @@ const CurrentOrders = () => {
         {
             key: "1",
             label: "Wszystkie",
-            children: <CurrentOrdersTable columns={columns} dataSource={orders}
-                                          onRow={handleRowClick}/>,
+            children: <CurrentOrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>,
         },
         {
             key: "2",
             label: "W restauracji",
-            children: <CurrentOrdersTable columns={columns} dataSource={getFilteredOrders("dinein")}
+            children: <CurrentOrdersTable columns={columns} dataSource={orders.filter(o => o.type === "dinein")}
                                           onRow={handleRowClick}/>,
         },
         {
             key: "3",
             label: "Na wynos",
-            children: <CurrentOrdersTable columns={columns} dataSource={getFilteredOrders("togo")}
+            children: <CurrentOrdersTable columns={columns} dataSource={orders.filter(o => o.type === "togo")}
                                           onRow={handleRowClick}/>,
         },
     ];
