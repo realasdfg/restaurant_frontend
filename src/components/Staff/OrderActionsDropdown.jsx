@@ -1,27 +1,14 @@
 import React, {useState} from "react";
 import {Dropdown, message} from "antd";
 import {EllipsisOutlined} from "@ant-design/icons";
-import {fetchTables, changeOrderInfo} from "../../services/api";
+import {changeOrderInfo} from "../../services/api";
 import TableListModal from "./TableListModal.jsx";
 
 const OrderActionsDropdown = ({order, onUpdateOrder}) => {
     const [isTableModalOpen, setIsTableModalOpen] = useState(false);
-    const [tables, setTables] = useState([]);
-
-    const openTableModal = async () => {
-        try {
-            const response = await fetchTables();
-            setTables(response.data.sort((a, b) => a.name.localeCompare(b.name)));
-            setIsTableModalOpen(true);
-        } catch (error) {
-            message.error("Nie udało się załadować stolików");
-            console.error("Error fetching tables:", error);
-        }
-    };
 
     const handleTableSelect = async (table) => {
         if (!table.is_free) return;
-
         try {
             await changeOrderInfo(order.id, {type: "dinein", table_id: table.id});
             onUpdateOrder(order.id, {type: "dinein", table_id: table.id});
@@ -31,19 +18,18 @@ const OrderActionsDropdown = ({order, onUpdateOrder}) => {
         }
     };
 
-    const handleMenuClick = async (e) => {
+    const handleDropdownItemClick = async (e) => {
         e.domEvent.stopPropagation();
-
         if (e.key === "typeChange") {
             const newType = order.type === "dinein" ? "togo" : "dinein";
             if (newType === "dinein") {
-                openTableModal();
+                setIsTableModalOpen(true);
             } else {
                 await changeOrderInfo(order.id, {type: newType, table_id: null});
                 onUpdateOrder(order.id, {type: newType, table_id: null});
             }
         } else if (e.key === "tableChange") {
-            openTableModal();
+            setIsTableModalOpen(true);
         }
     };
 
@@ -51,12 +37,12 @@ const OrderActionsDropdown = ({order, onUpdateOrder}) => {
         {
             label: "Zmień typ zamówienia",
             key: "typeChange",
-            onClick: handleMenuClick,
+            onClick: handleDropdownItemClick,
         },
         {
             label: "Zmień stolik",
             key: "tableChange",
-            onClick: handleMenuClick,
+            onClick: handleDropdownItemClick,
         },
     ];
 
@@ -69,12 +55,14 @@ const OrderActionsDropdown = ({order, onUpdateOrder}) => {
             </Dropdown>
             <TableListModal
                 open={isTableModalOpen}
-                onCancel={() => setIsTableModalOpen(false)}
-                onclick={(table, event) => {
-                    event.stopPropagation();
+                onCancel={(e) => {
+                    setIsTableModalOpen(false);
+                    e.stopPropagation();
+                }}
+                onTableClick={(table, e) => {
+                    e.stopPropagation();
                     handleTableSelect(table);
                 }}
-                tables={tables}
             />
         </>
     );
