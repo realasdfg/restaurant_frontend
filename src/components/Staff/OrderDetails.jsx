@@ -10,12 +10,14 @@ import LoadingSpinner from '../shared/LoadingSpinner';
 import {Button, Tag, message} from "antd";
 import AddOrderItemDrawer from "./AddOrderItemDrawer.jsx";
 import OrderItemsTable from "./OrderItemsTable.jsx";
+import OrderCloseModal from "./OrderCloseModal.jsx";
 
 const OrderDetails = ({orderId}) => {
     const [order, setOrder] = useState(null);
     const [table, setTable] = useState(null);
     const [orderItems, setOrderItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
@@ -106,7 +108,7 @@ const OrderDetails = ({orderId}) => {
     const handleQuantityInputConfirm = async (orderItemId, menuItemId, newQuantity) => {
         const orderItem = orderItems.find(item => item.id === orderItemId);
         if (newQuantity) {
-            if (newQuantity > 9999999){
+            if (newQuantity > 9999999) {
                 message.error('Za duża ilość pozycji');
                 return;
             }
@@ -165,8 +167,8 @@ const OrderDetails = ({orderId}) => {
                     </div>
 
                     <AddOrderItemDrawer
-                        visible={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
+                        visible={isDrawerOpen}
+                        onClose={() => setIsDrawerOpen(false)}
                         onAddItem={handleAddItem}
                     />
                 </div>
@@ -182,13 +184,14 @@ const OrderDetails = ({orderId}) => {
                 {/* Large screens */}
                 <div
                     className="hidden sm:flex sticky -bottom-0.5 justify-between items-center bg-blue-500 shadow-md p-3">
-                    <Button color="primary" variant="outlined" onClick={() => setIsModalOpen(true)}>
+                    <Button color="primary" variant="outlined" onClick={() => setIsDrawerOpen(true)}>
                         Dodaj
                     </Button>
                     <div>
                         <span className="font-bold text-xl text-white">{totalAmount} zł</span>
                         <Button color="primary" variant="outlined"
-                                className="w-24 h-10 font-bold text-base shadow ml-2">
+                                className="w-24 h-10 font-bold text-base shadow ml-2"
+                                onClick={() => setIsModalOpen(true)}>
                             Zamknij
                         </Button>
                     </div>
@@ -197,18 +200,25 @@ const OrderDetails = ({orderId}) => {
                 {/* Small screens */}
                 <div
                     className="sm:hidden fixed left-0 w-full -bottom-0.5 flex justify-between items-center bg-blue-500 shadow-md p-3">
-                    <Button color="primary" variant="outlined" onClick={() => setIsModalOpen(true)}>
+                    <Button color="primary" variant="outlined" onClick={() => setIsDrawerOpen(true)}>
                         Dodaj
                     </Button>
                     <div className="mr-6">
                         <span className="font-bold text-xl text-white">{totalAmount} zł</span>
                         <Button color="primary" variant="outlined"
-                                className="w-24 h-10 font-bold text-base shadow ml-2">
+                                className="w-24 h-10 font-bold text-base shadow ml-2"
+                                onClick={() => setIsModalOpen(true)}>
                             Zamknij
                         </Button>
                     </div>
                 </div>
             </div>
+            <OrderCloseModal
+                open={isModalOpen}
+                onCancel={() => setIsModalOpen(false)}
+                totalAmount={totalAmount}
+                orderId={orderId}
+            />
         </div>
     );
 };

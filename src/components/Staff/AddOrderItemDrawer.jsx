@@ -154,6 +154,14 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                 open={weightModalVisible}
                 onCancel={() => setWeightModalVisible(false)}
                 onOk={handleConfirmWeight}
+                footer={(_, {OkBtn, CancelBtn}) => (
+                    <div className="flex justify-between">
+                        <CancelBtn/>
+                        <OkBtn/>
+                    </div>
+                )}
+                okText="Dodaj"
+                cancelText="Anuluj"
             >
                 <InputNumber
                     ref={weightInputRef}

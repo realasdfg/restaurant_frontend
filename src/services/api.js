@@ -70,32 +70,36 @@ export const fetchMenuItems = async () => {
     return await API.get('/menu-items');
 };
 
-export const fetchMenuItemById = async (id) => {
-    return await API.get(`/menu-items/${id}`);
+export const fetchMenuItemById = async (menuItemId) => {
+    return await API.get(`/menu-items/${menuItemId}`);
 };
 
 export const fetchTables = async () => {
     return await API.get('/tables');
 };
 
-export const fetchTableById = async (id) => {
-    return await API.get(`/tables/${id}`);
+export const fetchTableById = async (tableId) => {
+    return await API.get(`/tables/${tableId}`);
 };
 
 export const fetchOrders = async (current_only) => {
     return await API.get('/orders', {params: {current_only: current_only}});
 };
 
-export const fetchOrderById = async (id) => {
-    return await API.get(`/orders/${id}`);
+export const fetchOrderById = async (orderId) => {
+    return await API.get(`/orders/${orderId}`);
 };
 
 export const createOrder = async (orderData) => {
     return await API.post('/orders', orderData);
 };
 
-export const fetchOrderItemsByOrderId = async (id) => {
-    return await API.get(`/orders/${id}/menu-items`);
+export const closeOrder = async (orderId, paymentData) => {
+    return await API.patch(`/orders/${orderId}`, paymentData);
+};
+
+export const fetchOrderItemsByOrderId = async (orderId) => {
+    return await API.get(`/orders/${orderId}/menu-items`);
 };
 
 export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity) => {
