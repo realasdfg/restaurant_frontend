@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Table, Modal, Button, List} from "antd";
 import {CloseOutlined} from "@ant-design/icons";
-import QuantityInput from "./QuantityInput.jsx";
+import ItemQuantityInput from "./ItemQuantityInput.jsx";
 
 const OrderItemsTable = ({
                              orderItems,
@@ -55,7 +55,7 @@ const OrderItemsTable = ({
             className: "w-1",
             render: (quantity, record) => (
                 <div className="justify-self-center sm:justify-self-start">
-                    <QuantityInput
+                    <ItemQuantityInput
                         value={quantity}
                         onChangeBtns={(newQuantity) => handleQuantityChange(record.id, record.menuItem.id, newQuantity)}
                         onConfirm={(newQuantity) => handleQuantityInputConfirm(record.id, record.menuItem.id, newQuantity)}
@@ -102,7 +102,7 @@ const OrderItemsTable = ({
         {
             label: "Ilość",
             value: (
-                <QuantityInput
+                <ItemQuantityInput
                     value={selectedItem.quantity}
                     onChangeBtns={(newQuantity) => handleQuantityChangeWrapper(selectedItem.id, selectedItem.menuItem.id, newQuantity)}
                     onConfirm={(newQuantity) => handleQuantityInputConfirmWrapper(selectedItem.id, selectedItem.menuItem.id, newQuantity)}

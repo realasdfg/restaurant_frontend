@@ -12,7 +12,7 @@ import AddOrderItemDrawer from "./AddOrderItemDrawer.jsx";
 import OrderItemsTable from "./OrderItemsTable.jsx";
 import OrderCloseModal from "./OrderCloseModal.jsx";
 
-const OrderDetails = ({orderId}) => {
+const CurrentOrderDetails = ({orderId}) => {
     const [order, setOrder] = useState(null);
     const [table, setTable] = useState(null);
     const [orderItems, setOrderItems] = useState([]);
@@ -223,4 +223,4 @@ const OrderDetails = ({orderId}) => {
     );
 };
 
-export default OrderDetails;
+export default CurrentOrderDetails;

@@ -98,6 +98,10 @@ export const closeOrder = async (orderId, paymentData) => {
     return await API.patch(`/orders/${orderId}`, paymentData);
 };
 
+export const changeOrderInfo = async (orderId, data) => {
+    return await API.patch(`/orders/${orderId}`, data);
+};
+
 export const fetchOrderItemsByOrderId = async (orderId) => {
     return await API.get(`/orders/${orderId}/menu-items`);
 };

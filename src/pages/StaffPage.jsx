@@ -1,7 +1,7 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
-import OrdersList from "../components/Staff/OrdersList.jsx";
-import OrderDetails from "../components/Staff/OrderDetails.jsx";
+import CurrentOrders from "../components/Staff/CurrentOrders.jsx";
+import CurrentOrderDetails from "../components/Staff/CurrentOrderDetails.jsx";
 import SHeader from "../components/shared/SHeader.jsx";
 
 
@@ -13,9 +13,9 @@ const StaffPage = () => {
             <SHeader/>
             <div>
                 {orderId ? (
-                    <OrderDetails orderId={orderId}/>
+                    <CurrentOrderDetails orderId={orderId}/>
                 ) : (
-                    <OrdersList/>
+                    <CurrentOrders/>
                 )}
             </div>
         </div>

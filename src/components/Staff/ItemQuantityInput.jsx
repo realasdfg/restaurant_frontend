@@ -1,6 +1,6 @@
 import {Button, InputNumber} from "antd";
 
-const QuantityInput = ({value, onChangeBtns, onConfirm, className, showCompact = false}) => {
+const ItemQuantityInput = ({value, onChangeBtns, onConfirm, className, showCompact = false}) => {
     return (
         <div className="flex items-center gap-2">
             <Button className="size-7" onClick={(e) => {
@@ -34,4 +34,4 @@ const QuantityInput = ({value, onChangeBtns, onConfirm, className, showCompact =
     );
 };
 
-export default QuantityInput;
+export default ItemQuantityInput;
