@@ -12,6 +12,7 @@ import AddOrderItemDrawer from "./AddOrderItemDrawer.jsx";
 import OrderItemsTable from "./OrderItemsTable.jsx";
 import OrderCloseModal from "./OrderCloseModal.jsx";
 import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
+import {orderWebSocketService} from "../../services/websocketService.js";
 
 const CurrentOrderDetails = ({orderId}) => {
     const [order, setOrder] = useState(null);
@@ -53,6 +54,28 @@ const CurrentOrderDetails = ({orderId}) => {
         };
         fetchData();
     }, [orderId]);
+
+    useEffect(() => {
+        const orderSocket = orderWebSocketService.connectToOrder(orderId);
+
+        orderSocket.connect();
+
+        const unsubscribe = orderSocket.subscribe(async (order) => {
+            console.log(`Order ${orderId} changes received:`, order);
+            setOrder(order);
+            if (order.table_id) {
+                const tableResponse = await fetchTableById(order.table_id);
+                setTable(tableResponse.data);
+            } else {
+                setTable(null);
+            }
+        });
+
+        return () => {
+            unsubscribe();
+            orderSocket.close();
+        };
+    }, []);
 
 
     const handleAddItem = async (menuItemId, menuItemAddQuantity) => {

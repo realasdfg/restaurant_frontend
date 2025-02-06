@@ -14,13 +14,17 @@ class WebSocketService {
 
             this.ws.onmessage = (event) => {
                 try {
-                    const data = JSON.parse(JSON.parse(event.data));
+                    const data = JSON.parse(event.data);
                     this.listeners.forEach((callback) => callback(data));
                 } catch (error) {
                     console.error("Error parsing WebSocket message:", error);
                 }
             };
         }
+    }
+
+    connectToOrder(orderId) {
+        return new WebSocketService(`${this.url}/${orderId}`);
     }
 
     subscribe(callback) {
@@ -36,6 +40,4 @@ class WebSocketService {
 }
 
 export const orderWebSocketService = new WebSocketService("ws://localhost:8000/ws/orders");
-
 export const tableWebSocketService = new WebSocketService("ws://localhost:8000/ws/tables");
-
