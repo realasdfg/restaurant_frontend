@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Modal, List, Button, message} from "antd";
 import {fetchTables} from "../../services/api.js";
+import {tableWebSocketService} from "../../services/websocketService.js";
 
 
 const TableListModal = ({open, onCancel, onTableClick}) => {
@@ -9,6 +10,17 @@ const TableListModal = ({open, onCancel, onTableClick}) => {
     useEffect(() => {
         if (open) {
             loadTables();
+
+            tableWebSocketService.connect();
+
+            const unsubscribe = tableWebSocketService.subscribe((table) => {
+                console.log('New table info received', table);
+                setTables((prevTables) => prevTables.map(o => (o.id === table.id ? table : o)));
+            });
+
+            return () => {
+                unsubscribe();
+            };
         }
     }, [open]);
 

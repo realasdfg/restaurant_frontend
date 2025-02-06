@@ -137,7 +137,7 @@ const CurrentOrderDetails = ({orderId}) => {
             const tableResponse = await fetchTableById(data.table_id);
             setTable(tableResponse.data);
         } else {
-            setTable({});
+            setTable(null);
         }
     }
 

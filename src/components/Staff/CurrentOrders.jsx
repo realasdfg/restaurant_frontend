@@ -5,7 +5,7 @@ import {fetchOrders, fetchTables} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import CurrentOrdersTable from "./CurrentOrdersTable.jsx";
 import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
-import orderWebSocketService from "../../services/websocketService";
+import {orderWebSocketService} from "../../services/websocketService.js";
 
 const {Title} = Typography;
 

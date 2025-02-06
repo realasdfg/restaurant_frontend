@@ -35,5 +35,7 @@ class WebSocketService {
     }
 }
 
-const orderWebSocketService = new WebSocketService("ws://localhost:8000/ws/orders");
-export default orderWebSocketService;
+export const orderWebSocketService = new WebSocketService("ws://localhost:8000/ws/orders");
+
+export const tableWebSocketService = new WebSocketService("ws://localhost:8000/ws/tables");
+
