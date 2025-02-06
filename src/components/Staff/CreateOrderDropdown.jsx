@@ -49,10 +49,6 @@ const CreateOrderDropdown = () => {
         }
     };
 
-    const handleModalCancel = () => {
-        setIsModalOpen(false);
-    };
-
     const dropdownItems = [
         {
             label: 'W restauracji',
@@ -78,7 +74,7 @@ const CreateOrderDropdown = () => {
                 title="Wybierz stół"
                 centered
                 open={isModalOpen}
-                onCancel={handleModalCancel}
+                onCancel={() => setIsModalOpen(false)}
                 footer={null}
             >
                 <List
@@ -92,7 +88,7 @@ const CreateOrderDropdown = () => {
                                 onClick={() => handleCreateDineInOrder(table)}
                                 className={!table.is_free ? 'bg-gray-300 text-gray-500' : ''}
                             >
-                                {table.name} {!table.is_free}
+                                {table.name}
                             </Button>
                         </List.Item>
                     )}
