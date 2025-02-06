@@ -15,6 +15,17 @@ const CurrentOrders = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const ws = new WebSocket("ws://localhost:8000/ws/orders");
+        ws.onmessage = (event) => {
+            const newOrder = JSON.parse(JSON.parse(event.data));
+            console.log('New order received', newOrder);
+            setOrders((prevOrders) => [newOrder, ...prevOrders]);
+        };
+
+        return () => ws.close();
+    }, []);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const [ordersResponse, tablesResponse] = await Promise.all([
@@ -107,7 +118,7 @@ const CurrentOrders = () => {
         {
             key: "1",
             label: "Wszystkie",
-            children: <CurrentOrdersTable columns={columns} dataSource={getFilteredOrders(null)}
+            children: <CurrentOrdersTable columns={columns} dataSource={orders}
                                           onRow={handleRowClick}/>,
         },
         {
