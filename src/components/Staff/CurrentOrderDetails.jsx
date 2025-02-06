@@ -79,7 +79,7 @@ const CurrentOrderDetails = ({orderId}) => {
 
                 itemName = menuItemResponse.data.name;
             }
-            message.success(`${itemName} został(a) dodana!`);
+            message.success(`Pozycja "${itemName}" została dodana!`);
         } catch (error) {
             message.error('Błąd dodawania pozycji');
             console.error('Add item error:', error);
@@ -139,7 +139,6 @@ const CurrentOrderDetails = ({orderId}) => {
         } else {
             setTable({});
         }
-        console.log(table)
     }
 
     const totalAmount = orderItems.reduce((sum, item) => {
@@ -238,7 +237,7 @@ const CurrentOrderDetails = ({orderId}) => {
             <OrderCloseModal
                 open={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
-                totalAmount={totalAmount}
+                totalAmount={parseFloat(totalAmount)}
                 orderId={orderId}
             />
         </div>

@@ -103,7 +103,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
                     {
                         key: 'sum',
                         label: <div className="text-base font-bold">Suma:</div>,
-                        value: <div className="text-base">{totalAmount} zł</div>,
+                        value: <div className="text-base">{(totalAmount).toFixed(2)} zł</div>,
                     },
                     {
                         key: 'cash',
@@ -137,7 +137,9 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
                         value:
                             <div
                                 className="text-base">{
-                                (cashAmount - totalAmount) >= 0 ? Math.round((cashAmount - totalAmount + Number.EPSILON) * 100) / 100 : 0
+                                (cashAmount - totalAmount) >= 0
+                                    ? (Math.round((cashAmount - totalAmount + Number.EPSILON) * 100) / 100).toFixed(2)
+                                    : '0.00'
                             } zł
                             </div>,
                     },
