@@ -5,6 +5,7 @@ import {fetchOrders, fetchTables} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import CurrentOrdersTable from "./CurrentOrdersTable.jsx";
 import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
+import orderWebSocketService from "../../services/websocketService";
 
 const {Title} = Typography;
 
@@ -16,10 +17,9 @@ const CurrentOrders = () => {
     const [_, setTimeUpdated] = useState(Date.now());
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8000/ws/orders");
+        orderWebSocketService.connect();
 
-        ws.onmessage = (event) => {
-            const order = JSON.parse(JSON.parse(event.data));
+        const unsubscribe = orderWebSocketService.subscribe((order) => {
             console.log('New order received', order);
 
             setOrders((prevOrders) => {
@@ -28,17 +28,19 @@ const CurrentOrders = () => {
                 }
 
                 const orderIndex = prevOrders.findIndex(o => o.id === order.id);
+
                 if (orderIndex !== -1) {
                     return prevOrders.map(o => (o.id === order.id ? order : o));
                 } else {
                     return [order, ...prevOrders];
                 }
             });
+        });
+
+        return () => {
+            unsubscribe();
         };
-
-        return () => ws.close();
     }, []);
-
 
     useEffect(() => {
         const fetchData = async () => {
