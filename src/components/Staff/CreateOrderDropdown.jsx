@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
-import {Modal, Button, message, Dropdown, List} from 'antd';
+import {Button, message, Dropdown} from 'antd';
 import {fetchTables, createOrder} from '../../services/api';
 import {DownOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
+import TableListModal from "./TableListModal.jsx";
 
 const CreateOrderDropdown = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isTableModalOpen, setIsTableModalOpen] = useState(false);
     const [tables, setTables] = useState([]);
     const navigate = useNavigate();
 
@@ -24,7 +25,7 @@ const CreateOrderDropdown = () => {
         if (!table.is_free) return;
         try {
             const response = await createOrder({type: 'dinein', table_id: table.id});
-            setIsModalOpen(false);
+            setIsTableModalOpen(false);
             navigate(`/orders/${response.data.id}`);
         } catch (error) {
             if (error.response?.status === 400) {
@@ -37,12 +38,11 @@ const CreateOrderDropdown = () => {
         }
     };
 
-
     const openModal = async () => {
         try {
             const response = await fetchTables();
             setTables(response.data.sort((a, b) => a.name.localeCompare(b.name)));
-            setIsModalOpen(true);
+            setIsTableModalOpen(true);
         } catch (error) {
             message.error('Nie udało się załadować stolików');
             console.error('Error fetching tables:', error);
@@ -70,30 +70,12 @@ const CreateOrderDropdown = () => {
                     <DownOutlined/>
                 </Button>
             </Dropdown>
-            <Modal
-                title="Wybierz stół"
-                centered
-                open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
-                footer={null}
-            >
-                <List
-                    dataSource={tables}
-                    renderItem={(table) => (
-                        <List.Item>
-                            <Button
-                                type="primary"
-                                block
-                                disabled={!table.is_free}
-                                onClick={() => handleCreateDineInOrder(table)}
-                                className={!table.is_free ? 'bg-gray-300 text-gray-500' : ''}
-                            >
-                                {table.name}
-                            </Button>
-                        </List.Item>
-                    )}
-                />
-            </Modal>
+            <TableListModal
+                open={isTableModalOpen}
+                onCancel={() => setIsTableModalOpen(false)}
+                onclick={handleCreateDineInOrder}
+                tables={tables}
+            />
         </>
     );
 };

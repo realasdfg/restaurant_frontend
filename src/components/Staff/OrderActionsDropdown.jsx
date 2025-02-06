@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { Dropdown, Modal, List, Button, message } from "antd";
-import { EllipsisOutlined } from "@ant-design/icons";
-import { fetchTables, changeOrderInfo } from "../../services/api";
+import React, {useState} from "react";
+import {Dropdown, message} from "antd";
+import {EllipsisOutlined} from "@ant-design/icons";
+import {fetchTables, changeOrderInfo} from "../../services/api";
+import TableListModal from "./TableListModal.jsx";
 
-const OrderActionsDropdown = ({ order, onUpdateOrder }) => {
+const OrderActionsDropdown = ({order, onUpdateOrder}) => {
     const [isTableModalOpen, setIsTableModalOpen] = useState(false);
     const [tables, setTables] = useState([]);
 
@@ -22,8 +23,8 @@ const OrderActionsDropdown = ({ order, onUpdateOrder }) => {
         if (!table.is_free) return;
 
         try {
-            await changeOrderInfo(order.id, { type: "dinein", table_id: table.id });
-            onUpdateOrder(order.id, { type: "dinein", table_id: table.id });
+            await changeOrderInfo(order.id, {type: "dinein", table_id: table.id});
+            onUpdateOrder(order.id, {type: "dinein", table_id: table.id});
             setIsTableModalOpen(false);
         } catch (error) {
             message.error("Błąd podczas zmiany stolika");
@@ -38,8 +39,8 @@ const OrderActionsDropdown = ({ order, onUpdateOrder }) => {
             if (newType === "dinein") {
                 openTableModal();
             } else {
-                await changeOrderInfo(order.id, { type: newType, table_id: null });
-                onUpdateOrder(order.id, { type: newType, table_id: null });
+                await changeOrderInfo(order.id, {type: newType, table_id: null});
+                onUpdateOrder(order.id, {type: newType, table_id: null});
             }
         } else if (e.key === "tableChange") {
             openTableModal();
@@ -61,35 +62,20 @@ const OrderActionsDropdown = ({ order, onUpdateOrder }) => {
 
     return (
         <>
-            <Dropdown menu={{ items: dropdownItems }} trigger={["click"]}>
+            <Dropdown menu={{items: dropdownItems}} trigger={["click"]}>
                 <a onClick={(e) => e.stopPropagation()}>
-                    <EllipsisOutlined />
+                    <EllipsisOutlined/>
                 </a>
             </Dropdown>
-            <Modal
-                title="Wybierz stół"
-                centered
+            <TableListModal
                 open={isTableModalOpen}
                 onCancel={() => setIsTableModalOpen(false)}
-                footer={null}
-            >
-                <List
-                    dataSource={tables}
-                    renderItem={(table) => (
-                        <List.Item>
-                            <Button
-                                type="primary"
-                                block
-                                disabled={!table.is_free}
-                                onClick={(e) =>{handleTableSelect(table);e.stopPropagation()}}
-                                className={!table.is_free ? "bg-gray-300 text-gray-500" : ""}
-                            >
-                                {table.name}
-                            </Button>
-                        </List.Item>
-                    )}
-                />
-            </Modal>
+                onclick={(table, event) => {
+                    event.stopPropagation();
+                    handleTableSelect(table);
+                }}
+                tables={tables}
+            />
         </>
     );
 };
