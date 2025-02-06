@@ -11,6 +11,7 @@ import {Button, Tag, message} from "antd";
 import AddOrderItemDrawer from "./AddOrderItemDrawer.jsx";
 import OrderItemsTable from "./OrderItemsTable.jsx";
 import OrderCloseModal from "./OrderCloseModal.jsx";
+import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
 
 const CurrentOrderDetails = ({orderId}) => {
     const [order, setOrder] = useState(null);
@@ -130,6 +131,17 @@ const CurrentOrderDetails = ({orderId}) => {
         }
     };
 
+    const handleOrderInfoUpdate = async (orderId, data) => {
+        setOrder({...order, ...data});
+        if (data.table_id) {
+            const tableResponse = await fetchTableById(data.table_id);
+            setTable(tableResponse.data);
+        } else {
+            setTable({});
+        }
+        console.log(table)
+    }
+
     const totalAmount = orderItems.reduce((sum, item) => {
         const itemTotal = item.menuItem.type === "by_quantity"
             ? item.quantity * item.menuItem.price
@@ -184,12 +196,17 @@ const CurrentOrderDetails = ({orderId}) => {
                 {/* Large screens */}
                 <div
                     className="hidden sm:flex sticky -bottom-0.5 justify-between items-center bg-blue-500 shadow-md p-3">
-                    <Button color="primary" variant="outlined" onClick={() => setIsDrawerOpen(true)}>
-                        Dodaj
-                    </Button>
+                    <div>
+                        <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
+                                              iconClassName="text-white"/>
+                        <Button className="ml-2" color="primary" variant="outlined"
+                                onClick={() => setIsDrawerOpen(true)}>
+                            Dodaj
+                        </Button>
+                    </div>
                     <div>
                         <span className="font-bold text-xl text-white">{totalAmount} zł</span>
-                        <Button color="primary" variant="outlined"
+                        <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
                                 className="w-24 h-10 font-bold text-base shadow ml-2"
                                 onClick={() => setIsModalOpen(true)}>
                             Zamknij
@@ -200,12 +217,17 @@ const CurrentOrderDetails = ({orderId}) => {
                 {/* Small screens */}
                 <div
                     className="sm:hidden fixed left-0 w-full -bottom-0.5 flex justify-between items-center bg-blue-500 shadow-md p-3">
-                    <Button color="primary" variant="outlined" onClick={() => setIsDrawerOpen(true)}>
-                        Dodaj
-                    </Button>
+                    <div>
+                        <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
+                                              iconClassName="text-white"/>
+                        <Button className="ml-2" color="primary" variant="outlined"
+                                onClick={() => setIsDrawerOpen(true)}>
+                            Dodaj
+                        </Button>
+                    </div>
                     <div className="mr-6">
                         <span className="font-bold text-xl text-white">{totalAmount} zł</span>
-                        <Button color="primary" variant="outlined"
+                        <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
                                 className="w-24 h-10 font-bold text-base shadow ml-2"
                                 onClick={() => setIsModalOpen(true)}>
                             Zamknij

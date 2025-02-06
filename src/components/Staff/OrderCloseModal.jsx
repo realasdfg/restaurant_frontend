@@ -15,7 +15,9 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
     const [isOkDisabled, setIsOkDisabled] = useState(true);
 
     useEffect(() => {
-        setIsOkDisabled(Math.round((cashAmount + cardAmount + Number.EPSILON) * 100) / 100 < totalAmount);
+        let isDisabled = Math.round((cashAmount + cardAmount + Number.EPSILON) * 100) / 100 < totalAmount;
+        isDisabled = isDisabled || cashAmount === 0 && cardAmount === 0;
+        setIsOkDisabled(isDisabled);
     }, [cashAmount, cardAmount, totalAmount]);
 
     useEffect(() => {

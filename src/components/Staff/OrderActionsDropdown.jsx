@@ -4,7 +4,7 @@ import {EllipsisOutlined} from "@ant-design/icons";
 import {changeOrderInfo} from "../../services/api";
 import TableListModal from "./TableListModal.jsx";
 
-const OrderActionsDropdown = ({order, onUpdateOrder}) => {
+const OrderActionsDropdown = ({order, onUpdateOrder, iconClassName}) => {
     const [isTableModalOpen, setIsTableModalOpen] = useState(false);
 
     const handleTableSelect = async (table) => {
@@ -50,7 +50,7 @@ const OrderActionsDropdown = ({order, onUpdateOrder}) => {
         <>
             <Dropdown menu={{items: dropdownItems}} trigger={["click"]}>
                 <a onClick={(e) => e.stopPropagation()}>
-                    <EllipsisOutlined/>
+                    <EllipsisOutlined className={`text-xl ${iconClassName || ''}`} />
                 </a>
             </Dropdown>
             <TableListModal

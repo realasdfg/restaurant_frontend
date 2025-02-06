@@ -93,7 +93,7 @@ const CurrentOrders = () => {
             key: "dropdown",
             className: "w-1",
             render: (_, record) => (
-                <OrderActionsDropdown order={record} onUpdateOrder={handleOrderUpdate}/>
+                <OrderActionsDropdown order={record} onUpdateOrder={handleOrderUpdate} iconClassName="text-black"/>
             ),
         },
     ];
