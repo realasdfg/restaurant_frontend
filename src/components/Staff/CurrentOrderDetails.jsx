@@ -167,7 +167,7 @@ const CurrentOrderDetails = ({orderId}) => {
                         )}
                     </div>
                     <div className="text-end items-center">
-                        {order.type === 'dinein' && (
+                        {table && (
                             <div>
                                 <strong>Stolik:</strong>
                                 <Tag color="green" className="text-sm">
