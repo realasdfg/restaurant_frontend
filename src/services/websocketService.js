@@ -24,7 +24,9 @@ class WebSocketService {
     }
 
     connectToOrder(orderId) {
-        return new WebSocketService(`${this.url}/${orderId}`);
+        const orderService = new WebSocketService(`${this.url}/${orderId}`);
+        orderService.connect();
+        return orderService;
     }
 
     subscribe(callback) {

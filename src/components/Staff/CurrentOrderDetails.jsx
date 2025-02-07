@@ -60,14 +60,40 @@ const CurrentOrderDetails = ({orderId}) => {
 
         orderSocket.connect();
 
-        const unsubscribe = orderSocket.subscribe(async (order) => {
-            console.log(`Order ${orderId} changes received:`, order);
-            setOrder(order);
-            if (order.table_id) {
-                const tableResponse = await fetchTableById(order.table_id);
-                setTable(tableResponse.data);
+        const unsubscribe = orderSocket.subscribe(async (data) => {
+            if (data.type) {
+                console.log(`Order ${orderId} info changes received:`, data);
+                setOrder(data);
+
+                if (data.table_id) {
+                    const tableResponse = await fetchTableById(data.table_id);
+                    setTable(tableResponse.data);
+                } else {
+                    setTable(null);
+                }
             } else {
-                setTable(null);
+                console.log(`Order ${orderId} items changes received:`, data);
+                if (data.deleted) {
+                    setOrderItems((prevOrderItems = []) => {
+                        return prevOrderItems.filter(o => o.id !== data.id);
+                    });
+                } else {
+                    fetchMenuItemById(data.menu_item_id).then((menuItemResponse) => {
+                        const dataWithDetails = {
+                            ...data,
+                            menuItem: menuItemResponse.data
+                        };
+
+                        setOrderItems((prevOrderItems = []) => {
+                            const orderItemIndex = prevOrderItems.findIndex(o => o.id === data.id);
+                            if (orderItemIndex !== -1) {
+                                return prevOrderItems.map(o => (o.id === dataWithDetails.id ? dataWithDetails : o));
+                            } else {
+                                return [...prevOrderItems, dataWithDetails];
+                            }
+                        });
+                    });
+                }
             }
         });
 
