@@ -113,3 +113,7 @@ export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity) =>
 export const deleteOrderItem = async (orderId, itemId) => {
     return await API.delete(`/orders/${orderId}/menu-items/${itemId}`);
 };
+
+export const fetchUserById = async (userId) => {
+    return await API.get(`/users/${userId}`);
+};

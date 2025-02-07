@@ -4,7 +4,7 @@ import {
     fetchOrderItemsByOrderId,
     fetchTableById,
     fetchMenuItemById,
-    addOrUpdateOrderItemQuantity, deleteOrderItem
+    addOrUpdateOrderItemQuantity, deleteOrderItem, fetchUserById
 } from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import {Button, Tag, message} from "antd";
@@ -23,6 +23,8 @@ const OrderDetails = ({orderId}) => {
     const [loading, setLoading] = useState(true);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userCreated, setUserCreated] = useState(null);
+    const [userPaid, setUserPaid] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,10 +33,11 @@ const OrderDetails = ({orderId}) => {
                     fetchOrderById(orderId),
                     fetchOrderItemsByOrderId(orderId),
                 ]);
-                setOrder(orderResponse.data);
+                const orderResponseData = orderResponse.data
+                setOrder(orderResponseData);
 
-                if (orderResponse.data.table_id) {
-                    const tableResponse = await fetchTableById(orderResponse.data.table_id);
+                if (orderResponseData.table_id) {
+                    const tableResponse = await fetchTableById(orderResponseData.table_id);
                     setTable(tableResponse.data);
                 }
 
@@ -48,6 +51,16 @@ const OrderDetails = ({orderId}) => {
                     })
                 );
                 setOrderItems(itemsWithDetails.sort((a, b) => a.id - b.id));
+
+                if (orderResponseData.paid) {
+                    const [userCreatedResponse, userPaidResponse] = await Promise.all([
+                        fetchUserById(orderResponseData.created_by),
+                        fetchUserById(orderResponseData.paid_by),
+                    ]);
+                    setUserCreated(userCreatedResponse.data)
+                    setUserPaid(userPaidResponse.data)
+                }
+
             } catch (error) {
                 setNotFound(true);
             } finally {
@@ -221,31 +234,33 @@ const OrderDetails = ({orderId}) => {
                             </Tag>
                         )}
                     </div>
-                    <div className="flex justify-between">
-                        <div>
-                            {order.paid &&
-                                <div>
-                                    Zapłacono: <br/>
-                                    kartą: {order.paid_by_card} zł<br/>
-                                    gotówką: {order.paid_by_cash} zł
-                                </div>
-                            }
+                    {table && (
+                        <div className="text-end">
+                            <strong>Stolik:</strong>
+                            <Tag color="green" className="text-sm">
+                                {table.name}
+                            </Tag>
                         </div>
-                        {table && (
-                            <div>
-                                <strong>Stolik:</strong>
-                                <Tag color="green" className="text-sm">
-                                    {table.name}
-                                </Tag>
-                            </div>
-                        )}
-                    </div>
-                    {!order.paid &&
-                        <AddOrderItemDrawer
-                            visible={isDrawerOpen}
-                            onClose={() => setIsDrawerOpen(false)}
-                            onAddItem={handleAddItem}
-                        />
+                    )}
+                    {order.paid &&
+                        <div className="flex gap-2 mt-2">
+                            <Tag color="blue" className="text-sm">
+                                <strong>Utworzono: </strong><br/>
+                                {new Date(order.created_at).toLocaleString()} <br/>
+                                Przez: {userCreated.first_name + ' ' + userCreated.last_name} ({userCreated.id})
+                            </Tag>
+                            <Tag color="blue" className="text-sm">
+                                    <span>
+                                    <strong>Zapłacono: </strong><br/>
+                                        {new Date(order.paid_at).toLocaleString()} <br/>
+                                        Przez: {userPaid.first_name + ' ' + userPaid.last_name} ({userPaid.id}) <br/>
+                                    </span>
+                                <span>
+                                    <strong>Kartą: {order.paid_by_card} zł</strong> <br/>
+                                    <strong>Gotówką: {order.paid_by_cash} zł</strong>
+                                    </span>
+                            </Tag>
+                        </div>
                     }
                 </div>
                 <div className="overflow-x-auto">
@@ -321,7 +336,14 @@ const OrderDetails = ({orderId}) => {
                     totalAmount={parseFloat(totalAmount)}
                     orderId={orderId}
                 />
+                &&
+                <AddOrderItemDrawer
+                    visible={isDrawerOpen}
+                    onClose={() => setIsDrawerOpen(false)}
+                    onAddItem={handleAddItem}
+                />
             }
+
         </div>
     );
 };
