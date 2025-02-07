@@ -4,6 +4,7 @@ import {CloseOutlined} from "@ant-design/icons";
 import ItemQuantityInput from "./ItemQuantityInput.jsx";
 
 const OrderItemsTable = ({
+                             order,
                              orderItems,
                              handleQuantityChange,
                              handleRemoveItem,
@@ -55,13 +56,15 @@ const OrderItemsTable = ({
             className: "w-1",
             render: (quantity, record) => (
                 <div className="justify-self-center sm:justify-self-start">
-                    <ItemQuantityInput
-                        value={quantity}
-                        onChangeBtns={(newQuantity) => handleQuantityChange(record.id, record.menuItem.id, newQuantity)}
-                        onConfirm={(newQuantity) => handleQuantityInputConfirm(record.id, record.menuItem.id, newQuantity)}
-                        showCompact={true}
-                        className="w-20"
-                    />
+                    {!order.paid
+                        ? <ItemQuantityInput
+                            value={quantity}
+                            onChangeBtns={(newQuantity) => handleQuantityChange(record.id, record.menuItem.id, newQuantity)}
+                            onConfirm={(newQuantity) => handleQuantityInputConfirm(record.id, record.menuItem.id, newQuantity)}
+                            showCompact={true}
+                            className="w-20"
+                        />
+                        : quantity}
                 </div>
             ),
         },
@@ -89,10 +92,12 @@ const OrderItemsTable = ({
             className: "hidden sm:table-cell w-1",
             render: (_, orderItem) => (
                 <div className="justify-self-center">
-                    <CloseOutlined onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveItem(orderItem)
-                    }}/>
+                    {!order.paid &&
+                        <CloseOutlined onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveItem(orderItem)
+                        }}/>
+                    }
                 </div>
             ),
         },
@@ -135,37 +140,38 @@ const OrderItemsTable = ({
                     onClick: () => setSelectedItem(record),
                 })}
             />
-
-            <Modal
-                title={<div className="text-black text-xl">{selectedItem?.menuItem?.name}</div>}
-                centered
-                open={!!selectedItem}
-                onCancel={() => setSelectedItem(null)}
-                footer={null}
-            >
-                {selectedItem && (
-                    <List
-                        bordered
-                        dataSource={listData}
-                        renderItem={(item) => (
-                            <List.Item>
-                                <div className="flex items-center gap-2">
-                                    <strong>{item.label}:</strong> {item.value}
-                                </div>
-                            </List.Item>
-                        )}
-                    />
-                )}
-                <div className="flex justify-between">
-                    <Button color="danger" variant="solid" className="mt-2"
-                            onClick={() => {
-                                handleRemoveItem(selectedItem);
-                                setSelectedItem(null)
-                            }}>Usuń</Button>
-                    <Button color="blue" variant="solid" className="mt-2"
-                            onClick={() => setSelectedItem(null)}>Ok</Button>
-                </div>
-            </Modal>
+            {!order.paid &&
+                <Modal
+                    title={<div className="text-black text-xl">{selectedItem?.menuItem?.name}</div>}
+                    centered
+                    open={!!selectedItem}
+                    onCancel={() => setSelectedItem(null)}
+                    footer={null}
+                >
+                    {selectedItem && (
+                        <List
+                            bordered
+                            dataSource={listData}
+                            renderItem={(item) => (
+                                <List.Item>
+                                    <div className="flex items-center gap-2">
+                                        <strong>{item.label}:</strong> {item.value}
+                                    </div>
+                                </List.Item>
+                            )}
+                        />
+                    )}
+                    <div className="flex justify-between">
+                        <Button color="danger" variant="solid" className="mt-2"
+                                onClick={() => {
+                                    handleRemoveItem(selectedItem);
+                                    setSelectedItem(null)
+                                }}>Usuń</Button>
+                        <Button color="blue" variant="solid" className="mt-2"
+                                onClick={() => setSelectedItem(null)}>Ok</Button>
+                    </div>
+                </Modal>
+            }
         </>
     );
 };

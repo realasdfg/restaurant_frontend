@@ -2,14 +2,12 @@ import React, {useEffect, useState, useRef} from "react";
 import {Button, List, Input, Drawer, Modal, InputNumber} from "antd";
 import {CloseCircleOutlined} from "@ant-design/icons";
 import {fetchCategories, fetchMenuItems} from "../../services/api";
-import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 
 const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
     const [categories, setCategories] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(false);
 
     const [weightModalVisible, setWeightModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -30,7 +28,6 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
     }, [weightModalVisible]);
 
     const loadData = async () => {
-        setLoading(true);
         try {
             const [categoriesResponse, menuItemsResponse] = await Promise.all([
                 fetchCategories(),
@@ -42,8 +39,6 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
             setSelectedCategory(null);
         } catch (error) {
             console.error("Error fetching data:", error);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -73,8 +68,6 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
         : selectedCategory
             ? menuItems.filter((item) => item.category_id === selectedCategory.id)
             : [];
-
-    if (loading) return <LoadingSpinner/>;
 
     return (
         <>
