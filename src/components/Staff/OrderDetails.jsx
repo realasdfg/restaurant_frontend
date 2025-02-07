@@ -247,13 +247,13 @@ const OrderDetails = ({orderId}) => {
                             <Tag color="blue" className="text-sm">
                                 <strong>Utworzono: </strong><br/>
                                 {new Date(order.created_at).toLocaleString()} <br/>
-                                Przez: {userCreated.first_name + ' ' + userCreated.last_name} ({userCreated.id})
+                                Przez: {userCreated?.first_name + ' ' + userCreated?.last_name} ({userCreated?.id})
                             </Tag>
                             <Tag color="blue" className="text-sm">
                                     <span>
                                     <strong>Zapłacono: </strong><br/>
                                         {new Date(order.paid_at).toLocaleString()} <br/>
-                                        Przez: {userPaid.first_name + ' ' + userPaid.last_name} ({userPaid.id}) <br/>
+                                        Przez: {userPaid?.first_name + ' ' + userPaid?.last_name} ({userPaid?.id}) <br/>
                                     </span>
                                 <span>
                                     <strong>Kartą: {order.paid_by_card} zł</strong> <br/>
@@ -330,20 +330,20 @@ const OrderDetails = ({orderId}) => {
                 </div>
             </div>
             {!order.paid &&
-                <OrderCloseModal
-                    open={isModalOpen}
-                    onCancel={() => setIsModalOpen(false)}
-                    totalAmount={parseFloat(totalAmount)}
-                    orderId={orderId}
-                />
-                &&
-                <AddOrderItemDrawer
-                    visible={isDrawerOpen}
-                    onClose={() => setIsDrawerOpen(false)}
-                    onAddItem={handleAddItem}
-                />
+                <>
+                    <OrderCloseModal
+                        open={isModalOpen}
+                        onCancel={() => setIsModalOpen(false)}
+                        totalAmount={parseFloat(totalAmount)}
+                        orderId={orderId}
+                    />
+                    <AddOrderItemDrawer
+                        visible={isDrawerOpen}
+                        onClose={() => setIsDrawerOpen(false)}
+                        onAddItem={handleAddItem}
+                    />
+                </>
             }
-
         </div>
     );
 };
