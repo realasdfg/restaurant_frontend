@@ -18,7 +18,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../context/AuthContext.jsx";
 
 const OrderDetails = ({orderId}) => {
-    const {user} = useAuth();
+    const {userRole} = useAuth();
     const navigate = useNavigate();
     const [notFound, setNotFound] = useState(false);
     const [order, setOrder] = useState(null);
@@ -56,7 +56,7 @@ const OrderDetails = ({orderId}) => {
                 );
                 setOrderItems(itemsWithDetails.sort((a, b) => a.id - b.id));
 
-                if (user === 'admin') {
+                if (userRole === 'admin') {
                     if (orderResponseData.paid) {
                         const userPaidResponse = await Promise.race([fetchUserById(orderResponseData.paid_by)]);
                         setUserPaid(userPaidResponse.data)
@@ -253,14 +253,14 @@ const OrderDetails = ({orderId}) => {
                     )}
 
                     <div className="flex gap-2 mt-2">
-                        {user === 'admin' &&
+                        {userRole === 'admin' &&
                             <Tag color="blue" className="text-sm">
                                 <strong>Utworzono: </strong><br/>
                                 {new Date(order.created_at).toLocaleString()} <br/>
                                 Przez: {userCreated?.first_name + ' ' + userCreated?.last_name} ({userCreated?.id})
                             </Tag>
                         }
-                        {user === 'admin' && order.paid &&
+                        {userRole === 'admin' && order.paid &&
                             <Tag color="blue" className="text-sm">
                                     <span>
                                     <strong>Zapłacono: </strong><br/>

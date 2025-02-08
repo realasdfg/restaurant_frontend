@@ -4,15 +4,15 @@ import { getUserRoleFromAPI } from "../services/authService";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const role = await getUserRoleFromAPI();
-                setUser(role);
+                setUserRole(role);
             } catch (error) {
-                setUser("guest");
+                setUserRole("guest");
             }
         };
 
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider value={{ userRole, setUserRole }}>
             {children}
         </AuthContext.Provider>
     );

@@ -3,15 +3,15 @@ import {useAuth} from "../context/AuthContext.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 
 const ProtectedRoute = ({children, requiredRole}) => {
-    const {user} = useAuth();
+    const {userRole} = useAuth();
 
-    if (!user) return null;
+    if (!userRole) return null;
 
     const rolesHierarchy = ["guest", "staff", "admin"];
-    const userIndex = rolesHierarchy.indexOf(user);
+    const userIndex = rolesHierarchy.indexOf(userRole);
     const requiredIndex = rolesHierarchy.indexOf(requiredRole);
 
-    if (user === "guest") {
+    if (userRole === "guest") {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         return <Navigate to="/staff/login"/>;

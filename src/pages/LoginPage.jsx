@@ -8,10 +8,10 @@ import {useAuth} from "../context/AuthContext.jsx";
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { user, setUser } = useAuth();
+    const { userRole, setUserRole } = useAuth();
 
     useEffect(() => {
-        if (user !== "guest") {
+        if (userRole !== "guest") {
             navigate('/orders');
         }
     }, [navigate]);
@@ -24,7 +24,7 @@ const LoginPage = () => {
             localStorage.setItem('refresh_token', response.data.refresh_token);
 
             message.success('Pomyślne logowanie!');
-            setUser(response.data.role);
+            setUserRole(response.data.role);
             navigate('/orders');
         } catch (error) {
             if (error.response.status === 404) {
