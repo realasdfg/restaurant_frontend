@@ -15,8 +15,10 @@ import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
 import {orderWebSocketService} from "../../services/websocketService.js";
 import NotFoundPage from "../../pages/NotFoundPage.jsx";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../context/AuthContext.jsx";
 
 const OrderDetails = ({orderId}) => {
+    const {user} = useAuth();
     const navigate = useNavigate();
     const [notFound, setNotFound] = useState(false);
     const [order, setOrder] = useState(null);
@@ -54,13 +56,13 @@ const OrderDetails = ({orderId}) => {
                 );
                 setOrderItems(itemsWithDetails.sort((a, b) => a.id - b.id));
 
-                if (orderResponseData.paid) {
-                    const [userCreatedResponse, userPaidResponse] = await Promise.all([
-                        fetchUserById(orderResponseData.created_by),
-                        fetchUserById(orderResponseData.paid_by),
-                    ]);
+                if (user === 'admin') {
+                    if (orderResponseData.paid) {
+                        const userPaidResponse = await Promise.race([fetchUserById(orderResponseData.paid_by)]);
+                        setUserPaid(userPaidResponse.data)
+                    }
+                    const userCreatedResponse = await Promise.race([fetchUserById(orderResponseData.created_by)]);
                     setUserCreated(userCreatedResponse.data)
-                    setUserPaid(userPaidResponse.data)
                 }
 
             } catch (error) {
@@ -249,13 +251,16 @@ const OrderDetails = ({orderId}) => {
                             </Tag>
                         </div>
                     )}
-                    {order.paid &&
-                        <div className="flex gap-2 mt-2">
+
+                    <div className="flex gap-2 mt-2">
+                        {user === 'admin' &&
                             <Tag color="blue" className="text-sm">
                                 <strong>Utworzono: </strong><br/>
                                 {new Date(order.created_at).toLocaleString()} <br/>
                                 Przez: {userCreated?.first_name + ' ' + userCreated?.last_name} ({userCreated?.id})
                             </Tag>
+                        }
+                        {user === 'admin' && order.paid &&
                             <Tag color="blue" className="text-sm">
                                     <span>
                                     <strong>Zapłacono: </strong><br/>
@@ -267,8 +272,8 @@ const OrderDetails = ({orderId}) => {
                                     <strong>Gotówką: {order.paid_by_cash} zł</strong>
                                     </span>
                             </Tag>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
                 <div className="overflow-x-auto">
                     <OrderItemsTable
