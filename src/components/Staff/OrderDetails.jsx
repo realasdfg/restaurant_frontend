@@ -253,24 +253,27 @@ const OrderDetails = () => {
                         </div>
                     )}
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-col">
                         {userRole === 'admin' &&
                             <Tag color="blue"
-                                 className="text-sm mt-2 overflow-hidden text-ellipsis whitespace-nowrap w-5/12">
+                                 className="text-sm mt-2 overflow-hidden text-ellipsis w-full">
                                 <strong>Utworzono: </strong><br/>
                                 {new Date(order.created_at).toLocaleString()} <br/>
-                                Przez: {userCreated?.first_name + ' ' + userCreated?.last_name} <br/>
-                                ({userCreated?.id})
+                                Przez: {userCreated?.first_name + ' ' + userCreated?.last_name}
+                                <span> ({userCreated?.id})</span>
+
                             </Tag>
+
                         }
+                        <div></div>
                         {userRole === 'admin' && order.paid &&
                             <Tag color="blue"
-                                 className="text-sm mt-2 overflow-hidden text-ellipsis whitespace-nowrap w-5/12">
+                                 className="text-sm mt-2 overflow-hidden text-ellipsis w-full">
                                     <span>
                                     <strong>Zapłacono: </strong><br/>
                                         {new Date(order.paid_at).toLocaleString()} <br/>
-                                        Przez: {userPaid?.first_name + ' ' + userPaid?.last_name} <br/>
-                                        ({userPaid?.id}) <br/>
+                                        Przez: {userPaid?.first_name + ' ' + userPaid?.last_name}
+                                        <span> ({userPaid?.id})</span> <br/>
                                     </span>
                                 <span>
                                     <strong>Kartą: {order.paid_by_card} zł</strong> <br/>

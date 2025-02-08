@@ -59,7 +59,7 @@ const CurrentOrders = () => {
             className: "w-1 bg-white",
             render: (type) => (
                 <Tag color={type === "dinein" ? "green" : "blue"}>
-                    {type === "dinein" ? "W RESTAURACJI" : "NA WYNOS"}
+                    {type === "dinein" ? "DINE IN" : "TO GO"}
                 </Tag>
             ),
         },
