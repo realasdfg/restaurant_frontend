@@ -1,27 +1,37 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {Tag, Typography} from "antd";
+import {Tag, Typography, DatePicker} from "antd";
 import {fetchOrders, fetchTables} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import OrdersTable from "./OrdersTable.jsx";
+import dayjs from "dayjs";
 
 const {Title} = Typography;
+const {RangePicker} = DatePicker;
 
 const CurrentOrders = () => {
     const [orders, setOrders] = useState([]);
     const [tableMap, setTableMap] = useState({});
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [dateRange, setDateRange] = useState([dayjs().startOf("month"), dayjs()]);
+    const [timeRange, setTimeRange] = useState([
+        dayjs("00:00:00", "HH:mm:ss"),
+        dayjs("23:59:59", "HH:mm:ss")
+    ]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
                 const [ordersResponse, tablesResponse] = await Promise.all([
                     fetchOrders({
                         paid_only: true,
-                        from_paid_date: null,
-                        to_paid_date: null,
+                        from_created_date: dateRange[0].format("YYYY-MM-DD") + " " + timeRange[0].format("HH:mm:ss"),
+                        to_created_date: dateRange[1].format("YYYY-MM-DD") + " " + timeRange[1].format("HH:mm:ss"),
                         type: null,
+                        created_by: null,
+                        paid_by: null,
                     }),
                     fetchTables(),
                 ]);
@@ -42,7 +52,7 @@ const CurrentOrders = () => {
         };
 
         fetchData();
-    }, []);
+    }, [dateRange, timeRange]);
 
     const columns = [
         {
@@ -99,7 +109,7 @@ const CurrentOrders = () => {
             className: "w-1 bg-white",
             sorter: (a, b) => {
                 return (parseFloat(a.paid_by_card) + parseFloat(a.paid_by_cash)) -
-                    (parseFloat(b.paid_by_card) + parseFloat(b.paid_by_cash))
+                    (parseFloat(b.paid_by_card) + parseFloat(b.paid_by_cash));
             },
             render: (_, record) => <div className="text-end font-semibold">
                 {(parseFloat(record.paid_by_card) + parseFloat(record.paid_by_cash)).toFixed(2)}
@@ -116,9 +126,25 @@ const CurrentOrders = () => {
 
     return (
         <div className="flex justify-center mb-4 my-3 mx-1">
-            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3">
-                <Title level={2} className="text-center mt-3">Archiwum zamówień</Title>
-                <div className="overflow-x-auto mx-1">
+            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 p-4">
+                <Title level={2} className="text-center">Archiwum zamówień</Title>
+
+                <div className="text-center gap-2 px-4">
+                    <RangePicker
+                        value={dateRange}
+                        onChange={setDateRange}
+                        format="YYYY-MM-DD"
+                    />
+                    <div className="flex gap-4 justify-center mt-2">
+
+                    <DatePicker picker={'time'} value={timeRange[0]}
+                                onChange={(value) => setTimeRange([value, timeRange[1]])}/>
+                    <DatePicker picker={'time'} value={timeRange[1]}
+                                onChange={(value) => setTimeRange([timeRange[0], value])}/>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto">
                     <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>
                 </div>
             </div>
