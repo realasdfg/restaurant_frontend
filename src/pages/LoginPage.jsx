@@ -3,10 +3,12 @@ import {useNavigate} from 'react-router-dom';
 import {Form, Input, Button, message} from 'antd';
 import {login} from '../services/api.js';
 import LoadingSpinner from "../components/shared/LoadingSpinner.jsx";
+import {useAuth} from "../context/AuthContext.jsx";
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -19,10 +21,11 @@ const LoginPage = () => {
         setLoading(true);
         try {
             const response = await login(values.username, values.password);
-            localStorage.setItem('access_token', response.access_token);
-            localStorage.setItem('refresh_token', response.refresh_token);
+            localStorage.setItem('access_token', response.data.access_token);
+            localStorage.setItem('refresh_token', response.data.refresh_token);
 
             message.success('Pomyślne logowanie!');
+            setUser(response.data.role);
             navigate('/orders');
         } catch (error) {
             if (error.response.status === 404) {

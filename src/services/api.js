@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/api/v1';
+export const BASE_URL = 'http://localhost:8000/api/v1';
 
 const API = axios.create({
     baseURL: BASE_URL,
@@ -14,48 +14,47 @@ API.interceptors.request.use((config) => {
     return config;
 });
 
-API.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401) {
-            const refreshToken = localStorage.getItem('refresh_token');
-            if (refreshToken) {
-                try {
-                    const response = await axios.post(
-                        `${BASE_URL}/auth/token/refresh?refresh_token=${refreshToken}`
-                    );
-                    const {access_token, refresh_token} = response.data;
-
-                    localStorage.setItem('access_token', access_token);
-                    localStorage.setItem('refresh_token', refresh_token);
-
-                    originalRequest.headers.Authorization = `Bearer ${access_token}`;
-
-                    return API(originalRequest);
-                } catch (refreshError) {
-                    localStorage.removeItem('access_token');
-                    localStorage.removeItem('refresh_token');
-                    window.location.href = '/staff/login';
-                    console.error(originalRequest);
-                    return Promise.reject(refreshError);
-                }
-            } else {
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                window.location.href = '/staff/login';
-            }
-        }
-
-        return Promise.reject(error);
-    }
-);
+// API.interceptors.response.use(
+//     (response) => response,
+//     async (error) => {
+//         const originalRequest = error.config;
+//
+//         if (error.response?.status === 401) {
+//             const refreshToken = localStorage.getItem('refresh_token');
+//             if (refreshToken) {
+//                 try {
+//                     const response = await axios.post(
+//                         `${BASE_URL}/auth/token/refresh?refresh_token=${refreshToken}`
+//                     );
+//                     const {access_token, refresh_token} = response.data;
+//
+//                     localStorage.setItem('access_token', access_token);
+//                     localStorage.setItem('refresh_token', refresh_token);
+//
+//                     originalRequest.headers.Authorization = `Bearer ${access_token}`;
+//
+//                     return API(originalRequest);
+//                 } catch (refreshError) {
+//                     localStorage.removeItem('access_token');
+//                     localStorage.removeItem('refresh_token');
+//                     window.location.href = '/staff/login';
+//                     console.error(originalRequest);
+//                     return Promise.reject(refreshError);
+//                 }
+//             } else {
+//                 localStorage.removeItem('access_token');
+//                 localStorage.removeItem('refresh_token');
+//                 window.location.href = '/staff/login';
+//             }
+//         }
+//
+//         return Promise.reject(error);
+//     }
+// );
 
 
 export const login = async (username, password) => {
-    const response = await API.post('/auth/login', {username, password});
-    return response.data;
+    return await API.post('/auth/login', {username, password});
 };
 
 export const fetchCategories = async () => {
