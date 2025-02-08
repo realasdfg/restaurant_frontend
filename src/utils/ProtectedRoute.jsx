@@ -12,7 +12,9 @@ const ProtectedRoute = ({children, requiredRole}) => {
     const requiredIndex = rolesHierarchy.indexOf(requiredRole);
 
     if (user === "guest") {
-        return <Navigate to="/staff/login" />;
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        return <Navigate to="/staff/login"/>;
     }
 
     return userIndex >= requiredIndex ? children : <NotFoundPage/>;

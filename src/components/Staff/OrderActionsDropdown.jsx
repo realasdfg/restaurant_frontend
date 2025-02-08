@@ -50,17 +50,15 @@ const OrderActionsDropdown = ({order, onUpdateOrder, iconClassName}) => {
         <>
             <Dropdown menu={{items: dropdownItems}} trigger={["click"]}>
                 <a onClick={(e) => e.stopPropagation()}>
-                    <EllipsisOutlined className={`text-xl ${iconClassName || ''}`} />
+                    <EllipsisOutlined className={`text-xl ${iconClassName || ''}`}/>
                 </a>
             </Dropdown>
             <TableListModal
                 open={isTableModalOpen}
-                onCancel={(e) => {
-                    setIsTableModalOpen(false);
-                    e.stopPropagation();
+                onCancel={() => {
+                    setIsTableModalOpen(false)
                 }}
-                onTableClick={(table, e) => {
-                    e.stopPropagation();
+                onTableClick={(table) => {
                     handleTableSelect(table);
                 }}
             />

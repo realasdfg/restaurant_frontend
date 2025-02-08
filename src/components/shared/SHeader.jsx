@@ -31,7 +31,7 @@ const SHeader = () => {
             </div>
             <UserOutlined className="text-white text-xl" onClick={() => setIsDrawerOpen(true)}/>
             <Drawer
-                title="Użytkownik"
+                title={<>Użytkownik ({user})</>}
                 placement="right"
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}

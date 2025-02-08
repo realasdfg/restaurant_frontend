@@ -41,6 +41,9 @@ const TableListModal = ({open, onCancel, onTableClick}) => {
             open={open}
             onCancel={onCancel}
             footer={null}
+            modalRender={(modal) => (
+                <div onClick={(event) => event.stopPropagation()}>{modal}</div>
+            )}
         >
             <List
                 dataSource={tables}
@@ -50,7 +53,7 @@ const TableListModal = ({open, onCancel, onTableClick}) => {
                             type="primary"
                             block
                             disabled={!table.is_free}
-                            onClick={(event) => onTableClick(table, event)}
+                            onClick={() => onTableClick(table)}
                             className={!table.is_free ? 'bg-gray-300 text-gray-500' : ''}
                         >
                             {table.name}

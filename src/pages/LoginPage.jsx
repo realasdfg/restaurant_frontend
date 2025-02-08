@@ -8,11 +8,10 @@ import {useAuth} from "../context/AuthContext.jsx";
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { setUser } = useAuth();
+    const { user, setUser } = useAuth();
 
     useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        if (token) {
+        if (user !== "guest") {
             navigate('/orders');
         }
     }, [navigate]);

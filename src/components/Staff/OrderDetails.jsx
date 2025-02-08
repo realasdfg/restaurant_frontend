@@ -14,8 +14,10 @@ import OrderCloseModal from "./OrderCloseModal.jsx";
 import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
 import {orderWebSocketService} from "../../services/websocketService.js";
 import NotFoundPage from "../../pages/NotFoundPage.jsx";
+import {useNavigate} from "react-router-dom";
 
 const OrderDetails = ({orderId}) => {
+    const navigate = useNavigate();
     const [notFound, setNotFound] = useState(false);
     const [order, setOrder] = useState(null);
     const [table, setTable] = useState(null);
@@ -80,6 +82,10 @@ const OrderDetails = ({orderId}) => {
         const unsubscribe = orderSocket.subscribe(async (data) => {
             if (data.type) {
                 console.log(`Order ${orderId} info changes received:`, data);
+                if (data.paid) {
+                    message.info("Zamówienie zostało opłacone!")
+                    navigate('/orders');
+                }
                 setOrder(data);
 
                 if (data.table_id) {
