@@ -97,6 +97,7 @@ const CurrentOrders = () => {
             dataIndex: "id",
             key: "id",
             className: "w-1 bg-white",
+            sorter: (a, b) => a.id - b.id,
             render: (id) => <div className="font-semibold">{id}</div>,
         },
         {

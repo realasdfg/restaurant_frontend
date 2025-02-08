@@ -50,6 +50,7 @@ const CurrentOrders = () => {
             dataIndex: "id",
             key: "id",
             className: "w-1 bg-white",
+            sorter: (a, b) => a.id - b.id,
             render: (id) => <div className="font-semibold">{id}</div>,
         },
         {
@@ -57,6 +58,7 @@ const CurrentOrders = () => {
             dataIndex: "type",
             key: "type",
             className: "w-1 bg-white",
+            sorter: (a, b) => a.type.localeCompare(b.type, undefined, {numeric: true}),
             render: (type) => (
                 <Tag color={type === "dinein" ? "green" : "blue"}>
                     {type === "dinein" ? "DINE IN" : "TO GO"}
@@ -68,6 +70,11 @@ const CurrentOrders = () => {
             dataIndex: "table_id",
             key: "table_id",
             className: "w-1 bg-white text-center",
+            sorter: (a, b) => {
+                const nameA = tableMap[a.table_id] || "";
+                const nameB = tableMap[b.table_id] || "";
+                return nameA.localeCompare(nameB, undefined, {numeric: true});
+            },
             render: (tableId) => (tableId ? tableMap[tableId] : "-"),
         },
         {
@@ -75,12 +82,25 @@ const CurrentOrders = () => {
             dataIndex: "created_at",
             key: "created_at",
             className: "bg-white",
+            sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
+            render: (date) => <>{new Date(date).toLocaleString()}</>,
+        },
+        {
+            title: "Zapłacono",
+            dataIndex: "paid_at",
+            key: "paid_at",
+            className: "bg-white",
+            sorter: (a, b) => new Date(a.paid_at) - new Date(b.paid_at),
             render: (date) => <>{new Date(date).toLocaleString()}</>,
         },
         {
             title: "Suma",
             key: "total_sum",
             className: "w-1 bg-white",
+            sorter: (a, b) => {
+                return (parseFloat(a.paid_by_card) + parseFloat(a.paid_by_cash)) -
+                    (parseFloat(b.paid_by_card) + parseFloat(b.paid_by_cash))
+            },
             render: (_, record) => <div className="text-end font-semibold">
                 {(parseFloat(record.paid_by_card) + parseFloat(record.paid_by_cash)).toFixed(2)}
             </div>,
