@@ -75,9 +75,10 @@ const OrderDetails = ({orderId}) => {
     useEffect(() => {
         if (!order || order.paid) return;
 
-        const orderSocket = orderWebSocketService.connectToOrder(orderId);
+        const access_token = localStorage.getItem("access_token");
+        const orderSocket = orderWebSocketService.connectToOrder(orderId, access_token);
 
-        orderSocket.connect();
+        orderSocket.connect(access_token);
 
         const unsubscribe = orderSocket.subscribe(async (data) => {
             if (data.type) {

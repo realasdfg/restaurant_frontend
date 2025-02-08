@@ -17,7 +17,8 @@ const CurrentOrders = () => {
     const [_, setTimeUpdated] = useState(Date.now());
 
     useEffect(() => {
-        orderWebSocketService.connect();
+        const access_token = localStorage.getItem("access_token");
+        orderWebSocketService.connect(access_token);
 
         const unsubscribe = orderWebSocketService.subscribe((order) => {
             console.log('New order received', order);

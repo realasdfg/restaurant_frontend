@@ -1,16 +1,17 @@
 class WebSocketService {
     constructor(url) {
-        this.url = url;
+        this.baseUrl = url;
         this.ws = null;
         this.listeners = new Set();
     }
 
-    connect() {
+    connect(token) {
         if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
-            this.ws = new WebSocket(this.url);
+            const urlWithToken = `${this.baseUrl}?token=${encodeURIComponent(token)}`;
+            this.ws = new WebSocket(urlWithToken);
 
-            this.ws.onopen = () => console.log("WebSocket connected:", this.url);
-            this.ws.onclose = () => console.log("WebSocket disconnected:", this.url);
+            this.ws.onopen = () => console.log("WebSocket connected:", this.baseUrl);
+            this.ws.onclose = () => console.log("WebSocket disconnected:", this.baseUrl);
 
             this.ws.onmessage = (event) => {
                 try {
@@ -23,9 +24,9 @@ class WebSocketService {
         }
     }
 
-    connectToOrder(orderId) {
-        const orderService = new WebSocketService(`${this.url}/${orderId}`);
-        orderService.connect();
+    connectToOrder(orderId, token) {
+        const orderService = new WebSocketService(`${this.baseUrl}/${orderId}`);
+        orderService.connect(token);
         return orderService;
     }
 

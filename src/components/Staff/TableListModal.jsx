@@ -11,7 +11,8 @@ const TableListModal = ({open, onCancel, onTableClick}) => {
         if (open) {
             loadTables();
 
-            tableWebSocketService.connect();
+            const access_token = localStorage.getItem("access_token");
+            tableWebSocketService.connect(access_token);
 
             const unsubscribe = tableWebSocketService.subscribe((table) => {
                 console.log('New table info received', table);
