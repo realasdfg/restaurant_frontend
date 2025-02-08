@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {Header} from 'antd/es/layout/layout.js';
 import {Button, Drawer} from 'antd';
 import CreateOrderDropdown from "../Staff/CreateOrderDropdown.jsx";
-import {ArrowLeftOutlined, UserOutlined} from "@ant-design/icons";
+import {ArrowLeftOutlined, HomeOutlined, UserOutlined} from "@ant-design/icons";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {fetchUserById} from "../../services/api.js";
 
@@ -32,27 +32,26 @@ const SHeader = ({isAdminPage}) => {
         navigate('/staff/login');
     };
 
-    const handleOrdersClick = () => {
-        navigate('/orders');
+    const handleHomeClick = () => {
+        if (isAdminPage) {
+            navigate('/admin/orders');
+        } else {
+            navigate('/orders');
+        }
     };
 
     return (
         <Header className="flex justify-between items-center bg-blue-500 pe-4 ps-4">
-            {isAdminPage ? (
-                <div className="flex items-center gap-1">
-                    <Button color="primary" variant="outlined" onClick={() => navigate('/orders')}>
-                        <ArrowLeftOutlined/>
-                    </Button>
+            <div className="flex items-center gap-1">
+                <Button color="primary" variant="outlined" onClick={handleHomeClick}>
+                    <HomeOutlined/>
+                </Button>
+                {isAdminPage ? (
                     <div className="text-white text-xl">Strona Administratora</div>
-                </div>
-            ) : (
-                <div>
-                    <Button color="primary" variant="outlined" onClick={handleOrdersClick}>
-                        Zamówienia
-                    </Button>
+                ) : (
                     <CreateOrderDropdown/>
-                </div>
-            )}
+                )}
+            </div>
             <UserOutlined className="text-white text-xl" onClick={() => setIsDrawerOpen(true)}/>
 
             <Drawer
@@ -68,6 +67,13 @@ const SHeader = ({isAdminPage}) => {
                 <div className="flex flex-col gap-3">
                     {userRole === "admin" &&
                         <>
+                            <Button className="w-full size-9" color="blue" variant="solid"
+                                    onClick={() => {
+                                        setIsDrawerOpen(false);
+                                        navigate('/orders');
+                                    }}>
+                                Aktualne zamówienia
+                            </Button>
                             <Button className="w-full size-9" color="blue" variant="solid"
                                     onClick={() => {
                                         setIsDrawerOpen(false);
