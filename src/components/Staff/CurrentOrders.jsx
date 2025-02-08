@@ -40,6 +40,7 @@ const CurrentOrders = () => {
 
         return () => {
             unsubscribe();
+            orderWebSocketService.close();
         };
     }, []);
 
