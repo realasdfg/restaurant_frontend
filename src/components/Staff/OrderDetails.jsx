@@ -252,20 +252,24 @@ const OrderDetails = ({orderId}) => {
                         </div>
                     )}
 
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2">
                         {userRole === 'admin' &&
-                            <Tag color="blue" className="text-sm">
+                            <Tag color="blue"
+                                 className="text-sm mt-2 overflow-hidden text-ellipsis whitespace-nowrap w-5/12">
                                 <strong>Utworzono: </strong><br/>
                                 {new Date(order.created_at).toLocaleString()} <br/>
-                                Przez: {userCreated?.first_name + ' ' + userCreated?.last_name} ({userCreated?.id})
+                                Przez: {userCreated?.first_name + ' ' + userCreated?.last_name} <br/>
+                                ({userCreated?.id})
                             </Tag>
                         }
                         {userRole === 'admin' && order.paid &&
-                            <Tag color="blue" className="text-sm">
+                            <Tag color="blue"
+                                 className="text-sm mt-2 overflow-hidden text-ellipsis whitespace-nowrap w-5/12">
                                     <span>
                                     <strong>Zapłacono: </strong><br/>
                                         {new Date(order.paid_at).toLocaleString()} <br/>
-                                        Przez: {userPaid?.first_name + ' ' + userPaid?.last_name} ({userPaid?.id}) <br/>
+                                        Przez: {userPaid?.first_name + ' ' + userPaid?.last_name} <br/>
+                                        ({userPaid?.id}) <br/>
                                     </span>
                                 <span>
                                     <strong>Kartą: {order.paid_by_card} zł</strong> <br/>
