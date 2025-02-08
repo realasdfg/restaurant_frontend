@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Tag, Typography, Tabs} from "antd";
 import {fetchOrders, fetchTables} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner";
-import CurrentOrdersTable from "./CurrentOrdersTable.jsx";
+import OrdersTable from "./OrdersTable.jsx";
 import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
 import {orderWebSocketService} from "../../services/websocketService.js";
 
@@ -48,7 +48,7 @@ const CurrentOrders = () => {
         const fetchData = async () => {
             try {
                 const [ordersResponse, tablesResponse] = await Promise.all([
-                    fetchOrders(true),
+                    fetchOrders({current_only: true}),
                     fetchTables(),
                 ]);
 
@@ -93,13 +93,20 @@ const CurrentOrders = () => {
 
     const columns = [
         {
+            title: "#",
+            dataIndex: "id",
+            key: "id",
+            className: "w-1 bg-white",
+            render: (id) => <div className="font-semibold">{id}</div>,
+        },
+        {
             title: "Typ",
             dataIndex: "type",
             key: "type",
-            className: "w-1/3",
+            className: "w-1/3 bg-white",
             render: (type) => (
                 <Tag color={type === "dinein" ? "green" : "blue"}>
-                    {type === "dinein" ? "W RESTAURACJI" : "NA WYNOS"}
+                    {type === "dinein" ? "DINE IN" : "TO GO"}
                 </Tag>
             ),
         },
@@ -107,7 +114,7 @@ const CurrentOrders = () => {
             title: "Stolik",
             dataIndex: "table_id",
             key: "table_id",
-            className: "w-1/3",
+            className: "w-1/3 bg-white",
             sorter: (a, b) => {
                 const nameA = tableMap[a.table_id] || "";
                 const nameB = tableMap[b.table_id] || "";
@@ -119,12 +126,12 @@ const CurrentOrders = () => {
             title: "Utworzono",
             dataIndex: "created_at",
             key: "created_at",
-            className: "w-1/3",
+            className: "w-1/3 bg-white",
             render: (date) => calculateMinutesAgo(date) + " min",
         },
         {
             key: "dropdown",
-            className: "w-1",
+            className: "w-1 bg-white",
             render: (_, record) => (
                 <OrderActionsDropdown order={record} onUpdateOrder={handleOrderUpdate} iconClassName="text-black"/>
             ),
@@ -140,29 +147,37 @@ const CurrentOrders = () => {
         {
             key: "1",
             label: "Wszystkie",
-            children: <CurrentOrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>,
+            children: <div className="overflow-x-auto">
+                <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>
+            </div>,
         },
         {
             key: "2",
             label: "W restauracji",
-            children: <CurrentOrdersTable columns={columns} dataSource={orders.filter(o => o.type === "dinein")}
-                                          onRow={handleRowClick}/>,
+            children: <div className="overflow-x-auto">
+                <OrdersTable columns={columns} dataSource={orders.filter(o => o.type === "dinein")}
+                             onRow={handleRowClick}/>
+            </div>,
         },
         {
             key: "3",
             label: "Na wynos",
-            children: <CurrentOrdersTable columns={columns} dataSource={orders.filter(o => o.type === "togo")}
-                                          onRow={handleRowClick}/>,
+            children: <div className="overflow-x-auto">
+                <OrdersTable columns={columns} dataSource={orders.filter(o => o.type === "togo")}
+                             onRow={handleRowClick}/>
+            </div>,
         },
     ];
 
     if (loading) return <LoadingSpinner/>;
 
     return (
-        <div className="flex justify-center flex-1 my-4 mx-1">
-            <div className="bg-gray-100 p-4 shadow w-full rounded-lg lg:w-4/6">
-                <Title level={2} className="text-center m-1">Aktualne zamówienia</Title>
-                <Tabs defaultActiveKey="1" items={tabs}/>
+        <div className="flex justify-center mb-4 my-3 mx-1 min-h-screen">
+            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3">
+                <Title level={2} className="text-center mt-3">Aktualne zamówienia</Title>
+                <div className="mx-1">
+                    <Tabs defaultActiveKey="1" items={tabs}/>
+                </div>
             </div>
         </div>
     );

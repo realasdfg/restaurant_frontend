@@ -1,6 +1,7 @@
 import {Navigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
+import SHeader from "../components/shared/SHeader.jsx";
 
 const ProtectedRoute = ({children, requiredRole}) => {
     const {userRole} = useAuth();
@@ -17,7 +18,7 @@ const ProtectedRoute = ({children, requiredRole}) => {
         return <Navigate to="/staff/login"/>;
     }
 
-    return userIndex >= requiredIndex ? children : <NotFoundPage/>;
+    return userIndex >= requiredIndex ? children : <><SHeader/><NotFoundPage/></>;
 };
 
 export default ProtectedRoute;

@@ -1,19 +1,34 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Header} from 'antd/es/layout/layout.js';
 import {Button, Drawer} from 'antd';
 import CreateOrderDropdown from "../Staff/CreateOrderDropdown.jsx";
-import {UserOutlined} from "@ant-design/icons";
+import {ArrowLeftOutlined, UserOutlined} from "@ant-design/icons";
 import {useAuth} from "../../context/AuthContext.jsx";
+import {fetchUserById} from "../../services/api.js";
 
-const SHeader = () => {
+const SHeader = ({isAdminPage}) => {
     const navigate = useNavigate();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const {user} = useAuth();
+    const [user, setUser] = useState(false);
+    const {userRole, setUserRole} = useAuth();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const userResponse = await Promise.race([fetchUserById('me')]);
+                setUser(userResponse.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchUserData();
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        setUserRole('guest')
         navigate('/staff/login');
     };
 
@@ -23,15 +38,25 @@ const SHeader = () => {
 
     return (
         <Header className="flex justify-between items-center bg-blue-500 pe-4 ps-4">
-            <div>
-                <Button color="primary" variant="outlined" onClick={handleOrdersClick}>
-                    Zamówienia
-                </Button>
-                <CreateOrderDropdown/>
-            </div>
+            {isAdminPage ? (
+                <div className="flex items-center gap-1">
+                    <Button color="primary" variant="outlined" onClick={() => navigate('/orders')}>
+                        <ArrowLeftOutlined/>
+                    </Button>
+                    <div className="text-white text-xl">Strona Administratora</div>
+                </div>
+            ) : (
+                <div>
+                    <Button color="primary" variant="outlined" onClick={handleOrdersClick}>
+                        Zamówienia
+                    </Button>
+                    <CreateOrderDropdown/>
+                </div>
+            )}
             <UserOutlined className="text-white text-xl" onClick={() => setIsDrawerOpen(true)}/>
+
             <Drawer
-                title={<>Użytkownik ({user})</>}
+                title={<>{user.first_name} {user.last_name} ({userRole === 'staff' ? 'Kelner' : 'Administrator'})</>}
                 placement="right"
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
@@ -40,14 +65,22 @@ const SHeader = () => {
                     header: {backgroundColor: "rgb(249, 250, 251)"}
                 }}
             >
-                {user === "admin" &&
-                    <div>
-                        aboba
-                    </div>
-                }
-                <Button className="w-full" color="danger" variant="solid" onClick={handleLogout}>
-                    Wyloguj się
-                </Button>
+                <div className="flex flex-col gap-3">
+                    {userRole === "admin" &&
+                        <>
+                            <Button className="w-full size-9" color="blue" variant="solid"
+                                    onClick={() => {
+                                        setIsDrawerOpen(false);
+                                        navigate('/admin/orders');
+                                    }}>
+                                Archiwum zamówień
+                            </Button>
+                        </>
+                    }
+                    <Button className="w-full" color="danger" variant="solid" onClick={handleLogout}>
+                        Wyloguj się
+                    </Button>
+                </div>
             </Drawer>
         </Header>
     );

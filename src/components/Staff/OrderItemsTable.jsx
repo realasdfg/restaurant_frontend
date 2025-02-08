@@ -47,13 +47,14 @@ const OrderItemsTable = ({
             title: "Nazwa",
             dataIndex: "menuItem",
             key: "name",
+            className: "bg-white",
             render: (menuItem) => <div className="line-clamp-2">{menuItem.name}</div>,
         },
         {
             title: <div className="justify-self-center">Ilość</div>,
             dataIndex: "quantity",
             key: "quantity",
-            className: "w-1",
+            className: "w-1 bg-white",
             render: (quantity, record) => (
                 <div className="justify-self-center sm:justify-self-start">
                     {!order.paid
@@ -72,7 +73,7 @@ const OrderItemsTable = ({
             title: <div className="justify-self-end">Cena</div>,
             dataIndex: "menuItem",
             key: "price",
-            className: "w-1",
+            className: "w-1 bg-white",
             render: (menuItem) => <div className="justify-self-end">{menuItem.price}</div>,
         },
         {
@@ -89,18 +90,18 @@ const OrderItemsTable = ({
         },
         {
             key: "delete",
-            className: "hidden sm:table-cell w-1",
-            render: (_, orderItem) => (
-                <div className="justify-self-center">
-                    {!order.paid &&
-                        <CloseOutlined onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveItem(orderItem)
-                        }}/>
-                    }
-                </div>
-            ),
-        },
+            className: "hidden sm:table-cell w-1 bg-white",
+            render: !order.paid ? (
+                    (_, orderItem) => (
+                        <div className="justify-self-center">
+                            <CloseOutlined onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveItem(orderItem)
+                            }}/>
+                        </div>
+                    ))
+                : undefined,
+        }
     ];
 
     const listData = selectedItem && [

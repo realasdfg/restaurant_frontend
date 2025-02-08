@@ -72,8 +72,8 @@ export const fetchTableById = async (tableId) => {
     return await API.get(`/tables/${tableId}`);
 };
 
-export const fetchOrders = async (current_only) => {
-    return await API.get('/orders', {params: {current_only: current_only}});
+export const fetchOrders = async (params) => {
+    return await API.get('/orders', {params: params});
 };
 
 export const fetchOrderById = async (orderId) => {

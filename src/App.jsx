@@ -17,12 +17,15 @@ function App() {
                 <Routes>
                     <Route path="/" element={<OnlineMenuPage/>}/>
                     <Route path="/staff/login" element={<LoginPage/>}/>
-                    <Route path="/orders" element={<ProtectedRoute requiredRole="staff"><StaffPage/></ProtectedRoute>}/>
-                    <Route path="/orders/:orderId" element={
+
+                    <Route path="/*" element={
                         <ProtectedRoute requiredRole="staff"><StaffPage/></ProtectedRoute>
                     }/>
+                    <Route path="/admin/*" element={
+                        <ProtectedRoute requiredRole="admin"><StaffPage/></ProtectedRoute>
+                    }/>
 
-                    <Route path="*" element={<ProtectedRoute><SHeader></SHeader><NotFoundPage/></ProtectedRoute>}/>
+                    <Route path="*" element={<ProtectedRoute><SHeader/><NotFoundPage/></ProtectedRoute>}/>
                 </Routes>
             </Router>
         </AuthProvider>

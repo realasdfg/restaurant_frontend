@@ -55,7 +55,8 @@ const OrderActionsDropdown = ({order, onUpdateOrder, iconClassName}) => {
             </Dropdown>
             <TableListModal
                 open={isTableModalOpen}
-                onCancel={() => {
+                onCancel={(e) => {
+                    e.stopPropagation();
                     setIsTableModalOpen(false)
                 }}
                 onTableClick={(table) => {

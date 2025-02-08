@@ -14,10 +14,11 @@ import OrderCloseModal from "./OrderCloseModal.jsx";
 import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
 import {orderWebSocketService} from "../../services/websocketService.js";
 import NotFoundPage from "../../pages/NotFoundPage.jsx";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../../context/AuthContext.jsx";
 
-const OrderDetails = ({orderId}) => {
+const OrderDetails = () => {
+    const {orderId} = useParams();
     const {userRole} = useAuth();
     const navigate = useNavigate();
     const [notFound, setNotFound] = useState(false);

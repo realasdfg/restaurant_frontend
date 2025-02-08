@@ -2,7 +2,7 @@ import React from 'react';
 import {Table} from 'antd';
 import PropTypes from "prop-types";
 
-const CurrentOrdersTable = ({dataSource, columns, onRow}) => (
+const OrdersTable = ({dataSource, columns, onRow}) => (
         <Table
             dataSource={dataSource}
             columns={columns}
@@ -14,10 +14,10 @@ const CurrentOrdersTable = ({dataSource, columns, onRow}) => (
     )
 ;
 
-CurrentOrdersTable.propTypes = {
+OrdersTable.propTypes = {
     dataSource: PropTypes.array.isRequired,
     columns: PropTypes.array.isRequired,
     onRow: PropTypes.func.isRequired,
 };
 
-export default CurrentOrdersTable;
+export default OrdersTable;
