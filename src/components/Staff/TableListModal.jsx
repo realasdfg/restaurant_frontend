@@ -21,6 +21,7 @@ const TableListModal = ({open, onCancel, onTableClick}) => {
 
             return () => {
                 unsubscribe();
+                tableWebSocketService.close();
             };
         }
     }, [open]);
