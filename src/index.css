@@ -20,7 +20,7 @@ html, body {
     animation: none;
     flex-wrap: nowrap;
     direction: ltr;
-    @media (max-width: 768px) {
+    @media (max-width: 1000px) {
         display: inline-grid;
     }
 }

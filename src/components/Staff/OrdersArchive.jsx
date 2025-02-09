@@ -70,15 +70,17 @@ const CurrentOrders = () => {
     }, [dateRange, timeRange, ordersType, ordersCreatedBy, ordersPaidBy]);
 
     const updateSearchParams = (dates, times, type, createdBy, paidBy) => {
-        setSearchParams({
-            dateFrom: dates[0].format("YYYY-MM-DD"),
-            dateTo: dates[1].format("YYYY-MM-DD"),
-            timeFrom: times[0].format("HH:mm:ss"),
-            timeTo: times[1].format("HH:mm:ss"),
-            type: type || '',
-            createdBy: createdBy || '',
-            paidBy: paidBy || '',
-        });
+        const params = {};
+
+        if (dates?.[0]) params.dateFrom = dates[0].format("YYYY-MM-DD");
+        if (dates?.[1]) params.dateTo = dates[1].format("YYYY-MM-DD");
+        if (times?.[0]) params.timeFrom = times[0].format("HH:mm:ss");
+        if (times?.[1]) params.timeTo = times[1].format("HH:mm:ss");
+        if (type) params.type = type;
+        if (createdBy) params.createdBy = createdBy;
+        if (paidBy) params.paidBy = paidBy;
+
+        setSearchParams(params);
     };
 
     const handleDateChange = (dates) => {
@@ -182,69 +184,95 @@ const CurrentOrders = () => {
         <div className="flex justify-center mb-4 my-3 mx-1 min-h-screen">
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
                 <Title level={2} className="text-center">Archiwum zamówień</Title>
-
-                <div className="text-center gap-2 px-4">
-                    <RangePicker
-                        value={dateRange}
-                        onChange={handleDateChange}
-                        format="DD-MM-YYYY"
-                    />
-                    <div className="flex gap-4 justify-center mt-2">
-
-                        <DatePicker picker={'time'} value={timeRange[0]}
-                                    onChange={(value) => handleTimeChange(0, value)}/>
-                        <DatePicker picker={'time'} value={timeRange[1]}
-                                    onChange={(value) => handleTimeChange(1, value)}/>
+                <div className="flex flex-wrap justify-center gap-2">
+                    <div className="w-[270px] flex flex-col gap-2">
+                        <Select className="w-full" defaultValue={ordersType || ''} onChange={handleOrderTypeChange}
+                                options={[
+                                    {
+                                        value: '',
+                                        label: <div className="text-gray-400">(Typ zamówienia)</div>,
+                                    },
+                                    {
+                                        value: 'dinein',
+                                        label: 'W restauracji',
+                                    },
+                                    {
+                                        value: 'togo',
+                                        label: 'Na wynos',
+                                    },
+                                ]}/>
+                        <Select className="w-full" defaultValue={ordersCreatedBy || ''}
+                                onChange={handleCreatedByChange}
+                                options={[
+                                    {
+                                        value: '',
+                                        label: <div className="text-gray-400">(Utworzony)</div>,
+                                    },
+                                    ...users.map(user => ({
+                                        value: `${user.id}`,
+                                        label: `${user.first_name} ${user.last_name} (${user.id})`
+                                    }))]}
+                        />
+                        <Select className="w-full" defaultValue={ordersPaidBy || ''} onChange={handlePaidByChange}
+                                options={[
+                                    {
+                                        value: '',
+                                        label: <div className="text-gray-400">(Opłacony)</div>,
+                                    },
+                                    ...users.map(user => ({
+                                        value: `${user.id}`,
+                                        label: `${user.first_name} ${user.last_name} (${user.id})`
+                                    }))]}
+                        />
+                    </div>
+                    <div className="w-[270px] flex flex-col gap-2">
+                        <RangePicker
+                            value={dateRange}
+                            onChange={handleDateChange}
+                            format="DD-MM-YYYY"
+                            placement={'bottomLeft'}
+                            presets={innerWidth > 1000 && [
+                                {
+                                    label: 'Ostatnie 7 dni',
+                                    value: [dayjs().add(-7, 'd'), dayjs()],
+                                },
+                                {
+                                    label: 'Ostatnie 14 dni',
+                                    value: [dayjs().add(-14, 'd'), dayjs()],
+                                },
+                                {
+                                    label: 'Ostatnie 30 dni',
+                                    value: [dayjs().add(-30, 'd'), dayjs()],
+                                },
+                                {
+                                    label: 'Ostatnie 90 dni',
+                                    value: [dayjs().add(-90, 'd'), dayjs()],
+                                },
+                            ]}
+                        />
+                        <div className="flex justify-between gap-3">
+                            <DatePicker picker={'time'} value={timeRange[0]}
+                                        onChange={(value) => handleTimeChange(0, value)}/>
+                            <DatePicker picker={'time'} value={timeRange[1]}
+                                        onChange={(value) => handleTimeChange(1, value)}/>
+                        </div>
+                        <Button className="w-full" onClick={() => {
+                            const dates = [dayjs().startOf("month"), dayjs().endOf("day")]
+                            const times = [dayjs("00:00:00", "HH:mm:ss"), dayjs("23:59:59", "HH:mm:ss")]
+                            setDateRange(dates)
+                            setTimeRange(times)
+                            setOrdersType('')
+                            setOrdersPaidBy('')
+                            setOrdersCreatedBy('')
+                            setSearchParams({})
+                        }}>Resetuj</Button>
                     </div>
                 </div>
-                <Select defaultValue={ordersType || ''} onChange={handleOrderTypeChange} options={[
-                    {
-                        value: '',
-                        label: 'Wszystkie',
-                    },
-                    {
-                        value: 'dinein',
-                        label: 'W restauracji',
-                    },
-                    {
-                        value: 'togo',
-                        label: 'Na wynos',
-                    },
-                ]}/>
-                <Select defaultValue={ordersCreatedBy || ''} onChange={handleCreatedByChange}
-                        options={[
-                            {
-                                value: '',
-                                label: 'Wszyscy',
-                            },
-                            ...users.map(user => ({
-                                value: `${user.id}`,
-                                label: `${user.first_name} ${user.last_name} (${user.id})`
-                            }))]}
-                />
-                <Select defaultValue={ordersPaidBy || ''} onChange={handlePaidByChange}
-                        options={[
-                            {
-                                value: '',
-                                label: 'Wszyscy',
-                            },
-                            ...users.map(user => ({
-                                value: `${user.id}`,
-                                label: `${user.first_name} ${user.last_name} (${user.id})`
-                            }))]}
-                />
-                <Button onClick={() => {
-                    const dates = [dayjs().startOf("month"), dayjs().endOf("day")]
-                    const times = [dayjs("00:00:00", "HH:mm:ss"), dayjs("23:59:59", "HH:mm:ss")]
-                    setDateRange(dates)
-                    setTimeRange(times)
-                    setOrdersType('')
-                    setOrdersPaidBy('')
-                    setOrdersCreatedBy('')
-                    updateSearchParams(dates, times, '', '', '');
-                }}>Resetuj</Button>
-                <div>
-                    Zamówień: {orders.length}
+                <div className="text-base font-semibold font-mono ml-4">
+                    Zamówień: {orders.length} | Łączna suma: {orders.reduce((sum, order) => {
+                    const totalSum = parseFloat(order.paid_by_card) + parseFloat(order.paid_by_cash);
+                    return sum + totalSum;
+                }, 0).toFixed(2)}
                 </div>
                 <div className="overflow-x-auto">
                     <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>
