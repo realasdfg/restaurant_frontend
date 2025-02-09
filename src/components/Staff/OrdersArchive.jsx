@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {Tag, Typography, DatePicker, Button} from "antd";
-import {fetchOrders, fetchTables} from "../../services/api";
+import {Tag, Typography, DatePicker, Select, Button} from "antd";
+import {fetchOrders, fetchTables, fetchUsers} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import OrdersTable from "./OrdersTable.jsx";
 import dayjs from "dayjs";
@@ -12,6 +12,7 @@ const {RangePicker} = DatePicker;
 const CurrentOrders = () => {
     const [orders, setOrders] = useState([]);
     const [tableMap, setTableMap] = useState({});
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -21,13 +22,17 @@ const CurrentOrders = () => {
     };
 
     const [dateRange, setDateRange] = useState([
-        getDateParam("from", "YYYY-MM-DD", dayjs().startOf("month")),
-        getDateParam("to", "YYYY-MM-DD", dayjs().endOf("day"))
+        getDateParam("dateFrom", "YYYY-MM-DD", dayjs().startOf("month")),
+        getDateParam("dateTo", "YYYY-MM-DD", dayjs().endOf("day"))
     ]);
     const [timeRange, setTimeRange] = useState([
         getDateParam("timeFrom", "HH:mm:ss", dayjs("00:00:00", "HH:mm:ss")),
         getDateParam("timeTo", "HH:mm:ss", dayjs("23:59:59", "HH:mm:ss"))
     ]);
+    const [ordersType, setOrdersType] = useState(
+        searchParams.get('type') === 'togo' || searchParams.get('type') === 'dinein' ? searchParams.get('type') : null);
+    const [ordersCreatedBy, setOrdersCreatedBy] = useState(searchParams.get('createdBy') || null);
+    const [ordersPaidBy, setOrdersPaidBy] = useState(searchParams.get('paidBy') || null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,9 +43,9 @@ const CurrentOrders = () => {
                         paid_only: true,
                         from_created_date: dateRange[0].format("YYYY-MM-DD") + " " + timeRange[0].format("HH:mm:ss"),
                         to_created_date: dateRange[1].format("YYYY-MM-DD") + " " + timeRange[1].format("HH:mm:ss"),
-                        type: null,
-                        created_by: null,
-                        paid_by: null,
+                        type: ordersType !== '' ? ordersType : null,
+                        created_by: ordersCreatedBy !== '' ? ordersCreatedBy : null,
+                        paid_by: ordersPaidBy !== '' ? ordersPaidBy : null,
                     }),
                     fetchTables(),
                 ]);
@@ -51,6 +56,9 @@ const CurrentOrders = () => {
                     tableMapData[table.id] = table.name;
                 });
                 setTableMap(tableMapData);
+
+                const usersResponse = await Promise.race([fetchUsers()]);
+                setUsers(usersResponse.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -59,27 +67,45 @@ const CurrentOrders = () => {
         };
 
         fetchData();
-    }, [dateRange, timeRange]);
+    }, [dateRange, timeRange, ordersType, ordersCreatedBy, ordersPaidBy]);
 
-    const updateSearchParams = (dates, times) => {
+    const updateSearchParams = (dates, times, type, createdBy, paidBy) => {
         setSearchParams({
-            from: dates[0].format("YYYY-MM-DD"),
-            to: dates[1].format("YYYY-MM-DD"),
+            dateFrom: dates[0].format("YYYY-MM-DD"),
+            dateTo: dates[1].format("YYYY-MM-DD"),
             timeFrom: times[0].format("HH:mm:ss"),
-            timeTo: times[1].format("HH:mm:ss")
+            timeTo: times[1].format("HH:mm:ss"),
+            type: type || '',
+            createdBy: createdBy || '',
+            paidBy: paidBy || '',
         });
     };
 
     const handleDateChange = (dates) => {
         setDateRange(dates);
-        updateSearchParams(dates, timeRange);
+        updateSearchParams(dates, timeRange, ordersType, ordersCreatedBy, ordersPaidBy);
     };
 
     const handleTimeChange = (index, value) => {
         const newTimeRange = [...timeRange];
         newTimeRange[index] = value;
         setTimeRange(newTimeRange);
-        updateSearchParams(dateRange, newTimeRange);
+        updateSearchParams(dateRange, newTimeRange, ordersType, ordersCreatedBy, ordersPaidBy);
+    };
+
+    const handleOrderTypeChange = (value) => {
+        setOrdersType(value);
+        updateSearchParams(dateRange, timeRange, value, ordersCreatedBy, ordersPaidBy);
+    };
+
+    const handleCreatedByChange = (value) => {
+        setOrdersCreatedBy(value);
+        updateSearchParams(dateRange, timeRange, ordersType, value, ordersPaidBy);
+    };
+
+    const handlePaidByChange = (value) => {
+        setOrdersPaidBy(value);
+        updateSearchParams(dateRange, timeRange, ordersType, ordersCreatedBy, value);
     };
 
     const columns = [
@@ -171,6 +197,52 @@ const CurrentOrders = () => {
                                     onChange={(value) => handleTimeChange(1, value)}/>
                     </div>
                 </div>
+                <Select defaultValue={ordersType || ''} onChange={handleOrderTypeChange} options={[
+                    {
+                        value: '',
+                        label: 'Wszystkie',
+                    },
+                    {
+                        value: 'dinein',
+                        label: 'W restauracji',
+                    },
+                    {
+                        value: 'togo',
+                        label: 'Na wynos',
+                    },
+                ]}/>
+                <Select defaultValue={ordersCreatedBy || ''} onChange={handleCreatedByChange}
+                        options={[
+                            {
+                                value: '',
+                                label: 'Wszyscy',
+                            },
+                            ...users.map(user => ({
+                                value: `${user.id}`,
+                                label: `${user.first_name} ${user.last_name} (${user.id})`
+                            }))]}
+                />
+                <Select defaultValue={ordersPaidBy || ''} onChange={handlePaidByChange}
+                        options={[
+                            {
+                                value: '',
+                                label: 'Wszyscy',
+                            },
+                            ...users.map(user => ({
+                                value: `${user.id}`,
+                                label: `${user.first_name} ${user.last_name} (${user.id})`
+                            }))]}
+                />
+                <Button onClick={() => {
+                    const dates = [dayjs().startOf("month"), dayjs().endOf("day")]
+                    const times = [dayjs("00:00:00", "HH:mm:ss"), dayjs("23:59:59", "HH:mm:ss")]
+                    setDateRange(dates)
+                    setTimeRange(times)
+                    setOrdersType('')
+                    setOrdersPaidBy('')
+                    setOrdersCreatedBy('')
+                    updateSearchParams(dates, times, '', '', '');
+                }}>Resetuj</Button>
                 <div>
                     Zamówień: {orders.length}
                 </div>
