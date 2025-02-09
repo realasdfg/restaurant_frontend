@@ -149,7 +149,7 @@ const CurrentOrders = () => {
             key: "1",
             label: "Wszystkie",
             children: <div className="overflow-x-auto">
-                <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>
+                <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick} pagination={false}/>
             </div>,
         },
         {
@@ -157,7 +157,7 @@ const CurrentOrders = () => {
             label: "W restauracji",
             children: <div className="overflow-x-auto">
                 <OrdersTable columns={columns} dataSource={orders.filter(o => o.type === "dinein")}
-                             onRow={handleRowClick}/>
+                             onRow={handleRowClick} pagination={false}/>
             </div>,
         },
         {
@@ -165,7 +165,7 @@ const CurrentOrders = () => {
             label: "Na wynos",
             children: <div className="overflow-x-auto">
                 <OrdersTable columns={columns} dataSource={orders.filter(o => o.type === "togo")}
-                             onRow={handleRowClick}/>
+                             onRow={handleRowClick} pagination={false}/>
             </div>,
         },
     ];

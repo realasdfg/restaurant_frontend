@@ -275,7 +275,7 @@ const CurrentOrders = () => {
                 }, 0).toFixed(2)}
                 </div>
                 <div className="overflow-x-auto">
-                    <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>
+                    <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick} pagination={true}/>
                 </div>
             </div>
         </div>
