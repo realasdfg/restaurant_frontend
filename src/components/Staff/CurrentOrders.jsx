@@ -174,7 +174,7 @@ const CurrentOrders = () => {
 
     return (
         <div className="flex justify-center mb-4 my-3 mx-1 min-h-screen">
-            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3">
+            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
                 <Title level={2} className="text-center mt-3">Aktualne zamówienia</Title>
                 <div className="mx-1">
                     <Tabs defaultActiveKey="1" items={tabs}/>

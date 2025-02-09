@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {Tag, Typography, DatePicker} from "antd";
+import {useNavigate, useSearchParams} from "react-router-dom";
+import {Tag, Typography, DatePicker, Button} from "antd";
 import {fetchOrders, fetchTables} from "../../services/api";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import OrdersTable from "./OrdersTable.jsx";
@@ -14,10 +14,19 @@ const CurrentOrders = () => {
     const [tableMap, setTableMap] = useState({});
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const [dateRange, setDateRange] = useState([dayjs().startOf("month"), dayjs()]);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const getDateParam = (param, format, defaultValue) => {
+        return searchParams.get(param) ? dayjs(searchParams.get(param), format) : defaultValue;
+    };
+
+    const [dateRange, setDateRange] = useState([
+        getDateParam("from", "YYYY-MM-DD", dayjs().startOf("month")),
+        getDateParam("to", "YYYY-MM-DD", dayjs().endOf("day"))
+    ]);
     const [timeRange, setTimeRange] = useState([
-        dayjs("00:00:00", "HH:mm:ss"),
-        dayjs("23:59:59", "HH:mm:ss")
+        getDateParam("timeFrom", "HH:mm:ss", dayjs("00:00:00", "HH:mm:ss")),
+        getDateParam("timeTo", "HH:mm:ss", dayjs("23:59:59", "HH:mm:ss"))
     ]);
 
     useEffect(() => {
@@ -35,14 +44,12 @@ const CurrentOrders = () => {
                     }),
                     fetchTables(),
                 ]);
-
                 setOrders(ordersResponse.data);
 
                 const tableMapData = {};
                 tablesResponse.data.forEach((table) => {
                     tableMapData[table.id] = table.name;
                 });
-
                 setTableMap(tableMapData);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -53,6 +60,27 @@ const CurrentOrders = () => {
 
         fetchData();
     }, [dateRange, timeRange]);
+
+    const updateSearchParams = (dates, times) => {
+        setSearchParams({
+            from: dates[0].format("YYYY-MM-DD"),
+            to: dates[1].format("YYYY-MM-DD"),
+            timeFrom: times[0].format("HH:mm:ss"),
+            timeTo: times[1].format("HH:mm:ss")
+        });
+    };
+
+    const handleDateChange = (dates) => {
+        setDateRange(dates);
+        updateSearchParams(dates, timeRange);
+    };
+
+    const handleTimeChange = (index, value) => {
+        const newTimeRange = [...timeRange];
+        newTimeRange[index] = value;
+        setTimeRange(newTimeRange);
+        updateSearchParams(dateRange, newTimeRange);
+    };
 
     const columns = [
         {
@@ -125,25 +153,27 @@ const CurrentOrders = () => {
     if (loading) return <LoadingSpinner/>;
 
     return (
-        <div className="flex justify-center mb-4 my-3 mx-1">
-            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 p-4">
+        <div className="flex justify-center mb-4 my-3 mx-1 min-h-screen">
+            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
                 <Title level={2} className="text-center">Archiwum zamówień</Title>
 
                 <div className="text-center gap-2 px-4">
                     <RangePicker
                         value={dateRange}
-                        onChange={setDateRange}
-                        format="YYYY-MM-DD"
+                        onChange={handleDateChange}
+                        format="DD-MM-YYYY"
                     />
                     <div className="flex gap-4 justify-center mt-2">
 
-                    <DatePicker picker={'time'} value={timeRange[0]}
-                                onChange={(value) => setTimeRange([value, timeRange[1]])}/>
-                    <DatePicker picker={'time'} value={timeRange[1]}
-                                onChange={(value) => setTimeRange([timeRange[0], value])}/>
+                        <DatePicker picker={'time'} value={timeRange[0]}
+                                    onChange={(value) => handleTimeChange(0, value)}/>
+                        <DatePicker picker={'time'} value={timeRange[1]}
+                                    onChange={(value) => handleTimeChange(1, value)}/>
                     </div>
                 </div>
-
+                <div>
+                    Zamówień: {orders.length}
+                </div>
                 <div className="overflow-x-auto">
                     <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick}/>
                 </div>
