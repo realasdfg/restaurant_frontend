@@ -31,7 +31,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
         try {
             const [categoriesResponse, menuItemsResponse] = await Promise.all([
                 fetchCategories(),
-                fetchMenuItems(),
+                fetchMenuItems(true),
             ]);
             setCategories(categoriesResponse.data);
             setMenuItems(menuItemsResponse.data);

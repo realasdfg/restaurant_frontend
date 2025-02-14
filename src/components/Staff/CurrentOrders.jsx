@@ -48,10 +48,9 @@ const CurrentOrders = () => {
         const fetchData = async () => {
             try {
                 const [ordersResponse, tablesResponse] = await Promise.all([
-                    fetchOrders({current_only: true}),
+                    fetchOrders({paid: false}),
                     fetchTables(),
                 ]);
-
                 setOrders(ordersResponse.data);
 
                 const tableMapData = {};

@@ -57,7 +57,7 @@ export const fetchCategories = async () => {
 };
 
 export const fetchMenuItems = async (available = null) => {
-    return await API.get('/menu-items',{params: {available: available}});
+    return await API.get('/menu-items', {params: {available: available}});
 };
 
 export const fetchMenuItemById = async (menuItemId) => {
@@ -96,8 +96,8 @@ export const fetchOrderItemsByOrderId = async (orderId) => {
     return await API.get(`/orders/${orderId}/menu-items`);
 };
 
-export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity) => {
-    return await API.patch(`/orders/${orderId}/menu-items/${itemId}`, null, {params: {quantity: quantity}});
+export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity = null) => {
+    return await API.patch(`/orders/${orderId}/menu-items/${itemId}`, {quantity: quantity});
 };
 
 export const deleteOrderItem = async (orderId, itemId) => {

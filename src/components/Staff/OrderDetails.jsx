@@ -81,10 +81,8 @@ const OrderDetails = () => {
         const access_token = localStorage.getItem("access_token");
         const orderSocket = orderWebSocketService.connectToOrder(orderId, access_token);
 
-        orderSocket.connect(access_token);
-
         const unsubscribe = orderSocket.subscribe(async (data) => {
-            if (data.type) {
+            if (data.broadcast_type === 'order') {
                 console.log(`Order ${orderId} info changes received:`, data);
                 if (data.paid) {
                     message.info("Zamówienie zostało opłacone!")
@@ -98,7 +96,7 @@ const OrderDetails = () => {
                 } else {
                     setTable(null);
                 }
-            } else {
+            } else if (data.broadcast_type === 'order_item') {
                 console.log(`Order ${orderId} items changes received:`, data);
                 if (data.deleted) {
                     setOrderItems((prevOrderItems = []) => {
