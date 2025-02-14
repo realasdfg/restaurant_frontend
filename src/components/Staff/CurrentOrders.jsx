@@ -139,7 +139,7 @@ const CurrentOrders = () => {
     ];
 
     const handleRowClick = (record) => ({
-        onClick: () => navigate(`/orders/${record.id}`),
+        onClick: () => navigate(`/staff/orders/${record.id}`),
         style: {cursor: "pointer"},
     });
 

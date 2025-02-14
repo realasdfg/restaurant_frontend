@@ -86,7 +86,7 @@ const OrderDetails = () => {
                 console.log(`Order ${orderId} info changes received:`, data);
                 if (data.paid) {
                     message.info("Zamówienie zostało opłacone!")
-                    navigate('/orders');
+                    navigate('/staff/orders');
                 }
                 setOrder(data);
 

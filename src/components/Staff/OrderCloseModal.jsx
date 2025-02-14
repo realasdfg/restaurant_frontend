@@ -36,7 +36,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
         try {
             let realCashAmount = cashAmount > totalAmount ? totalAmount : cashAmount;
             await closeOrder(orderId, {paid: true, paid_by_card: cardAmount, paid_by_cash: realCashAmount});
-            navigate('/orders');
+            navigate('/staff/orders');
         } catch (error) {
             message.error('Błąd podczas zamknięcia zamówienia');
             console.error('Close order error:', error);

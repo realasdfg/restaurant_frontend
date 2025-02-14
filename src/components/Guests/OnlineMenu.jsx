@@ -1,17 +1,17 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Layout, Typography, Divider, Input, Menu} from 'antd';
 import 'tailwindcss/tailwind.css';
-import {fetchCategories, fetchMenuItems} from "../services/api.js";
-import OnlineMenuHeader from "../components/OnlineMenu/OnlineMenuHeader.jsx";
-import OnlineMenuFooter from "../components/OnlineMenu/OnlineMenuFooter.jsx";
-import LoadingSpinner from "../components/shared/LoadingSpinner.jsx";
-import MenuItemModal from "../components/OnlineMenu/MenuItemModal.jsx";
+import {fetchCategories, fetchMenuItems} from "../../services/api.js";
+import GuestsHeader from "./GuestsHeader.jsx";
+import GuestsFooter from "./GuestsFooter.jsx";
+import LoadingSpinner from "../shared/LoadingSpinner.jsx";
+import MenuItemModal from "./MenuItemModal.jsx";
 
 const {Content} = Layout;
 const {Title} = Typography;
 const {Search} = Input;
 
-const OnlineMenuPage = () => {
+const OnlineMenu = () => {
     const [categories, setCategories] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
     const [filteredItems, setFilteredItems] = useState([]);
@@ -81,8 +81,8 @@ const OnlineMenuPage = () => {
     if (loading) return <LoadingSpinner/>;
 
     return (
-        <div className="bg-gray-100 font-mono">
-            <OnlineMenuHeader categories={categories} onCategoryClick={handleCategoryClick}/>
+        <>
+            <GuestsHeader categories={categories} onCategoryClick={handleCategoryClick} isMenu={true}/>
             <div className="flex justify-center p-3">
                 <div className="flex lg:w-3/4 gap-3">
                     <Menu
@@ -152,10 +152,9 @@ const OnlineMenuPage = () => {
                     </Content>
                 </div>
             </div>
-            <OnlineMenuFooter/>
-        </div>
+            <GuestsFooter/>
+        </>
     );
-
 };
 
-export default OnlineMenuPage;
+export default OnlineMenu;

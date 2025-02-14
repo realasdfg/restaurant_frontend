@@ -12,7 +12,7 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (userRole !== "guest") {
-            navigate('/orders');
+            navigate('/staff/orders');
         }
     }, [navigate]);
 
@@ -25,7 +25,7 @@ const LoginPage = () => {
 
             message.success('Pomyślne logowanie!');
             setUserRole(response.data.role);
-            navigate('/orders');
+            navigate('/staff/orders');
         } catch (error) {
             if (error.response.status === 404) {
                 message.error('Nieprawidłowy login lub hasło.');

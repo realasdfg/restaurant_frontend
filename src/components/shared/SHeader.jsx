@@ -36,7 +36,7 @@ const SHeader = ({isAdminPage}) => {
         if (isAdminPage) {
             navigate('/admin/orders');
         } else {
-            navigate('/orders');
+            navigate('/staff/orders');
         }
     };
 
@@ -70,7 +70,7 @@ const SHeader = ({isAdminPage}) => {
                             <Button className="w-full size-9" color="blue" variant="solid"
                                     onClick={() => {
                                         setIsDrawerOpen(false);
-                                        navigate('/orders');
+                                        navigate('/staff/orders');
                                     }}>
                                 Aktualne zamówienia
                             </Button>
