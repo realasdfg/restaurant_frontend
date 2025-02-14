@@ -56,8 +56,8 @@ export const fetchCategories = async () => {
     return await API.get('/menu-categories');
 };
 
-export const fetchMenuItems = async () => {
-    return await API.get('/menu-items');
+export const fetchMenuItems = async (available = null) => {
+    return await API.get('/menu-items',{params: {available: available}});
 };
 
 export const fetchMenuItemById = async (menuItemId) => {

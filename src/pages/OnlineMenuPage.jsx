@@ -26,7 +26,7 @@ const OnlineMenuPage = () => {
             try {
                 const [categoriesRes, itemsRes] = await Promise.all([
                     fetchCategories(),
-                    fetchMenuItems()
+                    fetchMenuItems(true)
                 ]);
 
                 setCategories(categoriesRes.data);
@@ -129,12 +129,16 @@ const OnlineMenuPage = () => {
                                                         <img src={item.image} alt={item.name}
                                                              className="w-full rounded-lg aspect-square object-cover"/>
                                                         <div
-                                                            className="mt-2 font-semibold text-lg m-1">{item.name}</div>
+                                                            className="mt-2 font-semibold text-lg line-clamp-2 m-1">{item.name}</div>
                                                         <div
                                                             className="text-gray-600 line-clamp-3 m-1">{item.description}</div>
                                                     </div>
-                                                    <div className="text-blue-600 font-bold mt-2 m-1">
-                                                        {item.price} zł {item.type === 'by_weight' ? 'za 100g' : ''}
+                                                    <div
+                                                        className="text-blue-600 font-bold mt-2 m-1 flex justify-between">
+                                                        <div>
+                                                            {item.price} zł {item.type === 'by_weight' ? `za ${item.weight}g` : ''}
+                                                        </div>
+                                                        {item.type === 'by_quantity' && <div>{item.weight}g</div>}
                                                     </div>
                                                 </div>
                                             ))}
