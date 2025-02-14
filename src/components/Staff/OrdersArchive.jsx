@@ -40,7 +40,7 @@ const CurrentOrders = () => {
                 setLoading(true);
                 const [ordersResponse, tablesResponse] = await Promise.all([
                     fetchOrders({
-                        paid_only: true,
+                        paid: true,
                         from_created_date: dateRange[0].format("YYYY-MM-DD") + " " + timeRange[0].format("HH:mm:ss"),
                         to_created_date: dateRange[1].format("YYYY-MM-DD") + " " + timeRange[1].format("HH:mm:ss"),
                         type: ordersType !== '' ? ordersType : null,
@@ -206,7 +206,7 @@ const CurrentOrders = () => {
                                 options={[
                                     {
                                         value: '',
-                                        label: <div className="text-gray-400">(Utworzony)</div>,
+                                        label: <div className="text-gray-400">(Utworzone)</div>,
                                     },
                                     ...users.map(user => ({
                                         value: `${user.id}`,
@@ -217,7 +217,7 @@ const CurrentOrders = () => {
                                 options={[
                                     {
                                         value: '',
-                                        label: <div className="text-gray-400">(Opłacony)</div>,
+                                        label: <div className="text-gray-400">(Opłacone)</div>,
                                     },
                                     ...users.map(user => ({
                                         value: `${user.id}`,
