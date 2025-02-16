@@ -60,10 +60,16 @@ export const fetchUserById = async (userId) => {
     return await API.get(`/users/${userId}`);
 };
 
+export const updateUserById = async (userId, user_data) => {
+    return await API.patch(`/users/${userId}`, user_data);
+};
+
+
 // CATEGORIES
 export const fetchCategories = async () => {
     return await API.get('/menu-categories');
 };
+
 
 // MENU ITEMS
 export const fetchMenuItems = async (available = null) => {
@@ -73,6 +79,7 @@ export const fetchMenuItems = async (available = null) => {
 export const fetchMenuItemById = async (menuItemId) => {
     return await API.get(`/menu-items/${menuItemId}`);
 };
+
 
 // TABLES
 export const fetchTables = async () => {
@@ -86,6 +93,7 @@ export const fetchTableById = async (tableId) => {
 export const fetchCurrentOrdersByTableId = async (tableId) => {
     return await API.get(`/tables/${tableId}/orders`, {params: {current_only: true}});
 };
+
 
 // ORDERS
 export const fetchOrders = async (params) => {
@@ -111,6 +119,7 @@ export const payOrderOnline = async (orderId) => {
 export const changeOrderInfo = async (orderId, data) => {
     return await API.patch(`/orders/${orderId}`, data);
 };
+
 
 // ORDER ITEMS
 export const fetchOrderItemsByOrderId = async (orderId) => {

@@ -81,6 +81,13 @@ const SHeader = ({isAdminPage}) => {
                                     }}>
                                 Archiwum zamówień
                             </Button>
+                            <Button className="w-full size-9" color="blue" variant="solid"
+                                    onClick={() => {
+                                        setIsDrawerOpen(false);
+                                        navigate('/admin/users');
+                                    }}>
+                                Użytkownicy
+                            </Button>
                         </>
                     }
                     <Button className="w-full" color="danger" variant="solid" onClick={handleLogout}>
