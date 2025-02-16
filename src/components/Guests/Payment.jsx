@@ -13,9 +13,7 @@ const Payment = () => {
     useEffect(() => {
         const pay = async () => {
             try {
-                await Promise.race([
-                    payOrderOnline(orderId),
-                ]);
+                await payOrderOnline(orderId);
             } catch (error) {
                 message.error("Błąd opłaty zamówienia")
                 console.error(error)

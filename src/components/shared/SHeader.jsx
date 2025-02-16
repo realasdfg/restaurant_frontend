@@ -16,7 +16,7 @@ const SHeader = ({isAdminPage}) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const userResponse = await Promise.race([fetchUserById('me')]);
+                const userResponse = await fetchUserById('me');
                 setUser(userResponse.data);
             } catch (error) {
                 console.error("Error fetching data:", error);

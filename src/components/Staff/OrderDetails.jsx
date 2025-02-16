@@ -60,10 +60,10 @@ const OrderDetails = () => {
 
                 if (userRole === 'admin') {
                     if (orderResponseData.paid) {
-                        const userPaidResponse = await Promise.race([fetchUserById(orderResponseData.paid_by)]);
+                        const userPaidResponse = await fetchUserById(orderResponseData.paid_by);
                         setUserPaid(userPaidResponse.data)
                     }
-                    const userCreatedResponse = await Promise.race([fetchUserById(orderResponseData.created_by)]);
+                    const userCreatedResponse = await fetchUserById(orderResponseData.created_by);
                     setUserCreated(userCreatedResponse.data)
                 }
 

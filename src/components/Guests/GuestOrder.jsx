@@ -36,9 +36,7 @@ const OnlineMenu = () => {
                 if (!tableResponse.data.is_free) {
                     if (orderResponse.data) {
                         setOrder(orderResponse.data[0]);
-                        const orderItemsResponse = await Promise.race([
-                            fetchOrderItemsByOrderId(orderResponse.data[0].id)
-                        ])
+                        const orderItemsResponse = await fetchOrderItemsByOrderId(orderResponse.data[0].id);
                         const itemsWithDetails = await Promise.all(
                             orderItemsResponse.data.map(async (orderItem) => {
                                 const menuItemResponse = await fetchMenuItemById(orderItem.menu_item_id);
