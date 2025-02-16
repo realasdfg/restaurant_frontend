@@ -82,9 +82,10 @@ const OrderItemsTable = ({
             className: "bg-white w-1",
             render: (_, record) => (
                 <div className="justify-self-start">
-                    {record.menuItem.type === "by_quantity"
-                        ? (record.quantity * record.menuItem.price).toFixed(2)
-                        : (record.quantity / 100 * record.menuItem.price).toFixed(2)}
+                    {record.type === "by_quantity"
+                        ? (Math.floor(record.quantity * Math.round(record.price * 100)) / 100).toFixed(2)
+                        : (Math.floor((record.quantity / record.weight) * Math.round(record.price * 100)) / 100).toFixed(2)
+                    }
                 </div>
             ),
         },

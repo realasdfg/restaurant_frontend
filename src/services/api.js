@@ -80,12 +80,20 @@ export const fetchOrderById = async (orderId) => {
     return await API.get(`/orders/${orderId}`);
 };
 
+export const fetchCurrentOrdersByTableId = async (tableId) => {
+    return await API.get(`/tables/${tableId}/orders`, {params: {current_only: true}});
+};
+
 export const createOrder = async (orderData) => {
     return await API.post('/orders', orderData);
 };
 
 export const closeOrder = async (orderId, paymentData) => {
     return await API.patch(`/orders/${orderId}`, paymentData);
+};
+
+export const payOrderOnline = async (orderId) => {
+    return await API.patch(`/orders/${orderId}`, {'paid_online': true});
 };
 
 export const changeOrderInfo = async (orderId, data) => {

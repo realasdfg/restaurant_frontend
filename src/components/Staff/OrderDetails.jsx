@@ -4,7 +4,7 @@ import {
     fetchOrderItemsByOrderId,
     fetchTableById,
     fetchMenuItemById,
-    addOrUpdateOrderItemQuantity, deleteOrderItem, fetchUserById
+    addOrUpdateOrderItemQuantity, deleteOrderItem, fetchUserById, closeOrder
 } from '../../services/api';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import {Button, Tag, message} from "antd";
@@ -16,6 +16,7 @@ import {orderWebSocketService} from "../../services/websocketService.js";
 import NotFoundPage from "../../pages/NotFoundPage.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../../context/AuthContext.jsx";
+import calculateTotalAmount from "../../utils/calculateTotalAmount.js";
 
 const OrderDetails = () => {
     const {orderId} = useParams();
@@ -85,7 +86,7 @@ const OrderDetails = () => {
             if (data.broadcast_type === 'order') {
                 console.log(`Order ${orderId} info changes received:`, data);
                 if (data.paid) {
-                    message.info("Zamówienie zostało opłacone!")
+                    message.info("Zamówienie zostało opłacone!");
                     navigate('/staff/orders');
                 }
                 setOrder(data);
@@ -215,12 +216,17 @@ const OrderDetails = () => {
         }
     }
 
-    const totalAmount = orderItems.reduce((sum, item) => {
-        const itemTotal = item.menuItem.type === "by_quantity"
-            ? item.quantity * item.menuItem.price
-            : (item.quantity / 100) * item.menuItem.price;
-        return sum + itemTotal;
-    }, 0).toFixed(2);
+    const handleCloseOnline = async () => {
+        try {
+            await closeOrder(orderId, {paid: true});
+            navigate('/staff/orders');
+        } catch (error) {
+            message.error('Błąd podczas zamknięcia zamówienia');
+            console.error('Close order error:', error);
+        }
+    }
+
+    const totalAmount = calculateTotalAmount(orderItems);
 
     if (notFound) return <NotFoundPage message="Zamówienie nie istnieje"/>;
 
@@ -276,6 +282,7 @@ const OrderDetails = () => {
                                 <span>
                                     <strong>Kartą: {order.paid_by_card} zł</strong> <br/>
                                     <strong>Gotówką: {order.paid_by_cash} zł</strong>
+                                    <strong>Online: {order.paid_online ? "Tak" : "Nie"} </strong> <br/>
                                     </span>
                             </Tag>
                         }
@@ -292,27 +299,40 @@ const OrderDetails = () => {
                 </div>
 
                 {/* Large screens */}
-                <div
-                    className="hidden sm:block sticky -bottom-0.5 bg-blue-500 shadow-md p-3">
+                <div className="hidden sm:block sticky -bottom-0.5 bg-blue-500 shadow-md p-3">
                     {!order.paid
-                        ? <div className="hidden sm:flex justify-between items-center">
-                            <div>
-                                <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
-                                                      iconClassName="text-white"/>
-                                <Button className="ml-2" color="primary" variant="outlined"
-                                        onClick={() => setIsDrawerOpen(true)}>
-                                    Dodaj
-                                </Button>
-                            </div>
-                            <div>
-                                <span className="font-bold text-xl text-white">{totalAmount} zł</span>
-                                <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
-                                        className="w-24 h-10 font-bold text-base shadow ml-2"
-                                        onClick={() => setIsModalOpen(true)}>
-                                    Zamknij
-                                </Button>
-                            </div>
-                        </div>
+                        ? <>
+                            {order.paid_online
+                                ? <div className="hidden sm:flex justify-end items-center">
+                                    <span className="font-bold text-xl text-white">Suma: {totalAmount} zł</span>
+                                    <Tag color="green" className="mx-2">opłacono online</Tag>
+                                    <Button color="primary" variant="outlined"
+                                            className="w-24 h-10 font-bold text-base shadow"
+                                            onClick={handleCloseOnline}>
+                                        Zamknij
+                                    </Button>
+                                </div>
+                                : <div className="hidden sm:flex justify-between items-center">
+                                    <div>
+                                        <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
+                                                              iconClassName="text-white"/>
+                                        <Button className="ml-2" color="primary" variant="outlined"
+                                                onClick={() => setIsDrawerOpen(true)}>
+                                            Dodaj
+                                        </Button>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                                        <Button color="primary" variant="outlined"
+                                                disabled={parseFloat(totalAmount) === 0}
+                                                className="w-24 h-10 font-bold text-base shadow ml-2"
+                                                onClick={() => setIsModalOpen(true)}>
+                                            Zamknij
+                                        </Button>
+                                    </div>
+                                </div>
+                            }
+                        </>
                         : <div className="hidden sm:flex justify-end items-center">
                             <span className="font-bold text-xl text-white">Suma: {totalAmount} zł</span>
                         </div>
@@ -320,33 +340,45 @@ const OrderDetails = () => {
                 </div>
 
                 {/* Small screens */}
-                <div
-                    className="sm:hidden fixed left-0 w-full -bottom-0.5 bg-blue-500 shadow-md p-3">
+                <div className="sm:hidden fixed left-0 w-full -bottom-0.5 bg-blue-500 shadow-md p-3">
                     {!order.paid
-                        ? <div className="flex justify-between items-center">
-                            <div>
-                                <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
-                                                      iconClassName="text-white"/>
-                                <Button className="ml-2" color="primary" variant="outlined"
-                                        onClick={() => setIsDrawerOpen(true)}>
-                                    Dodaj
-                                </Button>
-                            </div>
-                            <div className="mr-6">
-                                <span className="font-bold text-xl text-white">{totalAmount} zł</span>
-                                <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
-                                        className="w-24 h-10 font-bold text-base shadow ml-2"
-                                        onClick={() => setIsModalOpen(true)}>
+                        ? <> {order.paid_online
+                            ? <div className="flex justify-end items-center">
+                                <span className="font-bold text-xl text-white ">Suma: {totalAmount} zł</span>
+                                <Tag color="green" className="mx-2">opłacono online</Tag>
+                                <Button color="primary" variant="outlined"
+                                        className="w-24 h-10 font-bold text-base shadow ml-2 mr-6"
+                                        onClick={handleCloseOnline}>
                                     Zamknij
                                 </Button>
                             </div>
-                        </div>
+                            : <div className="flex justify-between items-center">
+                                <div>
+                                    <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
+                                                          iconClassName="text-white"/>
+                                    <Button className="ml-2" color="primary" variant="outlined"
+                                            onClick={() => setIsDrawerOpen(true)}>
+                                        Dodaj
+                                    </Button>
+                                </div>
+                                <div className="mr-6">
+                                    <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                                    <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
+                                            className="w-24 h-10 font-bold text-base shadow ml-2"
+                                            onClick={() => setIsModalOpen(true)}>
+                                        Zamknij
+                                    </Button>
+                                </div>
+                            </div>
+                        }
+                        </>
                         : <div className="flex justify-end items-center">
                             <span className="font-bold text-xl text-white mr-6">Suma: {totalAmount} zł</span>
                         </div>
                     }
                 </div>
             </div>
+
             {!order.paid &&
                 <>
                     <OrderCloseModal
