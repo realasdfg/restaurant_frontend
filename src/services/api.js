@@ -47,15 +47,25 @@ API.interceptors.response.use(
     }
 );
 
-
+// USERS
 export const login = async (username, password) => {
     return await API.post('/auth/login', {username, password});
 };
 
+export const fetchUsers = async () => {
+    return await API.get('/users');
+};
+
+export const fetchUserById = async (userId) => {
+    return await API.get(`/users/${userId}`);
+};
+
+// CATEGORIES
 export const fetchCategories = async () => {
     return await API.get('/menu-categories');
 };
 
+// MENU ITEMS
 export const fetchMenuItems = async (available = null) => {
     return await API.get('/menu-items', {params: {available: available}});
 };
@@ -64,6 +74,7 @@ export const fetchMenuItemById = async (menuItemId) => {
     return await API.get(`/menu-items/${menuItemId}`);
 };
 
+// TABLES
 export const fetchTables = async () => {
     return await API.get('/tables');
 };
@@ -72,16 +83,17 @@ export const fetchTableById = async (tableId) => {
     return await API.get(`/tables/${tableId}`);
 };
 
+export const fetchCurrentOrdersByTableId = async (tableId) => {
+    return await API.get(`/tables/${tableId}/orders`, {params: {current_only: true}});
+};
+
+// ORDERS
 export const fetchOrders = async (params) => {
     return await API.get('/orders', {params: params});
 };
 
 export const fetchOrderById = async (orderId) => {
     return await API.get(`/orders/${orderId}`);
-};
-
-export const fetchCurrentOrdersByTableId = async (tableId) => {
-    return await API.get(`/tables/${tableId}/orders`, {params: {current_only: true}});
 };
 
 export const createOrder = async (orderData) => {
@@ -100,6 +112,7 @@ export const changeOrderInfo = async (orderId, data) => {
     return await API.patch(`/orders/${orderId}`, data);
 };
 
+// ORDER ITEMS
 export const fetchOrderItemsByOrderId = async (orderId) => {
     return await API.get(`/orders/${orderId}/menu-items`);
 };
@@ -110,12 +123,4 @@ export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity = n
 
 export const deleteOrderItem = async (orderId, itemId) => {
     return await API.delete(`/orders/${orderId}/menu-items/${itemId}`);
-};
-
-export const fetchUsers = async () => {
-    return await API.get('/users');
-};
-
-export const fetchUserById = async (userId) => {
-    return await API.get(`/users/${userId}`);
 };
