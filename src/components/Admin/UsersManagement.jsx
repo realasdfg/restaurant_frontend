@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Typography, Table, Modal, Tag, Input, Select, message} from "antd";
-import {fetchUserById, fetchUsers, updateUserById} from "../../services/api.js";
+import {Typography, Table, Modal, Tag, Input, Select, message, Button} from "antd";
+import {deleteUserById, fetchUserById, fetchUsers, updateUserById} from "../../services/api.js";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 
 const {Title} = Typography;
@@ -116,10 +116,29 @@ const UsersManagement = () => {
             setUsers(users.map(user => (user.id === selectedUser.id ? editedUser : user)));
             setFilteredUsers(filteredUsers.map(user => (user.id === selectedUser.id ? editedUser : user)));
             setIsModalOpen(false);
+            setSelectedUser({})
         } catch (error) {
             message.error("Błąd podczas zapisywania danych użytkownika.");
             console.error("User edit error:", error);
         }
+    };
+
+    const handleRemoveUser = async () => {
+        try {
+            await deleteUserById(selectedUser.id);
+            message.success("Użytkownik usunięty.");
+            setUsers(prev => prev.filter(user => user.id !== selectedUser.id));
+            setFilteredUsers(prev => prev.filter(user => user.id !== selectedUser.id));
+            setIsModalOpen(false);
+            setSelectedUser({})
+        } catch (error) {
+            message.error("Błąd podczas usuwania użytkownika.");
+            console.error("User remove error:", error);
+        }
+    };
+
+    const handleAddUser = async () => {
+
     };
 
     const handleSearch = (value) => {
@@ -151,6 +170,10 @@ const UsersManagement = () => {
                     enterButton
                     className="lg:w-4/6 self-center px-4"
                 />
+                <Button color="blue" variant="solid" className="w-1/3 mt-2 self-center"
+                        onClick={handleAddUser}>
+                    Dodaj użytkownika
+                </Button>
                 <div className="overflow-x-auto">
                     <Table
                         dataSource={filteredUsers}
@@ -174,7 +197,10 @@ const UsersManagement = () => {
                     title={<div className="text-xl text-center">Użytkownik #{selectedUser.id}</div>}
                     centered
                     open={isModalOpen}
-                    onCancel={() => setIsModalOpen(false)}
+                    onCancel={() => {
+                        setIsModalOpen(false);
+                        setSelectedUser({})
+                    }}
                     className="font-mono"
                     footer={(_, {OkBtn, CancelBtn}) => (
                         <div className="flex justify-between">
@@ -187,78 +213,88 @@ const UsersManagement = () => {
                     okText="Zachowaj"
                     cancelText="Anuluj"
                 >
-                    <Table
-                        pagination={false}
-                        showHeader={false}
-                        bordered
-                        dataSource={[
-                            {
-                                key: 'username',
-                                label: <div className="text-base font-semibold">Nazwa użytkownika:</div>,
-                                value: (
-                                    <Input
-                                        value={editedUser?.username || ''}
-                                        onChange={(e) => handleInputChange('username', e.target.value)}
-                                    />
-                                ),
-                            },
-                            {
-                                key: 'first_name',
-                                label: <div className="text-base font-semibold">Imię:</div>,
-                                value: (
-                                    <Input
-                                        value={editedUser?.first_name || ''}
-                                        onChange={(e) => handleInputChange('first_name', e.target.value)}
-                                    />
-                                ),
-                            },
-                            {
-                                key: 'last_name',
-                                label: <div className="text-base font-semibold">Nazwisko:</div>,
-                                value: (
-                                    <Input
-                                        value={editedUser?.last_name || ''}
-                                        onChange={(e) => handleInputChange('last_name', e.target.value)}
-                                    />
-                                ),
-                            },
-                            {
-                                key: 'role',
-                                label: <div className="text-base font-semibold">Rola:</div>,
-                                value: (
-                                    <>
-                                        {currentUser.id === selectedUser.id
-                                            ? <Tag color={selectedUser.role === 'admin' ? 'red' : 'green'}
-                                                   className="font-semibold">{selectedUser.role.toUpperCase()}</Tag>
-                                            : <Select
-                                                value={editedUser?.role}
-                                                className="w-full"
-                                                onChange={(value) => handleInputChange('role', value)}
-                                                options={[
-                                                    {value: 'admin', label: 'ADMIN'},
-                                                    {value: 'staff', label: 'STAFF'},
-                                                ]}
-                                            />
-                                        }
-                                    </>
-                                ),
-                            },
-                            {
-                                key: 'new_password',
-                                label: <div className="text-base font-semibold">Nowe hasło:</div>,
-                                value: (
-                                    <Input
-                                        value={editedUser?.password || ''}
-                                        onChange={(e) => handleInputChange('password', e.target.value)}
-                                    />
-                                ),
-                            },
-                        ]}
-                        columns={[
-                            {dataIndex: 'label', key: 'label', className: 'w-1/2',},
-                            {dataIndex: 'value', key: 'value'},
-                        ]}
-                    />
+                    <div className="flex flex-col justify-center">
+                        <Table
+                            pagination={false}
+                            showHeader={false}
+                            bordered
+                            dataSource={[
+                                {
+                                    key: 'username',
+                                    label: <div className="text-base font-semibold">Nazwa użytkownika:</div>,
+                                    value: (
+                                        <Input
+                                            value={editedUser?.username || ''}
+                                            onChange={(e) => handleInputChange('username', e.target.value)}
+                                        />
+                                    ),
+                                },
+                                {
+                                    key: 'first_name',
+                                    label: <div className="text-base font-semibold">Imię:</div>,
+                                    value: (
+                                        <Input
+                                            value={editedUser?.first_name || ''}
+                                            onChange={(e) => handleInputChange('first_name', e.target.value)}
+                                        />
+                                    ),
+                                },
+                                {
+                                    key: 'last_name',
+                                    label: <div className="text-base font-semibold">Nazwisko:</div>,
+                                    value: (
+                                        <Input
+                                            value={editedUser?.last_name || ''}
+                                            onChange={(e) => handleInputChange('last_name', e.target.value)}
+                                        />
+                                    ),
+                                },
+                                {
+                                    key: 'role',
+                                    label: <div className="text-base font-semibold">Rola:</div>,
+                                    value: (
+                                        <>
+                                            {currentUser.id === selectedUser.id
+                                                ? <Tag color={selectedUser.role === 'admin' ? 'red' : 'green'}
+                                                       className="font-semibold">{selectedUser.role.toUpperCase()}</Tag>
+                                                : <Select
+                                                    value={editedUser?.role}
+                                                    className="w-full"
+                                                    onChange={(value) => handleInputChange('role', value)}
+                                                    options={[
+                                                        {value: 'admin', label: 'ADMIN'},
+                                                        {value: 'staff', label: 'STAFF'},
+                                                    ]}
+                                                />
+                                            }
+                                        </>
+                                    ),
+                                },
+                                {
+                                    key: 'new_password',
+                                    label: <div className="text-base font-semibold">Nowe hasło:</div>,
+                                    value: (
+                                        <Input
+                                            value={editedUser?.password || ''}
+                                            onChange={(e) => handleInputChange('password', e.target.value)}
+                                        />
+                                    ),
+                                },
+                            ]}
+                            columns={[
+                                {dataIndex: 'label', key: 'label', className: 'w-1/2',},
+                                {dataIndex: 'value', key: 'value'},
+                            ]}
+                        />
+                        {currentUser.id !== selectedUser.id
+                            ?
+                            <Button color="danger" variant="solid" className="w-1/3 mt-2 self-center"
+                                    onClick={handleRemoveUser}>
+                                Usuń użytkownika
+                            </Button>
+                            : null
+                        }
+                    </div>
                 </Modal>
             }
         </div>

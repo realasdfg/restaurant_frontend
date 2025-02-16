@@ -60,8 +60,16 @@ export const fetchUserById = async (userId) => {
     return await API.get(`/users/${userId}`);
 };
 
-export const updateUserById = async (userId, user_data) => {
-    return await API.patch(`/users/${userId}`, user_data);
+export const updateUserById = async (userId, userData) => {
+    return await API.patch(`/users/${userId}`, userData);
+};
+
+export const deleteUserById = async (userId) => {
+    return await API.patch(`/users/${userId}`);
+};
+
+export const addUser = async (userId, userData) => {
+    return await API.patch(`/users/${userId}`, userData);
 };
 
 
