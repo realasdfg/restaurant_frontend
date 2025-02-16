@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {Header} from 'antd/es/layout/layout.js';
-import {Button, Drawer} from 'antd';
+import {Button, Drawer, Layout} from 'antd';
 import CreateOrderDropdown from "../Staff/CreateOrderDropdown.jsx";
 import {HomeOutlined, UserOutlined} from "@ant-design/icons";
 import {useAuth} from "../../context/AuthContext.jsx";
 import {fetchUserById} from "../../services/api.js";
+
+const {Header} = Layout;
 
 const SHeader = ({isAdminPage}) => {
     const navigate = useNavigate();

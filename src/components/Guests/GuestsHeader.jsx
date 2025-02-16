@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import {Header} from 'antd/es/layout/layout.js';
 import {MenuOutlined} from '@ant-design/icons';
-import {Button, Drawer, Menu} from 'antd';
+import {Button, Drawer, Layout, Menu} from 'antd';
+
+const {Header} = Layout;
 
 const GuestsHeader = ({categories, onCategoryClick, isMenu}) => {
     const [visible, setVisible] = useState(false);

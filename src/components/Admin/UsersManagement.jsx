@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import {Typography, Table, Modal, Tag, Input, Select, message} from "antd";
 import {fetchUserById, fetchUsers, updateUserById} from "../../services/api.js";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
-import Search from "antd/es/input/Search.js";
 
 const {Title} = Typography;
+const {Search} = Input;
 
 const UsersManagement = () => {
     const [users, setUsers] = useState([]);
