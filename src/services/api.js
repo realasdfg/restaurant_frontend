@@ -68,8 +68,8 @@ export const deleteUserById = async (userId) => {
     return await API.patch(`/users/${userId}`);
 };
 
-export const addUser = async (userId, userData) => {
-    return await API.patch(`/users/${userId}`, userData);
+export const addUser = async (userData) => {
+    return await API.patch('/users', userData);
 };
 
 

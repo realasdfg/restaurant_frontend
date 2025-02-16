@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {Typography, Table, Modal, Tag, Input, Select, message, Button} from "antd";
+import {Typography, Table, Modal, Tag, Input, message, Button} from "antd";
 import {deleteUserById, fetchUserById, fetchUsers, updateUserById} from "../../services/api.js";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
+import UserForm from "./UserForm.jsx";
 
 const {Title} = Typography;
 const {Search} = Input;
@@ -9,13 +10,12 @@ const {Search} = Input;
 const UsersManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentUser, setCurrentUser] = useState({});
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState({});
-    const [isOkDisabled, setIsOkDisabled] = useState(true);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
-    const [editedUser, setEditedUser] = useState({});
 
 
     useEffect(() => {
@@ -79,44 +79,31 @@ const UsersManagement = () => {
     const handleRowClick = (record) => ({
         onClick: () => {
             setSelectedUser({...record, 'password': ''});
-            setEditedUser({...record, 'password': ''});
-            setIsModalOpen(true)
+            setIsEditModalOpen(true)
         },
         style: {cursor: "pointer"},
     });
 
-    const handleInputChange = (field, value) => {
-        setEditedUser(prev => {
-            const updatedUser = {...prev, [field]: value};
-            if (
-                updatedUser.username.length < 3 || updatedUser.username.length > 30 ||
-                updatedUser.first_name.length < 1 || updatedUser.first_name.length > 30 ||
-                updatedUser.last_name.length < 1 || updatedUser.last_name.length > 30 ||
-                (updatedUser.password && updatedUser.password.length < 8) ||
-                JSON.stringify(updatedUser) === JSON.stringify(selectedUser)
-            ) {
-                setIsOkDisabled(true);
-            } else {
-                setIsOkDisabled(false);
-            }
-            return updatedUser;
-        });
-    };
-
-    const handleConfirmUserChanges = async () => {
+    const handleConfirmUserChanges = async (userData) => {
         try {
             await updateUserById(selectedUser.id, {
-                username: editedUser.username,
-                first_name: editedUser.first_name,
-                last_name: editedUser.last_name,
-                role: editedUser.role,
-                password: editedUser.password === '' ? null : editedUser.password,
+                username: userData.username,
+                first_name: userData.first_name,
+                last_name: userData.last_name,
+                role: userData.role,
+                password: userData.password === '' ? null : userData.password,
             });
             message.success("Dane użytkownika zostały zapisane.");
-            setUsers(users.map(user => (user.id === selectedUser.id ? editedUser : user)));
-            setFilteredUsers(filteredUsers.map(user => (user.id === selectedUser.id ? editedUser : user)));
-            setIsModalOpen(false);
-            setSelectedUser({})
+            setUsers(users.map(user => (user.id === selectedUser.id ? {
+                ...user, ...userData,
+                'password': null
+            } : user)));
+            setFilteredUsers(filteredUsers.map(user => (user.id === selectedUser.id ? {
+                ...user, ...userData,
+                'password': null
+            } : user)));
+            setIsEditModalOpen(false);
+            setSelectedUser(null)
         } catch (error) {
             message.error("Błąd podczas zapisywania danych użytkownika.");
             console.error("User edit error:", error);
@@ -129,8 +116,8 @@ const UsersManagement = () => {
             message.success("Użytkownik usunięty.");
             setUsers(prev => prev.filter(user => user.id !== selectedUser.id));
             setFilteredUsers(prev => prev.filter(user => user.id !== selectedUser.id));
-            setIsModalOpen(false);
-            setSelectedUser({})
+            setIsEditModalOpen(false);
+            setSelectedUser(null)
         } catch (error) {
             message.error("Błąd podczas usuwania użytkownika.");
             console.error("User remove error:", error);
@@ -171,7 +158,7 @@ const UsersManagement = () => {
                     className="lg:w-4/6 self-center px-4"
                 />
                 <Button color="blue" variant="solid" className="w-1/3 mt-2 self-center"
-                        onClick={handleAddUser}>
+                        onClick={() => setIsAddModalOpen(true)}>
                     Dodaj użytkownika
                 </Button>
                 <div className="overflow-x-auto">
@@ -196,99 +183,20 @@ const UsersManagement = () => {
                 <Modal
                     title={<div className="text-xl text-center">Użytkownik #{selectedUser.id}</div>}
                     centered
-                    open={isModalOpen}
+                    open={isEditModalOpen}
                     onCancel={() => {
-                        setIsModalOpen(false);
-                        setSelectedUser({})
+                        setIsEditModalOpen(false);
+                        setSelectedUser(null)
                     }}
                     className="font-mono"
-                    footer={(_, {OkBtn, CancelBtn}) => (
-                        <div className="flex justify-between">
-                            <CancelBtn/>
-                            <OkBtn/>
-                        </div>
-                    )}
-                    onOk={handleConfirmUserChanges}
-                    okButtonProps={{disabled: isOkDisabled}}
-                    okText="Zachowaj"
-                    cancelText="Anuluj"
+                    footer={null}
                 >
                     <div className="flex flex-col justify-center">
-                        <Table
-                            pagination={false}
-                            showHeader={false}
-                            bordered
-                            dataSource={[
-                                {
-                                    key: 'username',
-                                    label: <div className="text-base font-semibold">Nazwa użytkownika:</div>,
-                                    value: (
-                                        <Input
-                                            value={editedUser?.username || ''}
-                                            onChange={(e) => handleInputChange('username', e.target.value)}
-                                        />
-                                    ),
-                                },
-                                {
-                                    key: 'first_name',
-                                    label: <div className="text-base font-semibold">Imię:</div>,
-                                    value: (
-                                        <Input
-                                            value={editedUser?.first_name || ''}
-                                            onChange={(e) => handleInputChange('first_name', e.target.value)}
-                                        />
-                                    ),
-                                },
-                                {
-                                    key: 'last_name',
-                                    label: <div className="text-base font-semibold">Nazwisko:</div>,
-                                    value: (
-                                        <Input
-                                            value={editedUser?.last_name || ''}
-                                            onChange={(e) => handleInputChange('last_name', e.target.value)}
-                                        />
-                                    ),
-                                },
-                                {
-                                    key: 'role',
-                                    label: <div className="text-base font-semibold">Rola:</div>,
-                                    value: (
-                                        <>
-                                            {currentUser.id === selectedUser.id
-                                                ? <Tag color={selectedUser.role === 'admin' ? 'red' : 'green'}
-                                                       className="font-semibold">{selectedUser.role.toUpperCase()}</Tag>
-                                                : <Select
-                                                    value={editedUser?.role}
-                                                    className="w-full"
-                                                    onChange={(value) => handleInputChange('role', value)}
-                                                    options={[
-                                                        {value: 'admin', label: 'ADMIN'},
-                                                        {value: 'staff', label: 'STAFF'},
-                                                    ]}
-                                                />
-                                            }
-                                        </>
-                                    ),
-                                },
-                                {
-                                    key: 'new_password',
-                                    label: <div className="text-base font-semibold">Nowe hasło:</div>,
-                                    value: (
-                                        <Input
-                                            value={editedUser?.password || ''}
-                                            onChange={(e) => handleInputChange('password', e.target.value)}
-                                        />
-                                    ),
-                                },
-                            ]}
-                            columns={[
-                                {dataIndex: 'label', key: 'label', className: 'w-1/2',},
-                                {dataIndex: 'value', key: 'value'},
-                            ]}
-                        />
+                        <UserForm isEditing={true} userData={selectedUser} currentUser={currentUser}
+                                  onSubmit={handleConfirmUserChanges}/>
                         {currentUser.id !== selectedUser.id
                             ?
-                            <Button color="danger" variant="solid" className="w-1/3 mt-2 self-center"
+                            <Button color="danger" variant="solid" className="w-full mt-2 self-center"
                                     onClick={handleRemoveUser}>
                                 Usuń użytkownika
                             </Button>
@@ -297,6 +205,20 @@ const UsersManagement = () => {
                     </div>
                 </Modal>
             }
+            <Modal
+                title={<div className="text-xl text-center">Nowy użytkownik</div>}
+                centered
+                open={isAddModalOpen}
+                onCancel={() => {
+                    setIsAddModalOpen(false);
+                }}
+                className="font-mono"
+                footer={null}
+            >
+                <div className="flex flex-col justify-center">
+                    <UserForm isEditing={false} onSubmit={handleAddUser}/>
+                </div>
+            </Modal>
         </div>
     );
 };
