@@ -4,7 +4,7 @@ import CurrentOrders from "../components/Staff/CurrentOrders.jsx";
 import OrderDetails from "../components/Staff/OrderDetails.jsx";
 import SHeader from "../components/shared/SHeader.jsx";
 import NotFoundPage from "./NotFoundPage.jsx";
-import OrdersArchive from "../components/Staff/OrdersArchive.jsx";
+import OrdersArchive from "../components/Admin/OrdersArchive.jsx";
 
 
 const StaffPage = () => {

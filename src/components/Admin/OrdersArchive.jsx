@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {Tag, Typography, DatePicker, Select, Button} from "antd";
-import {fetchOrders, fetchTables, fetchUsers} from "../../services/api";
-import LoadingSpinner from "../shared/LoadingSpinner";
-import OrdersTable from "./OrdersTable.jsx";
+import {fetchOrders, fetchTables, fetchUsers} from "../../services/api.js";
+import LoadingSpinner from "../shared/LoadingSpinner.jsx";
+import OrdersTable from "../Staff/OrdersTable.jsx";
 import dayjs from "dayjs";
 
 const {Title} = Typography;
