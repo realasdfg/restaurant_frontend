@@ -14,8 +14,7 @@ const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}
     return (
         <Form
             form={form}
-            name="user-form"
-            initialValues={isEditing ? userData : {role: 'STAFF'}}
+            initialValues={isEditing ? userData : {role: 'staff'}}
             onFinish={handleFinish}
             layout="vertical"
         >
@@ -54,8 +53,8 @@ const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}
                 rules={[{required: true, message: 'Wybierz rolę!'}]}
             >
                 <Select disabled={isEditing && currentUser.id === userData.id}>
-                    <Option value="admin">ADMIN</Option>
                     <Option value="staff">STAFF</Option>
+                    <Option value="admin">ADMIN</Option>
                 </Select>
             </Form.Item>
 

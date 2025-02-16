@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Typography, Table, Modal, Tag, Input, message, Button} from "antd";
-import {deleteUserById, fetchUserById, fetchUsers, updateUserById} from "../../services/api.js";
+import {addUser, deleteUserById, fetchUserById, fetchUsers, updateUserById} from "../../services/api.js";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 import UserForm from "./UserForm.jsx";
 
@@ -26,9 +26,9 @@ const UsersManagement = () => {
                     fetchUsers(),
                     fetchUserById('me')
                 ]);
-                setUsers(usersResponse.data);
+                setUsers(usersResponse.data.sort((a, b) => b.id - a.id));
                 setCurrentUser(currentUserResponse.data);
-                setFilteredUsers(usersResponse.data);
+                setFilteredUsers(usersResponse.data.sort((a, b) => b.id - a.id));
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -124,8 +124,23 @@ const UsersManagement = () => {
         }
     };
 
-    const handleAddUser = async () => {
-
+    const handleAddUser = async (userData) => {
+        try {
+            const newUserResponse = await addUser({
+                username: userData.username,
+                first_name: userData.first_name,
+                last_name: userData.last_name,
+                role: userData.role,
+                password: userData.password,
+            });
+            message.success("Nowy użytkownik został utworzony.");
+            setUsers([newUserResponse.data, ...users]);
+            setFilteredUsers([newUserResponse.data, ...filteredUsers]);
+            setIsAddModalOpen(false);
+        } catch (error) {
+            message.error("Błąd podczas tworzenia nowego użytkownika.");
+            console.error("User creation error:", error);
+        }
     };
 
     const handleSearch = (value) => {
@@ -157,7 +172,7 @@ const UsersManagement = () => {
                     enterButton
                     className="lg:w-4/6 self-center px-4"
                 />
-                <Button color="blue" variant="solid" className="w-1/3 mt-2 self-center"
+                <Button color="blue" variant="solid" className="w-1/4 mx-4"
                         onClick={() => setIsAddModalOpen(true)}>
                     Dodaj użytkownika
                 </Button>

@@ -65,11 +65,11 @@ export const updateUserById = async (userId, userData) => {
 };
 
 export const deleteUserById = async (userId) => {
-    return await API.patch(`/users/${userId}`);
+    return await API.delete(`/users/${userId}`);
 };
 
 export const addUser = async (userData) => {
-    return await API.patch('/users', userData);
+    return await API.post('/users', userData);
 };
 
 
