@@ -172,7 +172,7 @@ const UsersManagement = () => {
                     enterButton
                     className="lg:w-4/6 self-center px-4"
                 />
-                <Button color="blue" variant="solid" className="w-1/4 mx-4"
+                <Button color="blue" variant="solid" className="w-1/3 mx-4 self-center"
                         onClick={() => setIsAddModalOpen(true)}>
                     Dodaj użytkownika
                 </Button>
