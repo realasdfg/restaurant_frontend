@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Typography, Table, Modal, Tag, Input, Select, message} from "antd";
-import {fetchUsers, updateUserById} from "../../services/api.js";
+import {fetchUserById, fetchUsers, updateUserById} from "../../services/api.js";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 import Search from "antd/es/input/Search.js";
 
@@ -9,19 +9,25 @@ const {Title} = Typography;
 const UsersManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState({});
     const [isOkDisabled, setIsOkDisabled] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [editedUser, setEditedUser] = useState({});
 
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const usersResponse = await fetchUsers();
+                const [usersResponse, currentUserResponse] = await Promise.all([
+                    fetchUsers(),
+                    fetchUserById('me')
+                ]);
                 setUsers(usersResponse.data);
+                setCurrentUser(currentUserResponse.data);
                 setFilteredUsers(usersResponse.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -72,27 +78,49 @@ const UsersManagement = () => {
 
     const handleRowClick = (record) => ({
         onClick: () => {
-            setSelectedUser(record);
-            console.log(record)
+            setSelectedUser({...record, 'password': ''});
+            setEditedUser({...record, 'password': ''});
             setIsModalOpen(true)
         },
         style: {cursor: "pointer"},
     });
 
-    // const handleConfirmUserChanges = async () => {
-    //     try {
-    //         await updateUserById(/*userId*/, {
-    //             username: null,
-    //             first_name: null,
-    //             last_name: null,
-    //             role: null,
-    //             password: null
-    //         })
-    //     } catch (error) {
-    //         message.error('Błąd podczas zachowanie danych użytkownika');
-    //         console.error('User edit error:', error);
-    //     }
-    // }
+    const handleInputChange = (field, value) => {
+        setEditedUser(prev => {
+            const updatedUser = {...prev, [field]: value};
+            if (
+                updatedUser.username.length < 3 || updatedUser.username.length > 30 ||
+                updatedUser.first_name.length < 1 || updatedUser.first_name.length > 30 ||
+                updatedUser.last_name.length < 1 || updatedUser.last_name.length > 30 ||
+                (updatedUser.password && updatedUser.password.length < 8) ||
+                JSON.stringify(updatedUser) === JSON.stringify(selectedUser)
+            ) {
+                setIsOkDisabled(true);
+            } else {
+                setIsOkDisabled(false);
+            }
+            return updatedUser;
+        });
+    };
+
+    const handleConfirmUserChanges = async () => {
+        try {
+            await updateUserById(selectedUser.id, {
+                username: editedUser.username,
+                first_name: editedUser.first_name,
+                last_name: editedUser.last_name,
+                role: editedUser.role,
+                password: editedUser.password === '' ? null : editedUser.password,
+            });
+            message.success("Dane użytkownika zostały zapisane.");
+            setUsers(users.map(user => (user.id === selectedUser.id ? editedUser : user)));
+            setFilteredUsers(filteredUsers.map(user => (user.id === selectedUser.id ? editedUser : user)));
+            setIsModalOpen(false);
+        } catch (error) {
+            message.error("Błąd podczas zapisywania danych użytkownika.");
+            console.error("User edit error:", error);
+        }
+    };
 
     const handleSearch = (value) => {
         setSearchQuery(value);
@@ -169,8 +197,8 @@ const UsersManagement = () => {
                                 label: <div className="text-base font-semibold">Nazwa użytkownika:</div>,
                                 value: (
                                     <Input
-                                        value={selectedUser.username}
-                                        // onChange={handleCashChange}
+                                        value={editedUser?.username || ''}
+                                        onChange={(e) => handleInputChange('username', e.target.value)}
                                     />
                                 ),
                             },
@@ -179,8 +207,8 @@ const UsersManagement = () => {
                                 label: <div className="text-base font-semibold">Imię:</div>,
                                 value: (
                                     <Input
-                                        value={selectedUser.first_name}
-                                        // onChange={handleCashChange}
+                                        value={editedUser?.first_name || ''}
+                                        onChange={(e) => handleInputChange('first_name', e.target.value)}
                                     />
                                 ),
                             },
@@ -189,8 +217,8 @@ const UsersManagement = () => {
                                 label: <div className="text-base font-semibold">Nazwisko:</div>,
                                 value: (
                                     <Input
-                                        value={selectedUser.last_name}
-                                        // onChange={handleCashChange}
+                                        value={editedUser?.last_name || ''}
+                                        onChange={(e) => handleInputChange('last_name', e.target.value)}
                                     />
                                 ),
                             },
@@ -198,18 +226,21 @@ const UsersManagement = () => {
                                 key: 'role',
                                 label: <div className="text-base font-semibold">Rola:</div>,
                                 value: (
-                                    <Select defaultValue={selectedUser.role} className="w-full"
-                                            options={[
-                                                {
-                                                    value: 'admin',
-                                                    label: 'ADMIN',
-                                                },
-                                                {
-                                                    value: 'staff',
-                                                    label: 'STAFF',
-                                                },
-                                            ]}
-                                    />
+                                    <>
+                                        {currentUser.id === selectedUser.id
+                                            ? <Tag color={selectedUser.role === 'admin' ? 'red' : 'green'}
+                                                   className="font-semibold">{selectedUser.role.toUpperCase()}</Tag>
+                                            : <Select
+                                                value={editedUser?.role}
+                                                className="w-full"
+                                                onChange={(value) => handleInputChange('role', value)}
+                                                options={[
+                                                    {value: 'admin', label: 'ADMIN'},
+                                                    {value: 'staff', label: 'STAFF'},
+                                                ]}
+                                            />
+                                        }
+                                    </>
                                 ),
                             },
                             {
@@ -217,8 +248,8 @@ const UsersManagement = () => {
                                 label: <div className="text-base font-semibold">Nowe hasło:</div>,
                                 value: (
                                     <Input
-                                        // value={selectedUser.last_name}
-                                        // onChange={handleCashChange}
+                                        value={editedUser?.password || ''}
+                                        onChange={(e) => handleInputChange('password', e.target.value)}
                                     />
                                 ),
                             },
