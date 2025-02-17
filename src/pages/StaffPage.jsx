@@ -6,6 +6,7 @@ import SHeader from "../components/shared/SHeader.jsx";
 import NotFoundPage from "./NotFoundPage.jsx";
 import OrdersArchive from "../components/Admin/OrdersArchive.jsx";
 import UsersManagement from "../components/Admin/UsersManagement.jsx";
+import TablesManagement from "../components/Admin/TablesManagement.jsx";
 
 
 const StaffPage = () => {
@@ -23,9 +24,8 @@ const StaffPage = () => {
                             <Route path="orders" element={<OrdersArchive/>}/>
                             <Route path="orders/:orderId" element={<OrderDetails isAdmin={isAdminPage}/>}/>
                             <Route path="users" element={<UsersManagement/>}/>
-                            {/*<Route path="users/:userId" element={<UserDetails/>}/>*/}
+                            <Route path="tables" element={<TablesManagement/>}/>
                             {/*<Route path="menu" element={<MenuManagement/>}/>*/}
-                            {/*<Route path="tables" element={<MenuManagement/>}/>*/}
                             {/*<Route path="statistics" element={<Statistics/>}/>*/}
                         </>
                     ) : (

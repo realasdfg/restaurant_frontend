@@ -98,6 +98,18 @@ export const fetchTableById = async (tableId) => {
     return await API.get(`/tables/${tableId}`);
 };
 
+export const addTableById = async (tableData) => {
+    return await API.post('/tables', tableData);
+};
+
+export const updateTableById = async (tableId, tableData) => {
+    return await API.put(`/tables/${tableId}`, tableData);
+};
+
+export const deleteTableById = async (tableId) => {
+    return await API.delete(`/tables/${tableId}`);
+};
+
 export const fetchCurrentOrdersByTableId = async (tableId) => {
     return await API.get(`/tables/${tableId}/orders`, {params: {current_only: true}});
 };

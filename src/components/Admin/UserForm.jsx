@@ -25,7 +25,7 @@ const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}
                     required: true,
                     min: 3,
                     max: 30,
-                    message: 'Nazwa użytkownika musi zawierać od 1 do 30 znaków!'
+                    message: 'Nazwa użytkownika musi zawierać od 3 do 30 znaków!'
                 }]}
             >
                 <Input/>
