@@ -54,7 +54,7 @@ const TablesManagement = () => {
         style: {cursor: "pointer"},
     });
 
-    const handleConfirmTableChanges = async (tableData) => {
+    const handleEditTable = async (tableData) => {
         const isDuplicate = tables.some(table => table.name === tableData.name && table.id !== selectedTable.id);
         if (isDuplicate) {
             message.error("Stolik o takiej nazwie już istnieje!");
@@ -149,7 +149,7 @@ const TablesManagement = () => {
                         <Form
                             form={form}
                             initialValues={selectedTable}
-                            onFinish={handleConfirmTableChanges}
+                            onFinish={handleEditTable}
                             layout="vertical"
                         >
                             <Form.Item

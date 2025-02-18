@@ -80,7 +80,13 @@ const UsersManagement = () => {
         style: {cursor: "pointer"},
     });
 
-    const handleConfirmUserChanges = async (userData) => {
+    const handleEditUser = async (userData) => {
+        const isDuplicate = users.some(user => user.username === userData.username && user.id !== selectedUser.id);
+        if (isDuplicate) {
+            message.error("Użytkownik o takiej nazwie już istnieje!");
+            return;
+        }
+
         try {
             await updateUserById(selectedUser.id, {
                 username: userData.username,
@@ -121,6 +127,12 @@ const UsersManagement = () => {
     };
 
     const handleAddUser = async (userData) => {
+        const isDuplicate = users.some(user => user.username === userData.username);
+        if (isDuplicate) {
+            message.error("Użytkownik o takiej nazwie już istnieje!");
+            return;
+        }
+
         try {
             const newUserResponse = await addUser({
                 username: userData.username,
@@ -203,7 +215,7 @@ const UsersManagement = () => {
                 >
                     <div className="flex flex-col justify-center">
                         <UserForm isEditing={true} userData={selectedUser} currentUser={currentUser}
-                                  onSubmit={handleConfirmUserChanges}/>
+                                  onSubmit={handleEditUser}/>
                         {currentUser.id !== selectedUser.id
                             ?
                             <Button color="danger" variant="solid" className="w-full mt-2 self-center"
