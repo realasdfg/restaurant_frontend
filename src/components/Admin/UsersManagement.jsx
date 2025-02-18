@@ -66,11 +66,7 @@ const UsersManagement = () => {
             dataIndex: "role",
             key: "role",
             className: "bg-white",
-            sorter: (a, b) => {
-                const nameA = a.role || "";
-                const nameB = b.role || "";
-                return nameA.localeCompare(nameB, undefined, {numeric: true});
-            },
+            sorter: (a, b) => a.role.localeCompare(b.role),
             render: (role) => <Tag color={role === 'admin' ? 'red' : 'green'}
                                    className="font-semibold">{role.toUpperCase()}</Tag>,
         },

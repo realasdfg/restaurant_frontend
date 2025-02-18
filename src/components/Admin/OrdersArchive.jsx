@@ -124,7 +124,7 @@ const CurrentOrders = () => {
             dataIndex: "type",
             key: "type",
             className: "w-1 bg-white",
-            sorter: (a, b) => a.type.localeCompare(b.type, undefined, {numeric: true}),
+            sorter: (a, b) => a.type.localeCompare(b.type),
             render: (type) => (
                 <Tag color={type === "dinein" ? "green" : "blue"}>
                     {type === "dinein" ? "DINE IN" : "TO GO"}

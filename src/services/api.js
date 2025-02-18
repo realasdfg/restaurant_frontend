@@ -48,6 +48,7 @@ API.interceptors.response.use(
 );
 
 // USERS
+
 export const login = async (username, password) => {
     return await API.post('/auth/login', {username, password});
 };
@@ -74,12 +75,14 @@ export const addUser = async (userData) => {
 
 
 // CATEGORIES
+
 export const fetchCategories = async () => {
     return await API.get('/menu-categories');
 };
 
 
 // MENU ITEMS
+
 export const fetchMenuItems = async (available = null) => {
     return await API.get('/menu-items', {params: {available: available}});
 };
@@ -90,6 +93,7 @@ export const fetchMenuItemById = async (menuItemId) => {
 
 
 // TABLES
+
 export const fetchTables = async () => {
     return await API.get('/tables');
 };
@@ -116,6 +120,7 @@ export const fetchCurrentOrdersByTableId = async (tableId) => {
 
 
 // ORDERS
+
 export const fetchOrders = async (params) => {
     return await API.get('/orders', {params: params});
 };
@@ -142,6 +147,7 @@ export const changeOrderInfo = async (orderId, data) => {
 
 
 // ORDER ITEMS
+
 export const fetchOrderItemsByOrderId = async (orderId) => {
     return await API.get(`/orders/${orderId}/menu-items`);
 };

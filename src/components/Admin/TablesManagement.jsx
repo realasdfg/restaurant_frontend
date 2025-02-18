@@ -19,7 +19,7 @@ const TablesManagement = () => {
             try {
                 setLoading(true);
                 const usersResponse = await fetchTables()
-                setTables(usersResponse.data.sort((a, b) => a.name.localeCompare(b.name)));
+                setTables(usersResponse.data.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true})));
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
