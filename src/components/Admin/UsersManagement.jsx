@@ -201,7 +201,6 @@ const UsersManagement = () => {
                     open={isEditModalOpen}
                     onCancel={() => {
                         setIsEditModalOpen(false);
-                        setSelectedUser(null)
                     }}
                     className="font-mono"
                     footer={null}

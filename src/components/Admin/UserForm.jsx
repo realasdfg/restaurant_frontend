@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Button, Form, Input, Select} from 'antd';
 
 const {Option} = Select;
 
 const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}) => {
     const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (userData) {
+            form.setFieldsValue(userData);
+        }
+    }, [userData, form]);
 
     const handleFinish = (values) => {
         onSubmit(values);

@@ -83,7 +83,7 @@ const TablesManagement = () => {
             setIsEditModalOpen(false);
             setSelectedTable(null)
         } catch (error) {
-            message.error("Błąd podczas usuwania stolika.");
+            message.error("Błąd podczas usuwania stolika. Możliwe jest, że stolik jest zajęty.");
             console.error("Table remove error:", error);
         }
     };
@@ -172,8 +172,8 @@ const TablesManagement = () => {
                         </Form>
 
                         <Button color="danger" variant="solid" className="w-full mt-2 self-center"
-                                onClick={handleRemoveTable}>
-                            Usuń stolik
+                                onClick={handleRemoveTable} disabled={!selectedTable.is_free}>
+                            {selectedTable.is_free ? 'Usuń stolik' : 'Nie można usunąć zajęty stolik'}
                         </Button>
 
                     </div>
