@@ -80,6 +80,18 @@ export const fetchCategories = async () => {
     return await API.get('/menu-categories');
 };
 
+export const updateCategoryById = async (categoryId, categoryData) => {
+    return await API.patch(`/menu-categories/${categoryId}`, categoryData);
+};
+
+export const deleteCategoryById = async (categoryId) => {
+    return await API.delete(`/menu-categories/${categoryId}`);
+};
+
+export const addCategory = async (categoryData) => {
+    return await API.post('/menu-categories', categoryData);
+};
+
 
 // MENU ITEMS
 

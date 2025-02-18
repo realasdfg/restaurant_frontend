@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Typography, Table, Modal, Tag, Input, message, Button} from "antd";
+import {Typography, Table, Modal, Tag, Input, message, Button, Form} from "antd";
 import {
+    addCategory,
     addMenuItem,
+    deleteCategoryById,
     deleteMenuItemById,
     fetchCategories,
     fetchMenuItems,
+    updateCategoryById,
     updateMenuItemById
 } from "../../services/api.js";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
@@ -14,6 +17,7 @@ const {Title} = Typography;
 const {Search} = Input;
 
 const MenuManagement = () => {
+    const [form] = Form.useForm();
     const [loading, setLoading] = useState(true);
     const [menuItems, setMenuItems] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -23,6 +27,7 @@ const MenuManagement = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredCategories, setFilteredCategories] = useState([]);
 
+    const [addType, setAddType] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -127,8 +132,7 @@ const MenuManagement = () => {
             const image =
                 menuItemData.newImage && menuItemData.newImage.length > 0
                     ? menuItemData.newImage[0].originFileObj : null;
-            console.log(menuItemData)
-            console.log(image)
+
             const menuItemResponse = await updateMenuItemById(selectedRowData.id, {
                 name: menuItemData.name,
                 description: menuItemData.description,
@@ -150,6 +154,32 @@ const MenuManagement = () => {
         }
     };
 
+    const handleEditCategory = async (categoryData) => {
+        const isDuplicate = categories.some(cat => cat.name === categoryData.name && cat.id !== selectedRowData.id);
+        if (isDuplicate) {
+            message.error("Kategoria o takiej nazwie już istnieje!");
+            return;
+        }
+
+        try {
+            const categoryResponse = await updateCategoryById(selectedRowData.id, {
+                name: categoryData.name
+            });
+            message.success("Dane kategorii zostały zapisane.");
+            setCategories(categories.map(cat => (cat.id === selectedRowData.id ? {
+                ...cat, ...categoryResponse.data
+            } : cat)));
+            setFilteredCategories(categories.map(cat => (cat.id === selectedRowData.id ? {
+                ...cat, ...categoryResponse.data
+            } : cat)));
+            setIsEditModalOpen(false);
+            setSelectedRowData(null);
+        } catch (error) {
+            message.error("Błąd podczas zapisywania danych kategorii.");
+            console.error("Menu category edit error:", error);
+        }
+    };
+
     const handleRemoveMenuItem = async () => {
         try {
             await deleteMenuItemById(selectedRowData.id);
@@ -158,8 +188,27 @@ const MenuManagement = () => {
             setIsEditModalOpen(false);
             setSelectedRowData(null)
         } catch (error) {
-            message.error("Błąd podczas usuwania użytkownika.");
-            console.error("User remove error:", error);
+            message.error("Błąd podczas usuwania pozycji menu.");
+            console.error("Menu item remove error:", error);
+        }
+    };
+
+    const handleRemoveCategory = async () => {
+        const filteredItems = menuItems.filter(item => item.category_id === selectedRowData.id);
+        if (filteredItems.length !== 0) {
+            message.error("Nie można usuwać kategorii z pozycjami.");
+            return;
+        }
+        try {
+            await deleteCategoryById(selectedRowData.id);
+            message.success("Kategoria usunięta.");
+            setCategories(prev => prev.filter(cat => cat.id !== selectedRowData.id));
+            setFilteredCategories(prev => prev.filter(cat => cat.id !== selectedRowData.id));
+            setIsEditModalOpen(false);
+            setSelectedRowData(null);
+        } catch (error) {
+            message.error("Błąd podczas usuwania kategorii.");
+            console.error("Menu category remove error:", error);
         }
     };
 
@@ -194,6 +243,27 @@ const MenuManagement = () => {
         }
     };
 
+    const handleAddCategory = async (categoryData) => {
+        const isDuplicate = categories.some(cat => cat.name === categoryData.name);
+        if (isDuplicate) {
+            message.error("Kategoria o takiej nazwie już istnieje!");
+            return;
+        }
+
+        try {
+            const newCategoryResponse = await addCategory({
+                name: categoryData.name
+            });
+            message.success("Dane kategorii zostały zapisane.");
+            setCategories([newCategoryResponse.data, ...categories]);
+            setFilteredCategories([newCategoryResponse.data, ...filteredCategories]);
+            setIsAddModalOpen(false);
+        } catch (error) {
+            message.error("Błąd podczas tworzenia nowej kategorii.");
+            console.error("Menu category creation error:", error);
+        }
+    };
+
     const handleSearch = (value) => {
         setSearchQuery(value);
         if (value.trim() === '') {
@@ -225,10 +295,22 @@ const MenuManagement = () => {
                     enterButton
                     className="lg:w-4/6 self-center px-4"
                 />
-                <Button color="blue" variant="solid" className="w-1/3 mx-4 self-center"
-                        onClick={() => setIsAddModalOpen(true)}>
-                    Dodaj pozycję menu
-                </Button>
+                <div className="flex gap-3 justify-center">
+                    <Button color="blue" variant="solid" className="w-1/3 self-center"
+                            onClick={() => {
+                                setIsAddModalOpen(true);
+                                setAddType('menuItem');
+                            }}>
+                        Dodaj pozycję menu
+                    </Button>
+                    <Button color="blue" variant="solid" className="w-1/3 self-center"
+                            onClick={() => {
+                                setIsAddModalOpen(true);
+                                setAddType('category');
+                            }}>
+                        Dodaj kategorię
+                    </Button>
+                </div>
                 <div className="overflow-x-auto">
                     <Table
                         dataSource={filteredCategories}
@@ -253,13 +335,46 @@ const MenuManagement = () => {
                     footer={null}
                 >
                     <div className="flex flex-col justify-center">
-                        <MenuItemForm isEditing={true} menuItemData={selectedRowData} categories={categories}
-                                      onSubmit={handleEditMenuItem}/>
-
-                        <Button color="danger" variant="solid" className="w-full mt-2 self-center"
-                                onClick={handleRemoveMenuItem}>
-                            Usuń
-                        </Button>
+                        {selectedRowData.rowType === 'menuItem'
+                            ? <>
+                                <MenuItemForm isEditing={true} menuItemData={selectedRowData} categories={categories}
+                                              onSubmit={handleEditMenuItem}/>
+                                <Button color="danger" variant="solid" className="w-full mt-2 self-center"
+                                        onClick={handleRemoveMenuItem}>
+                                    Usuń
+                                </Button>
+                            </>
+                            : <>
+                                <Form
+                                    form={form}
+                                    initialValues={selectedRowData}
+                                    onFinish={handleEditCategory}
+                                    layout="vertical"
+                                >
+                                    <Form.Item
+                                        name="name"
+                                        label="Nazwa"
+                                        rules={[{
+                                            required: true,
+                                            min: 1,
+                                            max: 50,
+                                            message: 'Nazwa kategorii musi zawierać od 1 do 50 znaków!'
+                                        }]}
+                                    >
+                                        <Input/>
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <Button type="primary" htmlType="submit" className="w-full">
+                                            Zachowaj
+                                        </Button>
+                                    </Form.Item>
+                                </Form>
+                                <Button color="danger" variant="solid" className="w-full mt-2 self-center"
+                                        onClick={handleRemoveCategory}>
+                                    Usuń
+                                </Button>
+                            </>
+                        }
                     </div>
                 </Modal>
             }
@@ -274,7 +389,33 @@ const MenuManagement = () => {
                 footer={null}
             >
                 <div className="flex flex-col justify-center">
-                    <MenuItemForm isEditing={false} onSubmit={handleAddMenuItem} categories={categories}/>
+                    {addType === 'menuItem'
+                        ? <MenuItemForm isEditing={false} onSubmit={handleAddMenuItem} categories={categories}/>
+                        : <Form
+                            form={form}
+                            initialValues={selectedRowData}
+                            onFinish={handleAddCategory}
+                            layout="vertical"
+                        >
+                            <Form.Item
+                                name="name"
+                                label="Nazwa"
+                                rules={[{
+                                    required: true,
+                                    min: 1,
+                                    max: 50,
+                                    message: 'Nazwa kategorii musi zawierać od 1 do 50 znaków!'
+                                }]}
+                            >
+                                <Input/>
+                            </Form.Item>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" className="w-full">
+                                    Dodaj
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    }
                 </div>
             </Modal>
         </div>
