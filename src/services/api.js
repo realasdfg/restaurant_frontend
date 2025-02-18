@@ -91,6 +91,36 @@ export const fetchMenuItemById = async (menuItemId) => {
     return await API.get(`/menu-items/${menuItemId}`);
 };
 
+export const updateMenuItemById = async (menuItemId, menuItemData, image) => {
+    const formData = new FormData();
+    formData.append("menu_item_data", JSON.stringify(menuItemData));
+    if (image) {
+        formData.append("image", image);
+    }
+
+    return await API.patch(`/menu-items/${menuItemId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+
+export const addMenuItem = async (menuItemData, image) => {
+    const formData = new FormData();
+    formData.append("menu_item_data", JSON.stringify(menuItemData));
+    formData.append("image", image);
+
+    return await API.post('/menu-items', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+
+export const deleteMenuItemById = async (menuItemId) => {
+    return await API.delete(`/menu-items/${menuItemId}`);
+};
+
 
 // TABLES
 

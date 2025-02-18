@@ -96,6 +96,13 @@ const SHeader = ({isAdminPage}) => {
                                     }}>
                                 Stoliki
                             </Button>
+                            <Button className="w-full size-9" color="blue" variant="solid"
+                                    onClick={() => {
+                                        setIsDrawerOpen(false);
+                                        navigate('/admin/menu');
+                                    }}>
+                                Menu
+                            </Button>
                         </>
                     }
                     <Button className="w-full" color="danger" variant="solid" onClick={handleLogout}>

@@ -7,6 +7,7 @@ import NotFoundPage from "./NotFoundPage.jsx";
 import OrdersArchive from "../components/Admin/OrdersArchive.jsx";
 import UsersManagement from "../components/Admin/UsersManagement.jsx";
 import TablesManagement from "../components/Admin/TablesManagement.jsx";
+import MenuManagement from "../components/Admin/MenuManagement.jsx";
 
 
 const StaffPage = () => {
@@ -25,7 +26,7 @@ const StaffPage = () => {
                             <Route path="orders/:orderId" element={<OrderDetails isAdmin={isAdminPage}/>}/>
                             <Route path="users" element={<UsersManagement/>}/>
                             <Route path="tables" element={<TablesManagement/>}/>
-                            {/*<Route path="menu" element={<MenuManagement/>}/>*/}
+                            <Route path="menu" element={<MenuManagement/>}/>
                             {/*<Route path="statistics" element={<Statistics/>}/>*/}
                         </>
                     ) : (
