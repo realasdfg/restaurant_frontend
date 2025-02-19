@@ -201,3 +201,14 @@ export const addOrUpdateOrderItemQuantity = async (orderId, itemId, quantity = n
 export const deleteOrderItem = async (orderId, itemId) => {
     return await API.delete(`/orders/${orderId}/menu-items/${itemId}`);
 };
+
+
+// STATISTICS
+
+export const fetchTotalRevenue = async (params) => {
+    return await API.get(`/orders/revenue`, {params: params});
+};
+
+export const fetchDailyRevenue = async (params) => {
+    return await API.get(`/orders/revenue/daily`, {params: params});
+};

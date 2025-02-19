@@ -8,6 +8,7 @@ import OrdersArchive from "../components/Admin/OrdersArchive.jsx";
 import UsersManagement from "../components/Admin/UsersManagement.jsx";
 import TablesManagement from "../components/Admin/TablesManagement.jsx";
 import MenuManagement from "../components/Admin/MenuManagement.jsx";
+import Statistics from "../components/Admin/Statistics.jsx";
 
 
 const StaffPage = () => {
@@ -27,7 +28,7 @@ const StaffPage = () => {
                             <Route path="users" element={<UsersManagement/>}/>
                             <Route path="tables" element={<TablesManagement/>}/>
                             <Route path="menu" element={<MenuManagement/>}/>
-                            {/*<Route path="statistics" element={<Statistics/>}/>*/}
+                            <Route path="statistics" element={<Statistics/>}/>
                         </>
                     ) : (
                         <> {/* Staff routes */}
