@@ -208,7 +208,3 @@ export const deleteOrderItem = async (orderId, itemId) => {
 export const fetchTotalRevenue = async (params) => {
     return await API.get(`/orders/revenue`, {params: params});
 };
-
-export const fetchDailyRevenue = async (params) => {
-    return await API.get(`/orders/revenue/daily`, {params: params});
-};

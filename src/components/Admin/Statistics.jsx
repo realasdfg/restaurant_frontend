@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {Typography, DatePicker, Button, Select} from "antd";
-import {fetchCategories, fetchDailyRevenue, fetchTotalRevenue} from "../../services/api.js";
+import {fetchCategories, fetchTotalRevenue} from "../../services/api.js";
 import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 import dayjs from "dayjs";
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from "recharts";
@@ -35,17 +35,16 @@ const Statistics = () => {
                 setLoading(true);
                 const from_date = dateRange[0].format("YYYY-MM-DD");
                 const to_date = dateRange[1].format("YYYY-MM-DD");
-                const [totalRevenueResponse, dailyRevenueResponse,
+                const [totalRevenueResponse, periodicalRevenueResponse,
                     categoriesResponse] = await Promise.all([
                     fetchTotalRevenue({
                         from_date: from_date,
                         to_date: to_date,
                         category_id: selectedCategory !== '' ? selectedCategory : null,
                         type: selectedType !== '' ? selectedType : null,
-                        period: period !== '' ? period : 'daily',
                         paid_online: paidOnline !== '' ? paidOnline : null,
                     }),
-                    fetchDailyRevenue({
+                    fetchTotalRevenue({
                         from_date: from_date,
                         to_date: to_date,
                         category_id: selectedCategory !== '' ? selectedCategory : null,
@@ -56,7 +55,7 @@ const Statistics = () => {
                     fetchCategories(),
                 ]);
                 setTotalRevenue(totalRevenueResponse.data);
-                setDailyRevenue(dailyRevenueResponse.data);
+                setDailyRevenue(periodicalRevenueResponse.data);
                 setCategories(categoriesResponse.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -196,14 +195,50 @@ const Statistics = () => {
                                 <LineChart data={dailyRevenue} margin={{bottom: 30}}>
                                     <CartesianGrid strokeDasharray="3 3"/>
                                     <XAxis dataKey="date" angle={-45} textAnchor="end" height={80}/>
-                                    <YAxis/>
-                                    <Tooltip/>
+                                    <YAxis tickFormatter={(value) => value.toFixed(2)}/>
+                                    <Tooltip
+                                        formatter={(value, name) => {
+                                            const labels = {
+                                                total_revenue: "Przychód",
+                                                card_revenue: "Przychód (karta)",
+                                                cash_revenue: "Przychód (gotówka)",
+                                                total_cost: "Koszt",
+                                                total_profit: "Zysk",
+                                            };
+                                            return [value.toFixed(2), labels[name] || name];
+                                        }}
+                                        content={({payload}) => {
+                                            if (!payload || payload.length === 0) return null;
+                                            return (
+                                                <div className="bg-white p-2 shadow rounded text-sm">
+                                                    <p className="font-bold">{payload[0].payload.date}</p>
+                                                    {payload.map((entry, index) => (
+                                                        <p key={index} style={{color: entry.color}}>
+                                                            {entry.name}: {entry.value.toFixed(2)} zł
+                                                        </p>
+                                                    ))}
+                                                    {selectedCategory === ''
+                                                        ?
+                                                        <>
+                                                            <p style={{color: "#8884d8"}}>Przychód
+                                                                (karta): {payload[0].payload.card_revenue?.toFixed(2) || "0.00"} zł</p>
+                                                            <p style={{color: "#8884d8"}}>Przychód
+                                                                (gotówka): {payload[0].payload.cash_revenue?.toFixed(2) || "0.00"} zł</p>
+                                                        </>
+                                                        : ''
+                                                    }
+                                                </div>
+                                            );
+                                        }}
+                                    />
                                     <Legend verticalAlign="bottom" height={36}/>
                                     <Line type="monotone" dataKey="total_revenue" stroke="#8884d8" name="Przychód"/>
                                     <Line type="monotone" dataKey="total_cost" stroke="#82ca9d" name="Koszt"/>
                                     <Line type="monotone" dataKey="total_profit" stroke="#ff7300" name="Zysk"/>
                                 </LineChart>
                             </ResponsiveContainer>
+
+
                         </div>
                     </>
                     : <LoadingSpinner/>
