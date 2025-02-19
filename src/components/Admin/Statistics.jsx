@@ -26,6 +26,7 @@ const Statistics = () => {
     ]);
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category_id') || '');
     const [selectedType, setSelectedType] = useState(searchParams.get('type') || '');
+    const [period, setPeriod] = useState(searchParams.get('period') || 'daily');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,12 +41,14 @@ const Statistics = () => {
                         to_date: to_date,
                         category_id: selectedCategory !== '' ? selectedCategory : null,
                         type: selectedType !== '' ? selectedType : null,
+                        period: period !== '' ? period : 'daily',
                     }),
                     fetchDailyRevenue({
                         from_date: from_date,
                         to_date: to_date,
                         category_id: selectedCategory !== '' ? selectedCategory : null,
                         type: selectedType !== '' ? selectedType : null,
+                        period: period !== '' ? period : 'daily',
                     }),
                     fetchCategories(),
                 ]);
@@ -60,30 +63,36 @@ const Statistics = () => {
         };
 
         fetchData();
-    }, [dateRange, selectedCategory, selectedType]);
+    }, [dateRange, selectedCategory, selectedType, period]);
 
-    const updateSearchParams = (dates, category_id, type) => {
+    const updateSearchParams = (dates, category_id, type, period) => {
         const params = {};
         if (dates?.[0]) params.dateFrom = dates[0].format("YYYY-MM-DD");
         if (dates?.[1]) params.dateTo = dates[1].format("YYYY-MM-DD");
         if (category_id) params.category_id = category_id;
         if (type) params.type = type;
+        if (period) params.period = period;
         setSearchParams(params);
     };
 
     const handleDateChange = (dates) => {
         setDateRange(dates);
-        updateSearchParams(dates, selectedCategory, selectedType);
+        updateSearchParams(dates, selectedCategory, selectedType, period);
     };
 
     const handleCategoryChange = (value) => {
         setSelectedCategory(value);
-        updateSearchParams(dateRange, value, selectedType);
+        updateSearchParams(dateRange, value, selectedType, period);
     };
 
     const handleTypeChange = (value) => {
         setSelectedType(value);
-        updateSearchParams(dateRange, selectedCategory, value);
+        updateSearchParams(dateRange, selectedCategory, value, period);
+    };
+
+    const handlePeriodChange = (value) => {
+        setPeriod(value);
+        updateSearchParams(dateRange, selectedCategory, selectedType, value);
     };
 
 
@@ -113,11 +122,17 @@ const Statistics = () => {
                             <Option key='togo' value='togo'>Na wynos</Option>
                             <Option key='dinein' value='dinein'>W restauracji</Option>
                         </Select>
+                        <Select onChange={handlePeriodChange} value={period} defaultValue={'daily'}>
+                            <Option key='daily' value='daily'>Dziennie</Option>
+                            <Option key='weekly' value='weekly'>Tygodniowo</Option>
+                            <Option key='monthly' value='monthly'>Miesięcznie</Option>
+                        </Select>
                         <Button className="w-full" onClick={() => {
                             setDateRange([dayjs().startOf("month"), dayjs().endOf("day")]);
                             setSearchParams({});
                             setSelectedCategory('');
                             setSelectedType('');
+                            setPeriod('daily');
                         }}>Resetuj</Button>
                     </div>
                 </div>
@@ -130,7 +145,8 @@ const Statistics = () => {
                             <p>Całkowity zysk: {totalRevenue.total_profit} zł</p>
                         </div>
                         <div className="px-4">
-                            <Title level={4}>Dochody dzienne</Title>
+                            <Title
+                                level={4}>Dochody {period === 'daily' ? 'dzienne' : period === 'weekly' ? 'tygodniowe' : 'miesięczne'}</Title>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={dailyRevenue} margin={{bottom: 30}}>
                                     <CartesianGrid strokeDasharray="3 3"/>
