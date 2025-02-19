@@ -281,8 +281,8 @@ const OrderDetails = () => {
                                     </span>
                                 <span>
                                     <strong>Kartą: {order.paid_by_card} zł</strong> <br/>
-                                    <strong>Gotówką: {order.paid_by_cash} zł</strong>
-                                    <strong>Online: {order.paid_online ? "Tak" : "Nie"} </strong> <br/>
+                                    <strong>Gotówką: {order.paid_by_cash} zł</strong><br/>
+                                    <strong>Online: {order.paid_online ? "Tak" : "Nie"} </strong>
                                     </span>
                             </Tag>
                         }
