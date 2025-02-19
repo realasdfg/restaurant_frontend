@@ -11,10 +11,10 @@ const {RangePicker} = DatePicker;
 
 const Statistics = () => {
     const [loading, setLoading] = useState(true);
+    const [searchParams, setSearchParams] = useSearchParams();
     const [totalRevenue, setTotalRevenue] = useState({});
     const [dailyRevenue, setDailyRevenue] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [searchParams, setSearchParams] = useSearchParams();
 
     const getDateParam = (param, format, defaultValue) => {
         return searchParams.get(param) ? dayjs(searchParams.get(param), format) : defaultValue;
@@ -24,9 +24,10 @@ const Statistics = () => {
         getDateParam("dateFrom", "YYYY-MM-DD", dayjs().startOf("month")),
         getDateParam("dateTo", "YYYY-MM-DD", dayjs().endOf("day"))
     ]);
-    const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category_id') || '');
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get('categoryId') || '');
     const [selectedType, setSelectedType] = useState(searchParams.get('type') || '');
     const [period, setPeriod] = useState(searchParams.get('period') || 'daily');
+    const [paidOnline, setPaidOnline] = useState(searchParams.get('paidOnline') || '');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,6 +43,7 @@ const Statistics = () => {
                         category_id: selectedCategory !== '' ? selectedCategory : null,
                         type: selectedType !== '' ? selectedType : null,
                         period: period !== '' ? period : 'daily',
+                        paid_online: paidOnline !== '' ? paidOnline : null,
                     }),
                     fetchDailyRevenue({
                         from_date: from_date,
@@ -49,6 +51,7 @@ const Statistics = () => {
                         category_id: selectedCategory !== '' ? selectedCategory : null,
                         type: selectedType !== '' ? selectedType : null,
                         period: period !== '' ? period : 'daily',
+                        paid_online: paidOnline !== '' ? paidOnline : null,
                     }),
                     fetchCategories(),
                 ]);
@@ -63,36 +66,42 @@ const Statistics = () => {
         };
 
         fetchData();
-    }, [dateRange, selectedCategory, selectedType, period]);
+    }, [dateRange, selectedCategory, selectedType, period, paidOnline]);
 
-    const updateSearchParams = (dates, category_id, type, period) => {
+    const updateSearchParams = (dates, categoryId, type, period, paidOnline) => {
         const params = {};
         if (dates?.[0]) params.dateFrom = dates[0].format("YYYY-MM-DD");
         if (dates?.[1]) params.dateTo = dates[1].format("YYYY-MM-DD");
-        if (category_id) params.category_id = category_id;
+        if (categoryId) params.categoryId = categoryId;
         if (type) params.type = type;
         if (period) params.period = period;
+        if (paidOnline) params.paidOnline = paidOnline;
         setSearchParams(params);
     };
 
     const handleDateChange = (dates) => {
         setDateRange(dates);
-        updateSearchParams(dates, selectedCategory, selectedType, period);
+        updateSearchParams(dates, selectedCategory, selectedType, period, paidOnline);
     };
 
     const handleCategoryChange = (value) => {
         setSelectedCategory(value);
-        updateSearchParams(dateRange, value, selectedType, period);
+        updateSearchParams(dateRange, value, selectedType, period, paidOnline);
     };
 
     const handleTypeChange = (value) => {
         setSelectedType(value);
-        updateSearchParams(dateRange, selectedCategory, value, period);
+        updateSearchParams(dateRange, selectedCategory, value, period, paidOnline);
     };
 
     const handlePeriodChange = (value) => {
         setPeriod(value);
-        updateSearchParams(dateRange, selectedCategory, selectedType, value);
+        updateSearchParams(dateRange, selectedCategory, selectedType, value, paidOnline);
+    };
+
+    const handlePaidOnlineChange = (value) => {
+        setPaidOnline(value);
+        updateSearchParams(dateRange, selectedCategory, selectedType, period, value);
     };
 
 
@@ -106,26 +115,50 @@ const Statistics = () => {
                             value={dateRange}
                             onChange={handleDateChange}
                             format="DD-MM-YYYY"
+                            placement={'bottomLeft'}
+                            presets={innerWidth > 1000 && [
+                                {
+                                    label: 'Ostatnie 7 dni',
+                                    value: [dayjs().add(-7, 'd'), dayjs()],
+                                },
+                                {
+                                    label: 'Ostatnie 14 dni',
+                                    value: [dayjs().add(-14, 'd'), dayjs()],
+                                },
+                                {
+                                    label: 'Ostatnie 30 dni',
+                                    value: [dayjs().add(-30, 'd'), dayjs()],
+                                },
+                                {
+                                    label: 'Ostatnie 90 dni',
+                                    value: [dayjs().add(-90, 'd'), dayjs()],
+                                },
+                            ]}
                         />
                         <Select onChange={handleCategoryChange} value={selectedCategory} defaultValue={''}>
-                            <Option key='' value=''>
+                            <Select.Option key='' value=''>
                                 <div className="text-gray-400">Wybierz kategorię</div>
-                            </Option>
+                            </Select.Option>
                             {categories.map((category) => (
-                                <Option key={category.id} value={category.id}>{category.name}</Option>
+                                <Select.Option key={category.id} value={category.id}>{category.name}</Select.Option>
                             ))}
                         </Select>
                         <Select onChange={handleTypeChange} value={selectedType} defaultValue={''}>
-                            <Option key='' value=''>
+                            <Select.Option key='' value=''>
                                 <div className="text-gray-400">Wybierz typ</div>
-                            </Option>
-                            <Option key='togo' value='togo'>Na wynos</Option>
-                            <Option key='dinein' value='dinein'>W restauracji</Option>
+                            </Select.Option>
+                            <Select.Option key='togo' value='togo'>Na wynos</Select.Option>
+                            <Select.Option key='dinein' value='dinein'>W restauracji</Select.Option>
+                        </Select>
+                        <Select onChange={handlePaidOnlineChange} value={paidOnline} defaultValue={''}>
+                            <Select.Option key='' value=''>Wszystka opłata</Select.Option>
+                            <Select.Option key='true' value='true'>Opłacone online</Select.Option>
+                            <Select.Option key='false' value='false'>Opłacone nie online</Select.Option>
                         </Select>
                         <Select onChange={handlePeriodChange} value={period} defaultValue={'daily'}>
-                            <Option key='daily' value='daily'>Dziennie</Option>
-                            <Option key='weekly' value='weekly'>Tygodniowo</Option>
-                            <Option key='monthly' value='monthly'>Miesięcznie</Option>
+                            <Select.Option key='daily' value='daily'>Dziennie</Select.Option>
+                            <Select.Option key='weekly' value='weekly'>Tygodniowo</Select.Option>
+                            <Select.Option key='monthly' value='monthly'>Miesięcznie</Select.Option>
                         </Select>
                         <Button className="w-full" onClick={() => {
                             setDateRange([dayjs().startOf("month"), dayjs().endOf("day")]);
@@ -133,6 +166,7 @@ const Statistics = () => {
                             setSelectedCategory('');
                             setSelectedType('');
                             setPeriod('daily');
+                            setPaidOnline('');
                         }}>Resetuj</Button>
                     </div>
                 </div>
@@ -140,13 +174,24 @@ const Statistics = () => {
                     ? <>
                         <div className="px-4">
                             <Title level={4}>Łączne dochody</Title>
-                            <p>Całkowity przychód: {totalRevenue.total_revenue} zł</p>
-                            <p>Całkowity koszt: {totalRevenue.total_cost} zł</p>
-                            <p>Całkowity zysk: {totalRevenue.total_profit} zł</p>
+                            <p>Całkowity przychód: <strong>{totalRevenue.total_revenue?.toFixed(2)} zł</strong></p>
+                            {selectedCategory === ''
+                                ?
+                                <>
+                                    <p>Przychód z opłat
+                                        kartą: <strong>{totalRevenue.card_revenue?.toFixed(2)} zł</strong></p>
+                                    <p>Przychód z opłat
+                                        gotówką: <strong>{totalRevenue.cash_revenue?.toFixed(2)} zł</strong></p>
+                                </>
+                                : ''
+                            }
+                            <p>Całkowity koszt: <strong>{totalRevenue.total_cost?.toFixed(2)} zł</strong></p>
+                            <p>Całkowity zysk: <strong>{totalRevenue.total_profit?.toFixed(2)} zł</strong></p>
                         </div>
                         <div className="px-4">
-                            <Title
-                                level={4}>Dochody {period === 'daily' ? 'dzienne' : period === 'weekly' ? 'tygodniowe' : 'miesięczne'}</Title>
+                            <Title className="p-0 m-0" level={4}>
+                                Dochody {period === 'daily' ? 'dzienne' : period === 'weekly' ? 'tygodniowe' : 'miesięczne'}
+                            </Title>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={dailyRevenue} margin={{bottom: 30}}>
                                     <CartesianGrid strokeDasharray="3 3"/>
