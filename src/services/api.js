@@ -53,12 +53,12 @@ export const login = async (username, password) => {
     return await API.post('/auth/login', {username, password});
 };
 
-export const fetchUsers = async () => {
-    return await API.get('/users');
+export const fetchUsers = async (params) => {
+    return await API.get('/users', {params: params});
 };
 
-export const fetchUserById = async (userId) => {
-    return await API.get(`/users/${userId}`);
+export const fetchUserById = async (userId, params) => {
+    return await API.get(`/users/${userId}`, {params: params});
 };
 
 export const updateUserById = async (userId, userData) => {
@@ -76,8 +76,8 @@ export const addUser = async (userData) => {
 
 // CATEGORIES
 
-export const fetchCategories = async () => {
-    return await API.get('/menu-categories');
+export const fetchCategories = async (params) => {
+    return await API.get('/menu-categories', {params: params});
 };
 
 export const updateCategoryById = async (categoryId, categoryData) => {
@@ -95,12 +95,12 @@ export const addCategory = async (categoryData) => {
 
 // MENU ITEMS
 
-export const fetchMenuItems = async (available = null) => {
-    return await API.get('/menu-items', {params: {available: available}});
+export const fetchMenuItems = async (available = null, params) => {
+    return await API.get('/menu-items', {params: {available: available, ...params}});
 };
 
-export const fetchMenuItemById = async (menuItemId) => {
-    return await API.get(`/menu-items/${menuItemId}`);
+export const fetchMenuItemById = async (menuItemId, params) => {
+    return await API.get(`/menu-items/${menuItemId}`, {params: params});
 };
 
 export const updateMenuItemById = async (menuItemId, menuItemData, image) => {
@@ -136,12 +136,12 @@ export const deleteMenuItemById = async (menuItemId) => {
 
 // TABLES
 
-export const fetchTables = async () => {
-    return await API.get('/tables');
+export const fetchTables = async (params) => {
+    return await API.get('/tables', {params: params});
 };
 
-export const fetchTableById = async (tableId) => {
-    return await API.get(`/tables/${tableId}`);
+export const fetchTableById = async (tableId, params) => {
+    return await API.get(`/tables/${tableId}`, {params: params});
 };
 
 export const addTableById = async (tableData) => {

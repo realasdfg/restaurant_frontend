@@ -52,7 +52,7 @@ const Statistics = () => {
                         period: period !== '' ? period : 'daily',
                         paid_online: paidOnline !== '' ? paidOnline : null,
                     }),
-                    fetchCategories(),
+                    fetchCategories({include_deleted: true}),
                 ]);
                 setTotalRevenue(totalRevenueResponse.data);
                 setDailyRevenue(periodicalRevenueResponse.data);

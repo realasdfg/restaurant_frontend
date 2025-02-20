@@ -47,7 +47,7 @@ const CurrentOrders = () => {
                         created_by: ordersCreatedBy !== '' ? ordersCreatedBy : null,
                         paid_by: ordersPaidBy !== '' ? ordersPaidBy : null,
                     }),
-                    fetchTables(),
+                    fetchTables({include_deleted: true}),
                 ]);
                 setOrders(ordersResponse.data);
 
@@ -57,7 +57,7 @@ const CurrentOrders = () => {
                 });
                 setTableMap(tableMapData);
 
-                const usersResponse = await Promise.race([fetchUsers()]);
+                const usersResponse = await fetchUsers({include_deleted: true});
                 setUsers(usersResponse.data);
             } catch (error) {
                 console.error("Error fetching data:", error);

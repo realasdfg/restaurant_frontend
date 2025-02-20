@@ -43,13 +43,14 @@ const OrderDetails = () => {
                 setOrder(orderResponseData);
 
                 if (orderResponseData.table_id) {
-                    const tableResponse = await fetchTableById(orderResponseData.table_id);
+                    const tableResponse = await fetchTableById(orderResponseData.table_id, {include_deleted: true});
                     setTable(tableResponse.data);
                 }
 
                 const itemsWithDetails = await Promise.all(
                     orderItemsResponse.data.map(async (orderItem) => {
-                        const menuItemResponse = await fetchMenuItemById(orderItem.menu_item_id);
+                        const menuItemResponse = await fetchMenuItemById(orderItem.menu_item_id,
+                            {include_deleted: true});
                         return {
                             ...orderItem,
                             menuItem: menuItemResponse.data
@@ -92,7 +93,7 @@ const OrderDetails = () => {
                 setOrder(data);
 
                 if (data.table_id) {
-                    const tableResponse = await fetchTableById(data.table_id);
+                    const tableResponse = await fetchTableById(data.table_id, {include_deleted: true});
                     setTable(tableResponse.data);
                 } else {
                     setTable(null);
