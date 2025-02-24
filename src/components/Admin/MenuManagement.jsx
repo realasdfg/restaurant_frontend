@@ -379,7 +379,8 @@ const MenuManagement = () => {
                 </Modal>
             }
             <Modal
-                title={<div className="text-xl text-center">Nowa pozycja menu</div>}
+                title={<div
+                    className="text-xl text-center">Nowa {addType === 'menuItem' ? 'pozycja menu' : 'kategoria'}</div>}
                 centered
                 open={isAddModalOpen}
                 onCancel={() => {

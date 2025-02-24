@@ -43,7 +43,7 @@ const OrderDetails = () => {
                 setOrder(orderResponseData);
 
                 if (orderResponseData.table_id) {
-                    const tableResponse = await fetchTableById(orderResponseData.table_id, {include_deleted: true});
+                    const tableResponse = await fetchTableById(orderResponseData.table_id, {include_deleted: userRole === 'admin'});
                     setTable(tableResponse.data);
                 }
 
