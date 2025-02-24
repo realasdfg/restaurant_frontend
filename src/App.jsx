@@ -1,7 +1,7 @@
 import React from "react";
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import GuestsPage from "./pages/GuestsPage.jsx";
+import GuestPage from "./pages/GuestPage.jsx";
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import {AuthProvider} from "./context/AuthContext.jsx";
@@ -13,7 +13,7 @@ function App() {
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/*" element={<GuestsPage/>}/>
+                    <Route path="/*" element={<GuestPage/>}/>
 
                     <Route path="/staff/login" element={<LoginPage/>}/>
                     <Route path="/staff/*" element={

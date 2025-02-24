@@ -7,7 +7,7 @@ import GuestsHeader from "../components/Guests/GuestsHeader.jsx";
 import GuestOrder from "../components/Guests/GuestOrder.jsx";
 import Payment from "../components/Guests/Payment.jsx";
 
-const GuestsPage = () => {
+const GuestPage = () => {
     return (
         <div className="bg-gray-100 font-mono">
             <Routes>
@@ -21,4 +21,4 @@ const GuestsPage = () => {
     );
 };
 
-export default GuestsPage;
+export default GuestPage;
