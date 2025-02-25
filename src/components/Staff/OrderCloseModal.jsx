@@ -7,7 +7,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
     const navigate = useNavigate();
     const [cashAmount, setCashAmount] = useState(0);
     const [cardAmount, setCardAmount] = useState(0);
-    const [closestNumbers, setClosestNumbers] = useState([]);
+    const [cashPaymentOptions, setCashPaymentOptions] = useState([]);
 
     const cashInputRef = useRef(null);
     const cardInputRef = useRef(null);
@@ -21,16 +21,16 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
     }, [cashAmount, cardAmount, totalAmount]);
 
     useEffect(() => {
-        const findClosestNumbers = () => {
+        const calculateCashPaymentOptions = () => {
             const result = new Set();
             result.add(Math.ceil(totalAmount / 50) * 50);
             result.add(Math.ceil(totalAmount / 100) * 100);
             result.add(Math.ceil(totalAmount / 200) * 200);
             result.add(Math.ceil(totalAmount / 500) * 500);
-            setClosestNumbers(Array.from(result).sort((a, b) => a - b).slice(0, 4));
+            setCashPaymentOptions(Array.from(result).sort((a, b) => a - b));
         };
-        findClosestNumbers();
-    }, [totalAmount]);
+        calculateCashPaymentOptions();
+    }, [open]);
 
     const handleConfirm = async () => {
         try {
@@ -89,7 +89,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
             cancelText="Anuluj"
         >
             <div className="flex justify-center gap-3 mb-3">
-                {closestNumbers.map((value) => (
+                {cashPaymentOptions.map((value) => (
                     <Button color="blue" variant="outlined" key={value}
                             onClick={() => handleCashChange(value)}>{value}</Button>
                 ))}
