@@ -6,7 +6,8 @@ import LoadingSpinner from "../shared/LoadingSpinner.jsx";
 const {Title} = Typography;
 
 const TablesManagement = () => {
-    const [form] = Form.useForm();
+    const [editForm] = Form.useForm();
+    const [addForm] = Form.useForm();
     const [tables, setTables] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -32,9 +33,9 @@ const TablesManagement = () => {
 
     useEffect(() => {
         if (selectedTable) {
-            form.setFieldsValue(selectedTable);
+            editForm.setFieldsValue(selectedTable);
         }
-    }, [selectedTable, form]);
+    }, [selectedTable, editForm]);
 
     const tablesColumns = [
         {
@@ -100,6 +101,7 @@ const TablesManagement = () => {
             message.success("Nowy stolik został utworzony.");
             setTables([newTableResponse.data, ...tables]);
             setIsAddModalOpen(false);
+            addForm.resetFields();
         } catch (error) {
             message.error("Błąd podczas tworzenia nowego stolika.");
             console.error("Table creation error:", error);
@@ -147,7 +149,7 @@ const TablesManagement = () => {
                 >
                     <div className="flex flex-col justify-center">
                         <Form
-                            form={form}
+                            form={editForm}
                             initialValues={selectedTable}
                             onFinish={handleEditTable}
                             layout="vertical"
@@ -191,7 +193,7 @@ const TablesManagement = () => {
             >
                 <div className="flex flex-col justify-center">
                     <Form
-                        form={form}
+                        form={addForm}
                         onFinish={handleAddTable}
                         layout="vertical"
                     >

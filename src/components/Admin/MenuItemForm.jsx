@@ -9,7 +9,11 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
 
     useEffect(() => {
         if (menuItemData) {
-            const formData = {...menuItemData};
+            const formData = {
+                ...menuItemData,
+                price: menuItemData.price? parseFloat(menuItemData.price) : '',
+                cost: menuItemData.cost? parseFloat(menuItemData.cost) : ''
+            };
             if (isEditing && menuItemData.image) {
                 formData.image = [
                     {
@@ -25,12 +29,6 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
         }
     }, [menuItemData, isEditing, form]);
 
-
-    const handleFinish = (values) => {
-        onSubmit(values);
-        form.resetFields();
-    };
-
     const normFile = (e) => {
         console.log('Upload event:', e);
         if (Array.isArray(e)) {
@@ -44,7 +42,7 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
         <Form
             form={form}
             initialValues={isEditing ? {...menuItemData} : {available: true}}
-            onFinish={handleFinish}
+            onFinish={onSubmit}
             layout="vertical"
         >
             <Form.Item
@@ -87,7 +85,7 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
             <Form.Item
                 name="price"
                 label="Cena"
-                rules={[{required: true, type: 'number', min: 0, message: 'Cena musi być większa lub równa 0!'}]}
+                rules={[{required: true, type: 'number', min: 0.01, message: 'Cena musi być większa 0!'}]}
             >
                 <InputNumber className="w-full"/>
             </Form.Item>
@@ -95,7 +93,7 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
             <Form.Item
                 name="cost"
                 label="Koszt"
-                rules={[{required: true, type: 'number', min: 0, message: 'Koszt musi być większy lub równy 0!'}]}
+                rules={[{required: true, type: 'number', min: 0.01, message: 'Koszt musi być większy 0!'}]}
             >
                 <InputNumber className="w-full"/>
             </Form.Item>

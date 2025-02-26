@@ -17,7 +17,7 @@ const {Title} = Typography;
 const {Search} = Input;
 
 const MenuManagement = () => {
-    const [form] = Form.useForm();
+    const [categoryForm] = Form.useForm();
     const [loading, setLoading] = useState(true);
     const [menuItems, setMenuItems] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -50,6 +50,12 @@ const MenuManagement = () => {
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (selectedRowData) {
+            categoryForm.setFieldsValue(selectedRowData);
+        }
+    }, [selectedRowData, categoryForm]);
 
     const categoryColumns = [
         {
@@ -258,6 +264,7 @@ const MenuManagement = () => {
             setCategories([newCategoryResponse.data, ...categories]);
             setFilteredCategories([newCategoryResponse.data, ...filteredCategories]);
             setIsAddModalOpen(false);
+            categoryForm.resetFields();
         } catch (error) {
             message.error("Błąd podczas tworzenia nowej kategorii.");
             console.error("Menu category creation error:", error);
@@ -307,6 +314,7 @@ const MenuManagement = () => {
                             onClick={() => {
                                 setIsAddModalOpen(true);
                                 setAddType('category');
+                                categoryForm.setFieldsValue({name: null});
                             }}>
                         Dodaj kategorię
                     </Button>
@@ -346,7 +354,7 @@ const MenuManagement = () => {
                             </>
                             : <>
                                 <Form
-                                    form={form}
+                                    form={categoryForm}
                                     initialValues={selectedRowData}
                                     onFinish={handleEditCategory}
                                     layout="vertical"
@@ -393,7 +401,7 @@ const MenuManagement = () => {
                     {addType === 'menuItem'
                         ? <MenuItemForm isEditing={false} onSubmit={handleAddMenuItem} categories={categories}/>
                         : <Form
-                            form={form}
+                            form={categoryForm}
                             initialValues={selectedRowData}
                             onFinish={handleAddCategory}
                             layout="vertical"

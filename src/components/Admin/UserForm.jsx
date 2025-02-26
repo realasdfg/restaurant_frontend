@@ -12,16 +12,11 @@ const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}
         }
     }, [userData, form]);
 
-    const handleFinish = (values) => {
-        onSubmit(values);
-        form.resetFields();
-    };
-
     return (
         <Form
             form={form}
             initialValues={isEditing ? userData : {role: 'staff'}}
-            onFinish={handleFinish}
+            onFinish={onSubmit}
             layout="vertical"
         >
             <Form.Item

@@ -81,7 +81,7 @@ export const fetchCategories = async (params) => {
 };
 
 export const updateCategoryById = async (categoryId, categoryData) => {
-    return await API.patch(`/menu-categories/${categoryId}`, categoryData);
+    return await API.put(`/menu-categories/${categoryId}`, categoryData);
 };
 
 export const deleteCategoryById = async (categoryId) => {
