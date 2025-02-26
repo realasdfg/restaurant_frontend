@@ -191,7 +191,6 @@ const Statistics = () => {
                             <Title className="p-0 m-0" level={4}>
                                 Dochody {period === 'daily' ? 'dzienne' : period === 'weekly' ? 'tygodniowe' : 'miesięczne'}
                             </Title>
-                            {/*TODO*/}
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={dailyRevenue} margin={{bottom: 30}}>
                                     <CartesianGrid strokeDasharray="3 3"/>
