@@ -1,0 +1,402 @@
+import React, {useEffect, useState} from 'react';
+import {
+    fetchOrderById,
+    fetchOrderItemsByOrderId,
+    fetchTableById,
+    fetchMenuItemById,
+    addOrUpdateOrderItemQuantity, deleteOrderItem, fetchUserById, closeOrder
+} from '../../services/api';
+import LoadingSpinner from '../shared/LoadingSpinner';
+import {Button, Tag, message} from "antd";
+import AddOrderItemDrawer from "./AddOrderItemDrawer.jsx";
+import OrderItemsTable from "./OrderItemsTable.jsx";
+import OrderCloseModal from "./OrderCloseModal.jsx";
+import OrderActionsDropdown from "./OrderActionsDropdown.jsx";
+import {orderWebSocketService} from "../../services/websocketService.js";
+import NotFoundPage from "../../pages/NotFoundPage.jsx";
+import {useNavigate, useParams} from "react-router-dom";
+import {useAuth} from "../../context/AuthContext.jsx";
+import calculateTotalAmount from "../../utils/calculateTotalAmount.js";
+
+const OrderDetails = () => {
+    const {orderId} = useParams();
+    const {userRole} = useAuth();
+    const navigate = useNavigate();
+    const [notFound, setNotFound] = useState(false);
+    const [order, setOrder] = useState(null);
+    const [table, setTable] = useState(null);
+    const [orderItems, setOrderItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userCreated, setUserCreated] = useState(null);
+    const [userPaid, setUserPaid] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [orderResponse, orderItemsResponse] = await Promise.all([
+                    fetchOrderById(orderId),
+                    fetchOrderItemsByOrderId(orderId),
+                ]);
+                const orderResponseData = orderResponse.data
+                setOrder(orderResponseData);
+
+                if (orderResponseData.table_id) {
+                    const tableResponse = await fetchTableById(orderResponseData.table_id, {include_deleted: userRole === 'admin'});
+                    setTable(tableResponse.data);
+                }
+
+                const itemsWithDetails = await Promise.all(
+                    orderItemsResponse.data.map(async (orderItem) => {
+                        const menuItemResponse = await fetchMenuItemById(orderItem.menu_item_id,
+                            {include_deleted: true});
+                        return {
+                            ...orderItem,
+                            menuItem: menuItemResponse.data
+                        };
+                    })
+                );
+                setOrderItems(itemsWithDetails.sort((a, b) => a.id - b.id));
+
+                if (userRole === 'admin') {
+                    if (orderResponseData.paid) {
+                        const userPaidResponse = await fetchUserById(orderResponseData.paid_by);
+                        setUserPaid(userPaidResponse.data)
+                    }
+                    const userCreatedResponse = await fetchUserById(orderResponseData.created_by);
+                    setUserCreated(userCreatedResponse.data)
+                }
+
+            } catch (error) {
+                setNotFound(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [orderId]);
+
+    useEffect(() => {
+        if (!order || order.paid) return;
+
+        const access_token = localStorage.getItem("access_token");
+        const orderSocket = orderWebSocketService.connectToOrder(orderId, access_token);
+
+        const unsubscribe = orderSocket.subscribe(async (data) => {
+            if (data.broadcast_type === 'order') {
+                console.log(`Order ${orderId} info changes received:`, data);
+                if (data.paid) {
+                    message.info("The order has been paid for!");
+                    navigate('/staff/orders');
+                }
+                setOrder(data);
+
+                if (data.table_id) {
+                    const tableResponse = await fetchTableById(data.table_id, {include_deleted: true});
+                    setTable(tableResponse.data);
+                } else {
+                    setTable(null);
+                }
+            } else if (data.broadcast_type === 'order_item') {
+                console.log(`Order ${orderId} items changes received:`, data);
+                if (data.deleted) {
+                    setOrderItems((prevOrderItems = []) => {
+                        return prevOrderItems.filter(o => o.id !== data.id);
+                    });
+                } else {
+                    fetchMenuItemById(data.menu_item_id).then((menuItemResponse) => {
+                        const dataWithDetails = {
+                            ...data,
+                            menuItem: menuItemResponse.data
+                        };
+
+                        setOrderItems((prevOrderItems = []) => {
+                            const orderItemIndex = prevOrderItems.findIndex(o => o.id === data.id);
+                            if (orderItemIndex !== -1) {
+                                return prevOrderItems.map(o => (o.id === dataWithDetails.id ? dataWithDetails : o));
+                            } else {
+                                return [...prevOrderItems, dataWithDetails];
+                            }
+                        });
+                    });
+                }
+            }
+        });
+
+        return () => {
+            unsubscribe();
+            orderSocket.close();
+        };
+    }, [order]);
+
+
+    const handleAddItem = async (menuItemId, menuItemAddQuantity) => {
+        try {
+            if (menuItemAddQuantity > 9999999) {
+                message.error('Too many items');
+                return;
+            }
+            const orderItem = orderItems.find((item) => item.menu_item_id === menuItemId);
+            let itemName;
+            if (orderItem) {
+                itemName = orderItem.menuItem.name;
+                let newQuantity = orderItem.quantity + menuItemAddQuantity;
+                if (newQuantity > 9999999) {
+                    message.error('Too many items');
+                    return;
+                }
+                await handleQuantityChange(orderItem.id, menuItemId, newQuantity);
+            } else {
+                const response = await addOrUpdateOrderItemQuantity(orderId, menuItemId, menuItemAddQuantity);
+                const menuItemResponse = await fetchMenuItemById(response.data.menu_item_id);
+                const itemWithDetails = {...response.data, menuItem: menuItemResponse.data}
+                setOrderItems([...orderItems, itemWithDetails]);
+
+                itemName = menuItemResponse.data.name;
+            }
+            message.success(`The item "${itemName}" has been added!`);
+        } catch (error) {
+            message.error('Error adding an item');
+            console.error('Add item error:', error);
+        }
+    };
+
+    const handleQuantityChange = async (orderItemId, menuItemId, newQuantity) => {
+        try {
+            if (newQuantity === 0) {
+                await handleRemoveItem(orderItems.find(item => item.id === orderItemId));
+            } else {
+                await addOrUpdateOrderItemQuantity(orderId, menuItemId, newQuantity);
+                setOrderItems((prev) =>
+                    prev.map((item) =>
+                        item.id === orderItemId
+                            ? {...item, quantity: newQuantity !== undefined ? newQuantity : item.quantity + 1}
+                            : item
+                    )
+                );
+            }
+        } catch (error) {
+            message.error('Quantity Update Error');
+            console.error('Update quantity error:', error);
+        }
+    };
+
+    const handleQuantityInputConfirm = async (orderItemId, menuItemId, newQuantity) => {
+        const orderItem = orderItems.find(item => item.id === orderItemId);
+        if (newQuantity) {
+            if (newQuantity > 9999999) {
+                message.error('Too many items');
+                return;
+            }
+            if (orderItem.quantity !== newQuantity) {
+                await handleQuantityChange(orderItemId, menuItemId, newQuantity);
+            }
+        } else {
+            await handleRemoveItem(orderItem);
+        }
+    };
+
+    const handleRemoveItem = async (orderItem) => {
+        try {
+            await deleteOrderItem(orderId, orderItem.menu_item_id);
+            setOrderItems(orderItems.filter(item => item !== orderItem));
+        } catch (error) {
+            message.error('Error deleting an item');
+            console.error('Remove item error:', error);
+        }
+    };
+
+    const handleOrderInfoUpdate = async (orderId, data) => {
+        setOrder({...order, ...data});
+        if (data.table_id) {
+            const tableResponse = await fetchTableById(data.table_id);
+            setTable(tableResponse.data);
+        } else {
+            setTable(null);
+        }
+    }
+
+    const handleCloseOnline = async () => {
+        try {
+            await closeOrder(orderId, {paid: true});
+            navigate('/staff/orders');
+        } catch (error) {
+            message.error('Error while closing the order');
+            console.error('Close order error:', error);
+        }
+    }
+
+    const totalAmount = calculateTotalAmount(orderItems);
+
+    if (notFound) return <NotFoundPage message="Zamówienie nie istnieje"/>;
+
+    if (loading) return <LoadingSpinner/>;
+
+    return (
+        <div className="flex justify-center mb-4 m-3">
+            <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/6 xl:w-2/5 flex flex-col mb-14 sm:mb-0">
+                <div className="p-4">
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-xl font-bold">Order #{orderId}</span>
+                        {order.type === 'dinein' ? (
+                            <Tag color="green" className="text-sm">
+                                DINE IN
+                            </Tag>
+                        ) : (
+                            <Tag color="blue" className="text-sm">
+                                TO GO
+                            </Tag>
+                        )}
+                    </div>
+                    {table && (
+                        <div className="text-end">
+                            <strong>Table:</strong>
+                            <Tag color="green" className="text-sm">
+                                {table.name}
+                            </Tag>
+                        </div>
+                    )}
+
+                    <div className="flex flex-col">
+                        {userRole === 'admin' &&
+                            <Tag color="blue"
+                                 className="text-sm mt-2 overflow-hidden text-ellipsis w-full">
+                                <strong>Created at: </strong><br/>
+                                {new Date(order.created_at).toLocaleString()} <br/>
+                                By: {userCreated?.first_name + ' ' + userCreated?.last_name}
+                                <span> ({userCreated?.id})</span>
+
+                            </Tag>
+
+                        }
+                        <div></div>
+                        {userRole === 'admin' && order.paid &&
+                            <Tag color="blue"
+                                 className="text-sm mt-2 overflow-hidden text-ellipsis w-full">
+                                    <span>
+                                    <strong>Paid: </strong><br/>
+                                        {new Date(order.paid_at).toLocaleString()} <br/>
+                                        By: {userPaid?.first_name + ' ' + userPaid?.last_name}
+                                        <span> ({userPaid?.id})</span> <br/>
+                                    </span>
+                                <span>
+                                    <strong>By card: {order.paid_by_card} zł</strong> <br/>
+                                    <strong>by cash: {order.paid_by_cash} zł</strong><br/>
+                                    <strong>Online: {order.paid_online ? "Yes" : "No"} </strong>
+                                    </span>
+                            </Tag>
+                        }
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <OrderItemsTable
+                        order={order}
+                        orderItems={orderItems}
+                        handleQuantityChange={handleQuantityChange}
+                        handleQuantityInputConfirm={handleQuantityInputConfirm}
+                        handleRemoveItem={handleRemoveItem}
+                    />
+                </div>
+
+                {/* Large screens */}
+                <div className="hidden sm:block sticky -bottom-0.5 bg-blue-500 shadow-md p-3">
+                    {!order.paid
+                        ? <>
+                            {order.paid_online
+                                ? <div className="hidden sm:flex justify-end items-center">
+                                    <span className="font-bold text-xl text-white">Suma: {totalAmount} zł</span>
+                                    <Tag color="green" className="mx-2">paid online</Tag>
+                                    <Button color="primary" variant="outlined"
+                                            className="w-24 h-10 font-bold text-base shadow"
+                                            onClick={handleCloseOnline}>
+                                        Close
+                                    </Button>
+                                </div>
+                                : <div className="hidden sm:flex justify-between items-center">
+                                    <div>
+                                        <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
+                                                              iconClassName="text-white"/>
+                                        <Button className="ml-2" color="primary" variant="outlined"
+                                                onClick={() => setIsDrawerOpen(true)}>
+                                            Add
+                                        </Button>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                                        <Button color="primary" variant="outlined"
+                                                disabled={parseFloat(totalAmount) === 0}
+                                                className="w-24 h-10 font-bold text-base shadow ml-2"
+                                                onClick={() => setIsModalOpen(true)}>
+                                            Close
+                                        </Button>
+                                    </div>
+                                </div>
+                            }
+                        </>
+                        : <div className="hidden sm:flex justify-end items-center">
+                            <span className="font-bold text-xl text-white">Suma: {totalAmount} zł</span>
+                        </div>
+                    }
+                </div>
+
+                {/* Small screens */}
+                <div className="sm:hidden fixed left-0 w-full -bottom-0.5 bg-blue-500 shadow-md p-3">
+                    {!order.paid
+                        ? <> {order.paid_online
+                            ? <div className="flex justify-end items-center">
+                                <span className="font-bold text-xl text-white ">Suma: {totalAmount} zł</span>
+                                <Tag color="green" className="mx-2">paid online</Tag>
+                                <Button color="primary" variant="outlined"
+                                        className="w-24 h-10 font-bold text-base shadow ml-2 mr-6"
+                                        onClick={handleCloseOnline}>
+                                    Close
+                                </Button>
+                            </div>
+                            : <div className="flex justify-between items-center">
+                                <div>
+                                    <OrderActionsDropdown order={order} onUpdateOrder={handleOrderInfoUpdate}
+                                                          iconClassName="text-white"/>
+                                    <Button className="ml-2" color="primary" variant="outlined"
+                                            onClick={() => setIsDrawerOpen(true)}>
+                                        Add
+                                    </Button>
+                                </div>
+                                <div className="mr-6">
+                                    <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                                    <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
+                                            className="w-24 h-10 font-bold text-base shadow ml-2"
+                                            onClick={() => setIsModalOpen(true)}>
+                                        Close
+                                    </Button>
+                                </div>
+                            </div>
+                        }
+                        </>
+                        : <div className="flex justify-end items-center">
+                            <span className="font-bold text-xl text-white mr-6">Suma: {totalAmount} zł</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            {!order.paid &&
+                <>
+                    <OrderCloseModal
+                        open={isModalOpen}
+                        onCancel={() => setIsModalOpen(false)}
+                        totalAmount={parseFloat(totalAmount)}
+                        orderId={orderId}
+                    />
+                    <AddOrderItemDrawer
+                        visible={isDrawerOpen}
+                        onClose={() => setIsDrawerOpen(false)}
+                        onAddItem={handleAddItem}
+                    />
+                </>
+            }
+        </div>
+    );
+};
+
+export default OrderDetails;

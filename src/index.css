@@ -1,5 +1,26 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* Antd drawer right side closer */
+.ant-drawer-header-title {
+    flex-direction: row-reverse;
+}
+
+/* Antd date picker dropdown vertical on small screens */
+.ant-picker-dropdown .ant-picker-panel-container .ant-picker-panels {
+    display: inline-flex;
+    animation: none;
+    flex-wrap: nowrap;
+    direction: ltr;
+    @media (max-width: 1000px) {
+        display: inline-grid;
+    }
 }
