@@ -50,14 +50,14 @@ const LoginPage = () => {
                     layout="vertical"
                 >
                     <Form.Item
-                        label="Użytkownik"
+                        label="Username"
                         name="username"
                         rules={[{required: true, message: "Enter your username!"}]}
                     >
                         <Input/>
                     </Form.Item>
                     <Form.Item
-                        label="Hasło"
+                        label="Password"
                         name="password"
                         rules={[{required: true, message: "Enter your password!"}]}
                     >
