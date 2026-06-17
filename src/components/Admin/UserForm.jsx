@@ -21,12 +21,12 @@ const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}
         >
             <Form.Item
                 name="username"
-                label="Nazwa użytkownika"
+                label="Username"
                 rules={[{
                     required: true,
                     min: 3,
                     max: 30,
-                    message: 'Nazwa użytkownika musi zawierać od 3 do 30 znaków!'
+                    message: 'Your username must be between 3 and 30 characters long!'
                 }]}
             >
                 <Input/>
@@ -34,24 +34,24 @@ const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}
 
             <Form.Item
                 name="first_name"
-                label="Imię"
-                rules={[{required: true, min: 1, max: 30, message: 'Imię musi zawierać od 1 do 30 znaków!'}]}
+                label="First name"
+                rules={[{required: true, min: 1, max: 30, message: 'The name must be between 1 and 30 characters long!'}]}
             >
                 <Input/>
             </Form.Item>
 
             <Form.Item
                 name="last_name"
-                label="Nazwisko"
-                rules={[{required: true, min: 1, max: 30, message: 'Nazwisko musi zawierać od 1 do 30 znaków!'}]}
+                label="Last name"
+                rules={[{required: true, min: 1, max: 30, message: 'The last name must be between 1 and 30 characters long!'}]}
             >
                 <Input/>
             </Form.Item>
 
             <Form.Item
                 name="role"
-                label="Rola"
-                rules={[{required: true, message: 'Wybierz rolę!'}]}
+                label="Role"
+                rules={[{required: true, message: 'Choose a role!'}]}
             >
                 <Select disabled={isEditing && currentUser.id === userData.id}>
                     <Option value="staff">STAFF</Option>
@@ -61,15 +61,15 @@ const UserForm = ({isEditing = false, userData = {}, onSubmit, currentUser = {}}
 
             <Form.Item
                 name="password"
-                label="Hasło"
-                rules={[{required: !isEditing, min: 8, message: 'Hasło musi zawierać co najmniej 8 znaków!'}]}
+                label="Password"
+                rules={[{required: !isEditing, min: 8, message: 'Password must be at least 8 characters long!'}]}
             >
                 <Input/>
             </Form.Item>
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" className="w-full">
-                    {isEditing ? 'Zachowaj' : 'Utwórz'}
+                    {isEditing ? 'Save' : 'Create'}
                 </Button>
             </Form.Item>
         </Form>

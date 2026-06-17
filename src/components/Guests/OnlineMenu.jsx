@@ -92,7 +92,7 @@ const OnlineMenu = () => {
                         items={[
                             {
                                 key: "header",
-                                label: <div className="text-xl font-bold text-center text-black mb-2">Kategorie</div>,
+                                label: <div className="text-xl font-bold text-center text-black mb-2">Category</div>,
                                 type: "group"
                             },
                             ...categories.map(category => ({

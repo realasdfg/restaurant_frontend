@@ -31,7 +31,7 @@ const TableListModal = ({open, onCancel, onTableClick}) => {
             const response = await fetchTables();
             setTables(response.data.sort((a, b) => a.name.localeCompare(b.name)));
         } catch (error) {
-            message.error("Nie udało się załadować stolików");
+            message.error("The tables could not be loaded");
             console.error("Error fetching tables:", error);
         }
     };

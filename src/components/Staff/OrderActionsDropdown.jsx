@@ -14,7 +14,7 @@ const OrderActionsDropdown = ({order, onUpdateOrder, iconClassName}) => {
             onUpdateOrder(order.id, {type: "dinein", table_id: table.id});
             setIsTableModalOpen(false);
         } catch (error) {
-            message.error("Błąd podczas zmiany stolika");
+            message.error("Error while changing tables");
         }
     };
 
@@ -35,12 +35,12 @@ const OrderActionsDropdown = ({order, onUpdateOrder, iconClassName}) => {
 
     const dropdownItems = [
         {
-            label: "Zmień typ zamówienia",
+            label: "Change order type",
             key: "typeChange",
             onClick: handleDropdownItemClick,
         },
         {
-            label: "Zmień stolik",
+            label: "Change tables",
             key: "tableChange",
             onClick: handleDropdownItemClick,
         },

@@ -39,7 +39,7 @@ const TablesManagement = () => {
 
     const tablesColumns = [
         {
-            title: <div className="text-center">Nazwa</div>,
+            title: <div className="text-center">Name</div>,
             dataIndex: "name",
             key: "name",
             className: "bg-white",
@@ -58,20 +58,20 @@ const TablesManagement = () => {
     const handleEditTable = async (tableData) => {
         const isDuplicate = tables.some(table => table.name === tableData.name && table.id !== selectedTable.id);
         if (isDuplicate) {
-            message.error("Stolik o takiej nazwie już istnieje!");
+            message.error("A table with that name already exists!");
             return;
         }
 
         try {
             await updateTableById(selectedTable.id, {name: tableData.name});
-            message.success("Dane stolika zostały zapisane.");
+            message.success("The table data has been saved.");
             setTables(tables.map(table => (table.id === selectedTable.id ? {
                 ...table, ...tableData,
             } : table)));
             setIsEditModalOpen(false);
             setSelectedTable(null)
         } catch (error) {
-            message.error("Błąd podczas zapisywania danych stolika.");
+            message.error("An error occurred while saving the table data.");
             console.error("Table edit error:", error);
         }
     };
@@ -79,12 +79,12 @@ const TablesManagement = () => {
     const handleRemoveTable = async () => {
         try {
             await deleteTableById(selectedTable.id);
-            message.success("Stolik usunięty.");
+            message.success("The table has been removed.");
             setTables(prev => prev.filter(user => user.id !== selectedTable.id));
             setIsEditModalOpen(false);
             setSelectedTable(null)
         } catch (error) {
-            message.error("Błąd podczas usuwania stolika. Możliwe jest, że stolik jest zajęty.");
+            message.error("An error occurred while deleting the table. The table may be in use.");
             console.error("Table remove error:", error);
         }
     };
@@ -92,18 +92,18 @@ const TablesManagement = () => {
     const handleAddTable = async (tableData) => {
         const isDuplicate = tables.some(table => table.name === tableData.name);
         if (isDuplicate) {
-            message.error("Stolik o takiej nazwie już istnieje!");
+            message.error("A table with that name already exists!");
             return;
         }
 
         try {
             const newTableResponse = await addTableById({name: tableData.name});
-            message.success("Nowy stolik został utworzony.");
+            message.success("A new table has been created.");
             setTables([newTableResponse.data, ...tables]);
             setIsAddModalOpen(false);
             addForm.resetFields();
         } catch (error) {
-            message.error("Błąd podczas tworzenia nowego stolika.");
+            message.error("An error occurred while creating a new table.");
             console.error("Table creation error:", error);
         }
     };
@@ -113,10 +113,10 @@ const TablesManagement = () => {
     return (
         <div className="flex justify-center mb-4 my-3 mx-2 min-h-screen">
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
-                <Title level={2} className="text-center">Stoliki</Title>
+                <Title level={2} className="text-center">Tables</Title>
                 <Button color="blue" variant="solid" className="w-1/3 mx-4 self-center"
                         onClick={() => setIsAddModalOpen(true)}>
-                    Dodaj stolik
+                    Add a table
                 </Button>
                 <div className="overflow-x-auto">
                     <Table
@@ -132,13 +132,13 @@ const TablesManagement = () => {
                             showSizeChanger: true,
                             responsive: true,
                         }}
-                        locale={{emptyText: 'Tu będą stoliki'}}
+                        locale={{emptyText: 'There will be tables here'}}
                     />
                 </div>
             </div>
             {selectedTable &&
                 <Modal
-                    title={<div className="text-xl text-center">Stolik {selectedTable.name}</div>}
+                    title={<div className="text-xl text-center">Table {selectedTable.name}</div>}
                     centered
                     open={isEditModalOpen}
                     onCancel={() => {
@@ -161,28 +161,28 @@ const TablesManagement = () => {
                                     required: true,
                                     min: 1,
                                     max: 10,
-                                    message: 'Nazwa stolika musi zawierać od 1 do 10 znaków!'
+                                    message: 'The table name must contain between 1 and 10 characters!'
                                 }]}
                             >
                                 <Input/>
                             </Form.Item>
                             <Form.Item>
                                 <Button type="primary" htmlType="submit" className="w-full">
-                                    Zachowaj
+                                    Save
                                 </Button>
                             </Form.Item>
                         </Form>
 
                         <Button color="danger" variant="solid" className="w-full mt-2 self-center"
                                 onClick={handleRemoveTable} disabled={!selectedTable.is_free}>
-                            {selectedTable.is_free ? 'Usuń stolik' : 'Nie można usunąć zajęty stolik'}
+                            {selectedTable.is_free ? 'Remove the table' : 'You cannot remove a reserved table'}
                         </Button>
 
                     </div>
                 </Modal>
             }
             <Modal
-                title={<div className="text-xl text-center">Nowy stolik</div>}
+                title={<div className="text-xl text-center">New Table</div>}
                 centered
                 open={isAddModalOpen}
                 onCancel={() => {
@@ -204,14 +204,14 @@ const TablesManagement = () => {
                                 required: true,
                                 min: 1,
                                 max: 10,
-                                message: 'Nazwa stolika musi zawierać od 1 do 10 znaków!'
+                                message: 'The table name must contain between 1 and 10 characters!'
                             }]}
                         >
                             <Input/>
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" className="w-full">
-                                Dodaj
+                                Add
                             </Button>
                         </Form.Item>
                     </Form>

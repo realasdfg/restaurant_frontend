@@ -41,28 +41,28 @@ const UsersManagement = () => {
 
     const usersColumns = [
         {
-            title: "Nazwa",
+            title: "Username",
             dataIndex: "username",
             key: "username",
             className: "bg-white",
             render: (username) => <div className="font-semibold">{username}</div>,
         },
         {
-            title: "Imię",
+            title: "First name",
             dataIndex: "first_name",
             key: "first_name",
             className: "bg-white",
             render: (first_name) => <div>{first_name}</div>,
         },
         {
-            title: "Nazwisko",
+            title: "Last name",
             dataIndex: "last_name",
             key: "last_name",
             className: "bg-white",
             render: (last_name) => <div>{last_name}</div>,
         },
         {
-            title: "Rola",
+            title: "Role",
             dataIndex: "role",
             key: "role",
             className: "bg-white",
@@ -83,7 +83,7 @@ const UsersManagement = () => {
     const handleEditUser = async (userData) => {
         const isDuplicate = users.some(user => user.username === userData.username && user.id !== selectedUser.id);
         if (isDuplicate) {
-            message.error("Użytkownik o takiej nazwie już istnieje!");
+            message.error("A user with that name already exists!");
             return;
         }
 
@@ -95,7 +95,7 @@ const UsersManagement = () => {
                 role: userData.role,
                 password: userData.password === '' ? null : userData.password,
             });
-            message.success("Dane użytkownika zostały zapisane.");
+            message.success("Your user data has been saved.");
             setUsers(users.map(user => (user.id === selectedUser.id ? {
                 ...user, ...userData,
                 'password': null
@@ -107,7 +107,7 @@ const UsersManagement = () => {
             setIsEditModalOpen(false);
             setSelectedUser(null)
         } catch (error) {
-            message.error("Błąd podczas zapisywania danych użytkownika.");
+            message.error("An error occurred while saving user data.");
             console.error("User edit error:", error);
         }
     };
@@ -115,13 +115,13 @@ const UsersManagement = () => {
     const handleRemoveUser = async () => {
         try {
             await deleteUserById(selectedUser.id);
-            message.success("Użytkownik usunięty.");
+            message.success("User deleted.");
             setUsers(prev => prev.filter(user => user.id !== selectedUser.id));
             setFilteredUsers(prev => prev.filter(user => user.id !== selectedUser.id));
             setIsEditModalOpen(false);
             setSelectedUser(null)
         } catch (error) {
-            message.error("Błąd podczas usuwania użytkownika.");
+            message.error("An error occurred while deleting the user.");
             console.error("User remove error:", error);
         }
     };
@@ -129,7 +129,7 @@ const UsersManagement = () => {
     const handleAddUser = async (userData) => {
         const isDuplicate = users.some(user => user.username === userData.username);
         if (isDuplicate) {
-            message.error("Użytkownik o takiej nazwie już istnieje!");
+            message.error("A user with that name already exists!");
             return;
         }
 
@@ -141,12 +141,12 @@ const UsersManagement = () => {
                 role: userData.role,
                 password: userData.password,
             });
-            message.success("Nowy użytkownik został utworzony.");
+            message.success("A new user has been created.");
             setUsers([newUserResponse.data, ...users]);
             setFilteredUsers([newUserResponse.data, ...filteredUsers]);
             setIsAddModalOpen(false);
         } catch (error) {
-            message.error("Błąd podczas tworzenia nowego użytkownika.");
+            message.error("An error occurred while creating a new user.");
             console.error("User creation error:", error);
         }
     };
@@ -172,7 +172,7 @@ const UsersManagement = () => {
     return (
         <div className="flex justify-center mb-4 my-3 mx-2 min-h-screen">
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
-                <Title level={2} className="text-center">Użytkownicy</Title>
+                <Title level={2} className="text-center">Users</Title>
                 <Search
                     placeholder="Wyszukaj użytkowników..."
                     value={searchQuery}
@@ -182,7 +182,7 @@ const UsersManagement = () => {
                 />
                 <Button color="blue" variant="solid" className="w-1/3 mx-4 self-center"
                         onClick={() => setIsAddModalOpen(true)}>
-                    Dodaj użytkownika
+                    Add a user
                 </Button>
                 <div className="overflow-x-auto">
                     <Table
@@ -198,13 +198,13 @@ const UsersManagement = () => {
                             showSizeChanger: true,
                             responsive: true,
                         }}
-                        locale={{emptyText: 'Tu będą użytkownicy'}}
+                        locale={{emptyText: 'Users will be here'}}
                     />
                 </div>
             </div>
             {selectedUser &&
                 <Modal
-                    title={<div className="text-xl text-center">Użytkownik #{selectedUser.id}</div>}
+                    title={<div className="text-xl text-center">User #{selectedUser.id}</div>}
                     centered
                     open={isEditModalOpen}
                     onCancel={() => {
@@ -220,7 +220,7 @@ const UsersManagement = () => {
                             ?
                             <Button color="danger" variant="solid" className="w-full mt-2 self-center"
                                     onClick={handleRemoveUser}>
-                                Usuń użytkownika
+                                Delete User
                             </Button>
                             : null
                         }
@@ -228,7 +228,7 @@ const UsersManagement = () => {
                 </Modal>
             }
             <Modal
-                title={<div className="text-xl text-center">Nowy użytkownik</div>}
+                title={<div className="text-xl text-center">New User</div>}
                 centered
                 open={isAddModalOpen}
                 onCancel={() => {

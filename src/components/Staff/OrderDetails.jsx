@@ -87,7 +87,7 @@ const OrderDetails = () => {
             if (data.broadcast_type === 'order') {
                 console.log(`Order ${orderId} info changes received:`, data);
                 if (data.paid) {
-                    message.info("Zamówienie zostało opłacone!");
+                    message.info("The order has been paid for!");
                     navigate('/staff/orders');
                 }
                 setOrder(data);
@@ -134,7 +134,7 @@ const OrderDetails = () => {
     const handleAddItem = async (menuItemId, menuItemAddQuantity) => {
         try {
             if (menuItemAddQuantity > 9999999) {
-                message.error('Za duża ilość pozycji');
+                message.error('Too many items');
                 return;
             }
             const orderItem = orderItems.find((item) => item.menu_item_id === menuItemId);
@@ -143,7 +143,7 @@ const OrderDetails = () => {
                 itemName = orderItem.menuItem.name;
                 let newQuantity = orderItem.quantity + menuItemAddQuantity;
                 if (newQuantity > 9999999) {
-                    message.error('Za duża ilość pozycji');
+                    message.error('Too many items');
                     return;
                 }
                 await handleQuantityChange(orderItem.id, menuItemId, newQuantity);
@@ -155,9 +155,9 @@ const OrderDetails = () => {
 
                 itemName = menuItemResponse.data.name;
             }
-            message.success(`Pozycja "${itemName}" została dodana!`);
+            message.success(`The item "${itemName}" has been added!`);
         } catch (error) {
-            message.error('Błąd dodawania pozycji');
+            message.error('Error adding an item');
             console.error('Add item error:', error);
         }
     };
@@ -177,7 +177,7 @@ const OrderDetails = () => {
                 );
             }
         } catch (error) {
-            message.error('Błąd aktualizacji ilości');
+            message.error('Quantity Update Error');
             console.error('Update quantity error:', error);
         }
     };
@@ -186,7 +186,7 @@ const OrderDetails = () => {
         const orderItem = orderItems.find(item => item.id === orderItemId);
         if (newQuantity) {
             if (newQuantity > 9999999) {
-                message.error('Za duża ilość pozycji');
+                message.error('Too many items');
                 return;
             }
             if (orderItem.quantity !== newQuantity) {
@@ -202,7 +202,7 @@ const OrderDetails = () => {
             await deleteOrderItem(orderId, orderItem.menu_item_id);
             setOrderItems(orderItems.filter(item => item !== orderItem));
         } catch (error) {
-            message.error('Błąd usuwania pozycji');
+            message.error('Error deleting an item');
             console.error('Remove item error:', error);
         }
     };
@@ -222,7 +222,7 @@ const OrderDetails = () => {
             await closeOrder(orderId, {paid: true});
             navigate('/staff/orders');
         } catch (error) {
-            message.error('Błąd podczas zamknięcia zamówienia');
+            message.error('Error while closing the order');
             console.error('Close order error:', error);
         }
     }
@@ -238,20 +238,20 @@ const OrderDetails = () => {
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/6 xl:w-2/5 flex flex-col mb-14 sm:mb-0">
                 <div className="p-4">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-xl font-bold">Zamówienie #{orderId}</span>
+                        <span className="text-xl font-bold">Order #{orderId}</span>
                         {order.type === 'dinein' ? (
                             <Tag color="green" className="text-sm">
-                                W RESTAURACJI
+                                DINE IN
                             </Tag>
                         ) : (
                             <Tag color="blue" className="text-sm">
-                                NA WYNOS
+                                TO GO
                             </Tag>
                         )}
                     </div>
                     {table && (
                         <div className="text-end">
-                            <strong>Stolik:</strong>
+                            <strong>Table:</strong>
                             <Tag color="green" className="text-sm">
                                 {table.name}
                             </Tag>
@@ -262,9 +262,9 @@ const OrderDetails = () => {
                         {userRole === 'admin' &&
                             <Tag color="blue"
                                  className="text-sm mt-2 overflow-hidden text-ellipsis w-full">
-                                <strong>Utworzono: </strong><br/>
+                                <strong>Created at: </strong><br/>
                                 {new Date(order.created_at).toLocaleString()} <br/>
-                                Przez: {userCreated?.first_name + ' ' + userCreated?.last_name}
+                                By: {userCreated?.first_name + ' ' + userCreated?.last_name}
                                 <span> ({userCreated?.id})</span>
 
                             </Tag>
@@ -275,15 +275,15 @@ const OrderDetails = () => {
                             <Tag color="blue"
                                  className="text-sm mt-2 overflow-hidden text-ellipsis w-full">
                                     <span>
-                                    <strong>Zapłacono: </strong><br/>
+                                    <strong>Paid: </strong><br/>
                                         {new Date(order.paid_at).toLocaleString()} <br/>
-                                        Przez: {userPaid?.first_name + ' ' + userPaid?.last_name}
+                                        By: {userPaid?.first_name + ' ' + userPaid?.last_name}
                                         <span> ({userPaid?.id})</span> <br/>
                                     </span>
                                 <span>
-                                    <strong>Kartą: {order.paid_by_card} zł</strong> <br/>
-                                    <strong>Gotówką: {order.paid_by_cash} zł</strong><br/>
-                                    <strong>Online: {order.paid_online ? "Tak" : "Nie"} </strong>
+                                    <strong>By card: {order.paid_by_card} zł</strong> <br/>
+                                    <strong>by cash: {order.paid_by_cash} zł</strong><br/>
+                                    <strong>Online: {order.paid_online ? "Yes" : "No"} </strong>
                                     </span>
                             </Tag>
                         }
@@ -306,11 +306,11 @@ const OrderDetails = () => {
                             {order.paid_online
                                 ? <div className="hidden sm:flex justify-end items-center">
                                     <span className="font-bold text-xl text-white">Suma: {totalAmount} zł</span>
-                                    <Tag color="green" className="mx-2">opłacono online</Tag>
+                                    <Tag color="green" className="mx-2">paid online</Tag>
                                     <Button color="primary" variant="outlined"
                                             className="w-24 h-10 font-bold text-base shadow"
                                             onClick={handleCloseOnline}>
-                                        Zamknij
+                                        Close
                                     </Button>
                                 </div>
                                 : <div className="hidden sm:flex justify-between items-center">
@@ -319,7 +319,7 @@ const OrderDetails = () => {
                                                               iconClassName="text-white"/>
                                         <Button className="ml-2" color="primary" variant="outlined"
                                                 onClick={() => setIsDrawerOpen(true)}>
-                                            Dodaj
+                                            Add
                                         </Button>
                                     </div>
                                     <div>
@@ -328,7 +328,7 @@ const OrderDetails = () => {
                                                 disabled={parseFloat(totalAmount) === 0}
                                                 className="w-24 h-10 font-bold text-base shadow ml-2"
                                                 onClick={() => setIsModalOpen(true)}>
-                                            Zamknij
+                                            Close
                                         </Button>
                                     </div>
                                 </div>
@@ -346,11 +346,11 @@ const OrderDetails = () => {
                         ? <> {order.paid_online
                             ? <div className="flex justify-end items-center">
                                 <span className="font-bold text-xl text-white ">Suma: {totalAmount} zł</span>
-                                <Tag color="green" className="mx-2">opłacono online</Tag>
+                                <Tag color="green" className="mx-2">paid online</Tag>
                                 <Button color="primary" variant="outlined"
                                         className="w-24 h-10 font-bold text-base shadow ml-2 mr-6"
                                         onClick={handleCloseOnline}>
-                                    Zamknij
+                                    Close
                                 </Button>
                             </div>
                             : <div className="flex justify-between items-center">
@@ -359,7 +359,7 @@ const OrderDetails = () => {
                                                           iconClassName="text-white"/>
                                     <Button className="ml-2" color="primary" variant="outlined"
                                             onClick={() => setIsDrawerOpen(true)}>
-                                        Dodaj
+                                        Add
                                     </Button>
                                 </div>
                                 <div className="mr-6">
@@ -367,7 +367,7 @@ const OrderDetails = () => {
                                     <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
                                             className="w-24 h-10 font-bold text-base shadow ml-2"
                                             onClick={() => setIsModalOpen(true)}>
-                                        Zamknij
+                                        Close
                                     </Button>
                                 </div>
                             </div>

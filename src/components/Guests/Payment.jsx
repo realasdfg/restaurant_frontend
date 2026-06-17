@@ -15,7 +15,7 @@ const Payment = () => {
             try {
                 await payOrderOnline(orderId);
             } catch (error) {
-                message.error("Błąd opłaty zamówienia")
+                message.error("Order Payment Error")
                 console.error(error)
             } finally {
                 setTimeout(() => {
@@ -31,7 +31,7 @@ const Payment = () => {
         <>
             <GuestsHeader isMenu={false}/>
             <div className="flex justify-center min-h-screen">
-                <h2>Przetwarzanie płatności...</h2>
+                <h2>Payment Processing...</h2>
             </div>
         </>
     );

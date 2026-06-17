@@ -63,14 +63,14 @@ const OnlineMenu = () => {
 
     const tableColumns = [
         {
-            title: "Nazwa",
+            title: "Name",
             dataIndex: "menuItem",
             key: "name",
             className: "bg-white",
             render: (menuItem) => <div className="line-clamp-2">{menuItem.name}</div>,
         },
         {
-            title: <div className="justify-self-center">Ilość</div>,
+            title: <div className="justify-self-center">Quantity</div>,
             dataIndex: "quantity",
             key: "quantity",
             className: "w-1 bg-white",
@@ -88,7 +88,7 @@ const OnlineMenu = () => {
             render: (price) => <div className="justify-self-end">{price}</div>,
         },
         {
-            title: <div className="justify-self-end">Wartość</div>,
+            title: <div className="justify-self-end">Value</div>,
             key: "total",
             className: "bg-white w-1",
             render: (_, record) => (
@@ -117,7 +117,7 @@ const OnlineMenu = () => {
             <div className="flex justify-center min-h-screen">
                 <div className="bg-gray-200 rounded-lg shadow w-full lg:w-3/6 xl:w-2/5 flex flex-col m-2">
                     <div className="flex justify-between items-center m-3">
-                        <span className="text-xl font-bold">Stolik: {table.name}</span>
+                        <span className="text-xl font-bold">Table: {table.name}</span>
                     </div>
                     {order
                         ? <div>
@@ -128,13 +128,13 @@ const OnlineMenu = () => {
                                     columns={tableColumns}
                                     rowKey="id"
                                     pagination={false}
-                                    locale={{emptyText: "Tu będą widoczne pozycje zamówienia"}}
+                                    locale={{emptyText: "The order items will be displayed here"}}
                                 />
                             </div>
                             {order.paid_online &&
                                 <Tag color="green-inverse" className="text-xl font-mono my-4 w-full">
                                     <div className="text-center">
-                                        Zamówienie zostało już opłacone
+                                        The order has already been paid for
                                     </div>
                                 </Tag>
                             }
@@ -145,12 +145,12 @@ const OnlineMenu = () => {
                                 <Button color="primary" variant="solid" disabled={totalAmount <= 0}
                                         className={"w-24 h-10 font-bold text-base shadow ml-2 " + (order.paid_online ? "hidden" : "")}
                                         onClick={handlePayment}>
-                                    Zapłać
+                                    Pay
                                 </Button>
                             </div>
                         </div>
                         : <div className="text-xl font-bold text-center">
-                            Nie ma dostępnego zamówienia
+                            There are no orders available
                         </div>
                     }
                 </div>

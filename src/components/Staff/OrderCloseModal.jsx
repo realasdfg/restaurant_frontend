@@ -38,7 +38,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
             await closeOrder(orderId, {paid: true, paid_by_card: cardAmount, paid_by_cash: realCashAmount});
             navigate('/staff/orders');
         } catch (error) {
-            message.error('Błąd podczas zamknięcia zamówienia');
+            message.error('Error while closing the order');
             console.error('Close order error:', error);
         }
     }
@@ -71,7 +71,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
 
     return (
         <Modal
-            title={<div className="text-xl text-center">Zamknięcie zamówienia</div>}
+            title={<div className="text-xl text-center">Order Closure</div>}
             centered
             open={open}
             onCancel={onCancel}
@@ -107,7 +107,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
                     },
                     {
                         key: 'cash',
-                        label: <div className="text-base font-bold">Gotówką:</div>,
+                        label: <div className="text-base font-bold">By cash:</div>,
                         value: (
                             <InputNumber
                                 ref={cashInputRef}
@@ -120,7 +120,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
                     },
                     {
                         key: 'card',
-                        label: <div className="text-base font-bold">Kartą:</div>,
+                        label: <div className="text-base font-bold">By card:</div>,
                         value: (
                             <InputNumber
                                 ref={cardInputRef}
@@ -133,7 +133,7 @@ const OrderCloseModal = ({open, onCancel, totalAmount, orderId}) => {
                     },
                     {
                         key: 'change',
-                        label: <div className="text-base font-bold">Reszta:</div>,
+                        label: <div className="text-base font-bold">Rest:</div>,
                         value:
                             <div
                                 className="text-base">{

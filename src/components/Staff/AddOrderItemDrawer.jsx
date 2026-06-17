@@ -117,7 +117,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                                 {!searchQuery && (
                                     <Button onClick={() => setSelectedCategory(null)}
                                             className="mb-2 w-full bg-gray-50">
-                                        ← Wróć
+                                        ← Back
                                     </Button>
                                 )}
 
@@ -125,7 +125,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                                     bordered
                                     className="w-full"
                                     dataSource={filteredMenuItems}
-                                    locale={{emptyText: "Błąd wyszukiwania"}}
+                                    locale={{emptyText: "Search error"}}
                                     renderItem={(item) => (
                                         <List.Item onClick={() => handleAddItem(item)}
                                                    className="cursor-pointer bg-gray-50">

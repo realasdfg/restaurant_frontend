@@ -132,7 +132,7 @@ const CurrentOrders = () => {
             ),
         },
         {
-            title: "Stolik",
+            title: "Table",
             dataIndex: "table_id",
             key: "table_id",
             className: "w-1 bg-white text-center",
@@ -144,7 +144,7 @@ const CurrentOrders = () => {
             render: (tableId) => (tableId ? tableMap[tableId] : "-"),
         },
         {
-            title: "Utworzono",
+            title: "Created at",
             dataIndex: "created_at",
             key: "created_at",
             className: "bg-white",
@@ -152,7 +152,7 @@ const CurrentOrders = () => {
             render: (date) => <>{new Date(date).toLocaleString()}</>,
         },
         {
-            title: "Zapłacono",
+            title: "Paid at",
             dataIndex: "paid_at",
             key: "paid_at",
             className: "bg-white",
@@ -183,22 +183,22 @@ const CurrentOrders = () => {
     return (
         <div className="flex justify-center mb-4 my-3 mx-1 min-h-screen">
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
-                <Title level={2} className="text-center">Archiwum zamówień</Title>
+                <Title level={2} className="text-center">Order Archive</Title>
                 <div className="flex flex-wrap justify-center gap-2">
                     <div className="w-[270px] flex flex-col gap-2">
                         <Select className="w-full" defaultValue={ordersType || ''} onChange={handleOrderTypeChange}
                                 options={[
                                     {
                                         value: '',
-                                        label: <div className="text-gray-400">(Typ zamówienia)</div>,
+                                        label: <div className="text-gray-400">(Order Type)</div>,
                                     },
                                     {
                                         value: 'dinein',
-                                        label: 'W restauracji',
+                                        label: 'Dine in',
                                     },
                                     {
                                         value: 'togo',
-                                        label: 'Na wynos',
+                                        label: 'To go',
                                     },
                                 ]}/>
                         <Select className="w-full" defaultValue={ordersCreatedBy || ''}
@@ -206,7 +206,7 @@ const CurrentOrders = () => {
                                 options={[
                                     {
                                         value: '',
-                                        label: <div className="text-gray-400">(Utworzone)</div>,
+                                        label: <div className="text-gray-400">(Created)</div>,
                                     },
                                     ...users.map(user => ({
                                         value: `${user.id}`,
@@ -217,7 +217,7 @@ const CurrentOrders = () => {
                                 options={[
                                     {
                                         value: '',
-                                        label: <div className="text-gray-400">(Opłacone)</div>,
+                                        label: <div className="text-gray-400">(Paid)</div>,
                                     },
                                     ...users.map(user => ({
                                         value: `${user.id}`,
@@ -233,19 +233,19 @@ const CurrentOrders = () => {
                             placement={'bottomLeft'}
                             presets={innerWidth > 1000 && [
                                 {
-                                    label: 'Ostatnie 7 dni',
+                                    label: 'Last 7 days',
                                     value: [dayjs().add(-7, 'd'), dayjs()],
                                 },
                                 {
-                                    label: 'Ostatnie 14 dni',
+                                    label: 'Last 14 days',
                                     value: [dayjs().add(-14, 'd'), dayjs()],
                                 },
                                 {
-                                    label: 'Ostatnie 30 dni',
+                                    label: 'Last 30 days',
                                     value: [dayjs().add(-30, 'd'), dayjs()],
                                 },
                                 {
-                                    label: 'Ostatnie 90 dni',
+                                    label: 'Last 90 days',
                                     value: [dayjs().add(-90, 'd'), dayjs()],
                                 },
                             ]}
@@ -265,11 +265,11 @@ const CurrentOrders = () => {
                             setOrdersPaidBy('')
                             setOrdersCreatedBy('')
                             setSearchParams({})
-                        }}>Resetuj</Button>
+                        }}>Reset</Button>
                     </div>
                 </div>
                 <div className="text-base font-semibold font-mono ml-4">
-                    Zamówień: {orders.length} | Łączna suma: {orders.reduce((sum, order) => {
+                    Orders: {orders.length} | Total amount: {orders.reduce((sum, order) => {
                     const totalSum = parseFloat(order.paid_by_card) + parseFloat(order.paid_by_cash);
                     return sum + totalSum;
                 }, 0).toFixed(2)}

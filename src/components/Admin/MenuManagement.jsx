@@ -59,7 +59,7 @@ const MenuManagement = () => {
 
     const categoryColumns = [
         {
-            title: "Kategoria",
+            title: "Category",
             dataIndex: "name",
             key: "name",
             className: "bg-white",
@@ -69,23 +69,23 @@ const MenuManagement = () => {
 
     const menuItemColumns = [
         {
-            title: "Nazwa",
+            title: "Name",
             dataIndex: "name",
             key: "name",
             className: "bg-white",
             render: (name) => <div className="font-semibold w-[250px]">{name}</div>,
         },
         {
-            title: "Typ",
+            title: "Type",
             dataIndex: "type",
             key: "type",
             className: "bg-white w-1",
             sorter: (a, b) => a.type.localeCompare(b.type),
             render: (type) => <Tag color={type === 'by_weight' ? 'blue' : 'green'}
-                                   className="font-semibold">{type === 'by_weight' ? 'Wagowa' : 'Ilościowa'}</Tag>,
+                                   className="font-semibold">{type === 'by_weight' ? 'By Weight' : 'By Quantity'}</Tag>,
         },
         {
-            title: <div className="justify-self-center">Waga</div>,
+            title: <div className="justify-self-center">Weight</div>,
             dataIndex: "weight",
             key: "weight",
             className: "bg-white w-1",
@@ -100,7 +100,7 @@ const MenuManagement = () => {
             render: (price) => <div className="text-end">{price}</div>,
         },
         {
-            title: <div className="justify-self-end">Koszt</div>,
+            title: <div className="justify-self-end">Cost</div>,
             dataIndex: "cost",
             key: "cost",
             className: "bg-white w-1",
@@ -108,7 +108,7 @@ const MenuManagement = () => {
             render: (cost) => <div className="text-end">{cost}</div>,
         },
         {
-            title: <div className="justify-self-center">Dostępny</div>,
+            title: <div className="justify-self-center">Available</div>,
             dataIndex: "available",
             key: "available",
             className: "bg-white w-1",
@@ -130,7 +130,7 @@ const MenuManagement = () => {
     const handleEditMenuItem = async (menuItemData) => {
         const isDuplicate = menuItems.some(item => item.name === menuItemData.name && item.id !== selectedRowData.id);
         if (isDuplicate) {
-            message.error("Pozycja menu o takiej nazwie już istnieje!");
+            message.error("A menu item with that name already exists!");
             return;
         }
 
@@ -148,14 +148,14 @@ const MenuManagement = () => {
                 weight: menuItemData.weight,
                 available: menuItemData.available,
             }, image);
-            message.success("Dane pozycji menu zostały zapisane.");
+            message.success("The menu item data has been saved.");
             setMenuItems(menuItems.map(item => (item.id === selectedRowData.id ? {
                 ...item, ...menuItemResponse.data
             } : item)));
             setIsEditModalOpen(false);
             setSelectedRowData(null)
         } catch (error) {
-            message.error("Błąd podczas zapisywania danych pozycji menu.");
+            message.error("An error occurred while saving the menu item data.");
             console.error("Menu item edit error:", error);
         }
     };
@@ -163,7 +163,7 @@ const MenuManagement = () => {
     const handleEditCategory = async (categoryData) => {
         const isDuplicate = categories.some(cat => cat.name === categoryData.name && cat.id !== selectedRowData.id);
         if (isDuplicate) {
-            message.error("Kategoria o takiej nazwie już istnieje!");
+            message.error("A category with that name already exists!");
             return;
         }
 
@@ -171,7 +171,7 @@ const MenuManagement = () => {
             const categoryResponse = await updateCategoryById(selectedRowData.id, {
                 name: categoryData.name
             });
-            message.success("Dane kategorii zostały zapisane.");
+            message.success("The category data has been saved.");
             setCategories(categories.map(cat => (cat.id === selectedRowData.id ? {
                 ...cat, ...categoryResponse.data
             } : cat)));
@@ -181,7 +181,7 @@ const MenuManagement = () => {
             setIsEditModalOpen(false);
             setSelectedRowData(null);
         } catch (error) {
-            message.error("Błąd podczas zapisywania danych kategorii.");
+            message.error("An error occurred while saving category data.");
             console.error("Menu category edit error:", error);
         }
     };
@@ -189,12 +189,12 @@ const MenuManagement = () => {
     const handleRemoveMenuItem = async () => {
         try {
             await deleteMenuItemById(selectedRowData.id);
-            message.success("Pozycja menu usunięta.");
+            message.success("Menu item removed.");
             setMenuItems(prev => prev.filter(item => item.id !== selectedRowData.id));
             setIsEditModalOpen(false);
             setSelectedRowData(null)
         } catch (error) {
-            message.error("Błąd podczas usuwania pozycji menu.");
+            message.error("An error occurred while deleting a menu item.");
             console.error("Menu item remove error:", error);
         }
     };
@@ -202,18 +202,18 @@ const MenuManagement = () => {
     const handleRemoveCategory = async () => {
         const filteredItems = menuItems.filter(item => item.category_id === selectedRowData.id);
         if (filteredItems.length !== 0) {
-            message.error("Nie można usuwać kategorii z pozycjami.");
+            message.error("You cannot delete categories that contain items.");
             return;
         }
         try {
             await deleteCategoryById(selectedRowData.id);
-            message.success("Kategoria usunięta.");
+            message.success("Category deleted.");
             setCategories(prev => prev.filter(cat => cat.id !== selectedRowData.id));
             setFilteredCategories(prev => prev.filter(cat => cat.id !== selectedRowData.id));
             setIsEditModalOpen(false);
             setSelectedRowData(null);
         } catch (error) {
-            message.error("Błąd podczas usuwania kategorii.");
+            message.error("An error occurred while deleting the category.");
             console.error("Menu category remove error:", error);
         }
     };
@@ -221,7 +221,7 @@ const MenuManagement = () => {
     const handleAddMenuItem = async (menuItemData) => {
         const isDuplicate = menuItems.some(item => item.name === menuItemData.name);
         if (isDuplicate) {
-            message.error("Pozycja menu o takiej nazwie już istnieje!");
+            message.error("A menu item with that name already exists!");
             return;
         }
 
@@ -240,11 +240,11 @@ const MenuManagement = () => {
                 available: menuItemData.available,
                 category_id: menuItemData.category_id,
             }, image);
-            message.success("Dane pozycji menu zostały zapisane.");
+            message.success("The menu item data has been saved.");
             setMenuItems([newMenuItemResponse.data, ...menuItems]);
             setIsAddModalOpen(false);
         } catch (error) {
-            message.error("Błąd podczas tworzenia nowej pozycji menu.");
+            message.error("An error occurred while creating a new menu item.");
             console.error("Menu item creation error:", error);
         }
     };
@@ -252,7 +252,7 @@ const MenuManagement = () => {
     const handleAddCategory = async (categoryData) => {
         const isDuplicate = categories.some(cat => cat.name === categoryData.name);
         if (isDuplicate) {
-            message.error("Kategoria o takiej nazwie już istnieje!");
+            message.error("A category with that name already exists!");
             return;
         }
 
@@ -260,13 +260,13 @@ const MenuManagement = () => {
             const newCategoryResponse = await addCategory({
                 name: categoryData.name
             });
-            message.success("Dane kategorii zostały zapisane.");
+            message.success("The category data has been saved.");
             setCategories([newCategoryResponse.data, ...categories]);
             setFilteredCategories([newCategoryResponse.data, ...filteredCategories]);
             setIsAddModalOpen(false);
             categoryForm.resetFields();
         } catch (error) {
-            message.error("Błąd podczas tworzenia nowej kategorii.");
+            message.error("An error occurred while creating a new category.");
             console.error("Menu category creation error:", error);
         }
     };
@@ -308,7 +308,7 @@ const MenuManagement = () => {
                                 setIsAddModalOpen(true);
                                 setAddType('menuItem');
                             }}>
-                        Dodaj pozycję menu
+                        Add a menu item
                     </Button>
                     <Button color="blue" variant="solid" className="w-1/3 self-center"
                             onClick={() => {
@@ -316,7 +316,7 @@ const MenuManagement = () => {
                                 setAddType('category');
                                 categoryForm.setFieldsValue({name: null});
                             }}>
-                        Dodaj kategorię
+                        Add a category
                     </Button>
                 </div>
                 <div className="overflow-x-auto">
@@ -327,7 +327,7 @@ const MenuManagement = () => {
                         rowKey={(record) => record.id}
                         onRow={handleRowClick}
                         pagination={false}
-                        locale={{emptyText: 'Tu będą pozycji menu'}}
+                        locale={{emptyText: 'The menu items will appear here'}}
                     />
                 </div>
             </div>
@@ -349,7 +349,7 @@ const MenuManagement = () => {
                                               onSubmit={handleEditMenuItem}/>
                                 <Button color="danger" variant="solid" className="w-full mt-2 self-center"
                                         onClick={handleRemoveMenuItem}>
-                                    Usuń
+                                    Delete
                                 </Button>
                             </>
                             : <>
@@ -366,20 +366,20 @@ const MenuManagement = () => {
                                             required: true,
                                             min: 1,
                                             max: 50,
-                                            message: 'Nazwa kategorii musi zawierać od 1 do 50 znaków!'
+                                            message: 'The category name must contain between 1 and 50 characters!'
                                         }]}
                                     >
                                         <Input/>
                                     </Form.Item>
                                     <Form.Item>
                                         <Button type="primary" htmlType="submit" className="w-full">
-                                            Zachowaj
+                                            Save
                                         </Button>
                                     </Form.Item>
                                 </Form>
                                 <Button color="danger" variant="solid" className="w-full mt-2 self-center"
                                         onClick={handleRemoveCategory}>
-                                    Usuń
+                                    Delete
                                 </Button>
                             </>
                         }
@@ -388,7 +388,7 @@ const MenuManagement = () => {
             }
             <Modal
                 title={<div
-                    className="text-xl text-center">Nowa {addType === 'menuItem' ? 'pozycja menu' : 'kategoria'}</div>}
+                    className="text-xl text-center">New {addType === 'menuItem' ? 'menu item' : 'category'}</div>}
                 centered
                 open={isAddModalOpen}
                 onCancel={() => {
@@ -413,14 +413,14 @@ const MenuManagement = () => {
                                     required: true,
                                     min: 1,
                                     max: 50,
-                                    message: 'Nazwa kategorii musi zawierać od 1 do 50 znaków!'
+                                    message: 'The category name must contain between 1 and 50 characters!'
                                 }]}
                             >
                                 <Input/>
                             </Form.Item>
                             <Form.Item>
                                 <Button type="primary" htmlType="submit" className="w-full">
-                                    Dodaj
+                                    Add
                                 </Button>
                             </Form.Item>
                         </Form>

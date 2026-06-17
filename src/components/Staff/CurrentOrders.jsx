@@ -111,7 +111,7 @@ const CurrentOrders = () => {
             ),
         },
         {
-            title: "Stolik",
+            title: "Table",
             dataIndex: "table_id",
             key: "table_id",
             className: "w-1/3 bg-white",
@@ -123,7 +123,7 @@ const CurrentOrders = () => {
             render: (tableId) => (tableId ? tableMap[tableId] : "-"),
         },
         {
-            title: "Utworzono",
+            title: "Created at",
             dataIndex: "created_at",
             key: "created_at",
             className: "w-1/3 bg-white",
@@ -146,14 +146,14 @@ const CurrentOrders = () => {
     const tabs = [
         {
             key: "1",
-            label: "Wszystkie",
+            label: "All",
             children: <div className="overflow-x-auto">
                 <OrdersTable columns={columns} dataSource={orders} onRow={handleRowClick} pagination={false}/>
             </div>,
         },
         {
             key: "2",
-            label: "W restauracji",
+            label: "Dine in",
             children: <div className="overflow-x-auto">
                 <OrdersTable columns={columns} dataSource={orders.filter(o => o.type === "dinein")}
                              onRow={handleRowClick} pagination={false}/>
@@ -161,7 +161,7 @@ const CurrentOrders = () => {
         },
         {
             key: "3",
-            label: "Na wynos",
+            label: "To go",
             children: <div className="overflow-x-auto">
                 <OrdersTable columns={columns} dataSource={orders.filter(o => o.type === "togo")}
                              onRow={handleRowClick} pagination={false}/>
@@ -174,7 +174,7 @@ const CurrentOrders = () => {
     return (
         <div className="flex justify-center mb-4 my-3 mx-1 min-h-screen">
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
-                <Title level={2} className="text-center mt-3">Aktualne zamówienia</Title>
+                <Title level={2} className="text-center mt-3">Current Orders</Title>
                 <div className="mx-1">
                     <Tabs defaultActiveKey="1" items={tabs}/>
                 </div>

@@ -44,14 +44,14 @@ const OrderItemsTable = ({
 
     const tableColumns = [
         {
-            title: "Nazwa",
+            title: "Name",
             dataIndex: "menuItem",
             key: "name",
             className: "bg-white",
             render: (menuItem) => <div className="line-clamp-2">{menuItem.name}</div>,
         },
         {
-            title: <div className="justify-self-center">Ilość</div>,
+            title: <div className="justify-self-center">Quantity</div>,
             dataIndex: "quantity",
             key: "quantity",
             className: "w-1 bg-white",
@@ -77,7 +77,7 @@ const OrderItemsTable = ({
             render: (menuItem) => <div className="justify-self-end">{menuItem.price}</div>,
         },
         {
-            title: <div className="justify-self-end">Wartość</div>,
+            title: <div className="justify-self-end">Value</div>,
             key: "total",
             className: "bg-white w-1",
             render: (_, record) => (
@@ -107,7 +107,7 @@ const OrderItemsTable = ({
 
     const listData = selectedItem && [
         {
-            label: "Ilość",
+            label: "Quantity",
             value: (
                 <ItemQuantityInput
                     value={selectedItem.quantity}
@@ -122,7 +122,7 @@ const OrderItemsTable = ({
             value: <>{selectedItem.menuItem.price} zł {selectedItem.menuItem.type === "by_weight" ? '/ 100 g' : ''}</>
         },
         {
-            label: "Wartość",
+            label: "Value",
             value: selectedItem.menuItem.type === "by_quantity"
                 ? `${(selectedItem.quantity * selectedItem.menuItem.price).toFixed(2)} zł`
                 : `${(selectedItem.quantity / 100 * selectedItem.menuItem.price).toFixed(2)} zł`
@@ -137,7 +137,7 @@ const OrderItemsTable = ({
                 columns={tableColumns}
                 rowKey="id"
                 pagination={false}
-                locale={{emptyText: "Tu będą widoczne pozycje zamówienia"}}
+                locale={{emptyText: "The order items will be displayed here"}}
                 onRow={(record) => ({
                     onClick: () => setSelectedItem(record),
                 })}
@@ -168,7 +168,7 @@ const OrderItemsTable = ({
                                 onClick={() => {
                                     handleRemoveItem(selectedItem);
                                     setSelectedItem(null)
-                                }}>Usuń</Button>
+                                }}>Delete</Button>
                         <Button color="blue" variant="solid" className="mt-2"
                                 onClick={() => setSelectedItem(null)}>Ok</Button>
                     </div>

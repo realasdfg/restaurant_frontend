@@ -48,7 +48,7 @@ const SHeader = ({isAdminPage}) => {
                     <HomeOutlined/>
                 </Button>
                 {isAdminPage ? (
-                    <div className="text-white text-xl">Strona Administratora</div>
+                    <div className="text-white text-xl">Administrator Page</div>
                 ) : (
                     <CreateOrderDropdown/>
                 )}
@@ -56,7 +56,7 @@ const SHeader = ({isAdminPage}) => {
             <UserOutlined className="text-white text-xl" onClick={() => setIsDrawerOpen(true)}/>
 
             <Drawer
-                title={<>{user.first_name} {user.last_name} ({userRole === 'staff' ? 'Kelner' : 'Administrator'})</>}
+                title={<>{user.first_name} {user.last_name} ({userRole === 'staff' ? 'Waiter' : 'Administrator'})</>}
                 placement="right"
                 open={isDrawerOpen}
                 onClose={() => setIsDrawerOpen(false)}
@@ -73,28 +73,28 @@ const SHeader = ({isAdminPage}) => {
                                         setIsDrawerOpen(false);
                                         navigate('/staff/orders');
                                     }}>
-                                Aktualne zamówienia
+                                Current Orders
                             </Button>
                             <Button className="w-full size-9" color="blue" variant="solid"
                                     onClick={() => {
                                         setIsDrawerOpen(false);
                                         navigate('/admin/orders');
                                     }}>
-                                Archiwum zamówień
+                                Order Archive
                             </Button>
                             <Button className="w-full size-9" color="blue" variant="solid"
                                     onClick={() => {
                                         setIsDrawerOpen(false);
                                         navigate('/admin/users');
                                     }}>
-                                Użytkownicy
+                                Users
                             </Button>
                             <Button className="w-full size-9" color="blue" variant="solid"
                                     onClick={() => {
                                         setIsDrawerOpen(false);
                                         navigate('/admin/tables');
                                     }}>
-                                Stoliki
+                                Tables
                             </Button>
                             <Button className="w-full size-9" color="blue" variant="solid"
                                     onClick={() => {
@@ -108,12 +108,12 @@ const SHeader = ({isAdminPage}) => {
                                         setIsDrawerOpen(false);
                                         navigate('/admin/statistics');
                                     }}>
-                                Statystyka
+                                Statistics
                             </Button>
                         </>
                     }
                     <Button className="w-full" color="danger" variant="solid" onClick={handleLogout}>
-                        Wyloguj się
+                        Log out
                     </Button>
                 </div>
             </Drawer>

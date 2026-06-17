@@ -31,7 +31,7 @@ const OrdersTable = ({dataSource, columns, onRow, pagination}) => {
                 rowKey={(record) => record.id}
                 onRow={onRow}
                 pagination={!pagination ? pagination : tableParams.pagination}
-                locale={{emptyText: 'Tu będą widoczne zamówienia'}}
+                locale={{emptyText: 'Orders will be displayed here'}}
                 onChange={handleTableChange}
             />
         </>

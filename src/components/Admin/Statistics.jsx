@@ -107,7 +107,7 @@ const Statistics = () => {
     return (
         <div className="flex justify-center mb-4 my-3 mx-1 min-h-screen">
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
-                <Title level={2} className="text-center">Statystyka dochodów</Title>
+                <Title level={2} className="text-center">Revenue Statistics</Title>
                 <div className="flex justify-center">
                     <div className="w-[350px] flex flex-col gap-2">
                         <RangePicker
@@ -117,26 +117,26 @@ const Statistics = () => {
                             placement={'bottomLeft'}
                             presets={innerWidth > 1000 && [
                                 {
-                                    label: 'Ostatnie 7 dni',
+                                    label: 'Last 7 days',
                                     value: [dayjs().add(-7, 'd'), dayjs()],
                                 },
                                 {
-                                    label: 'Ostatnie 14 dni',
+                                    label: 'Last 14 days',
                                     value: [dayjs().add(-14, 'd'), dayjs()],
                                 },
                                 {
-                                    label: 'Ostatnie 30 dni',
+                                    label: 'Last 30 days',
                                     value: [dayjs().add(-30, 'd'), dayjs()],
                                 },
                                 {
-                                    label: 'Ostatnie 90 dni',
+                                    label: 'Last 90 days',
                                     value: [dayjs().add(-90, 'd'), dayjs()],
                                 },
                             ]}
                         />
                         <Select onChange={handleCategoryChange} value={selectedCategory} defaultValue={''}>
                             <Select.Option key='' value=''>
-                                <div className="text-gray-400">Wybierz kategorię</div>
+                                <div className="text-gray-400">Select a category</div>
                             </Select.Option>
                             {categories.map((category) => (
                                 <Select.Option key={category.id} value={category.id}>{category.name}</Select.Option>
@@ -144,20 +144,20 @@ const Statistics = () => {
                         </Select>
                         <Select onChange={handleTypeChange} value={selectedType} defaultValue={''}>
                             <Select.Option key='' value=''>
-                                <div className="text-gray-400">Wybierz typ</div>
+                                <div className="text-gray-400">Select a type</div>
                             </Select.Option>
-                            <Select.Option key='togo' value='togo'>Na wynos</Select.Option>
-                            <Select.Option key='dinein' value='dinein'>W restauracji</Select.Option>
+                            <Select.Option key='togo' value='togo'>To go</Select.Option>
+                            <Select.Option key='dinein' value='dinein'>Dine in</Select.Option>
                         </Select>
                         <Select onChange={handlePaidOnlineChange} value={paidOnline} defaultValue={''}>
-                            <Select.Option key='' value=''>Wszystka opłata</Select.Option>
-                            <Select.Option key='true' value='true'>Opłacone online</Select.Option>
-                            <Select.Option key='false' value='false'>Opłacone nie online</Select.Option>
+                            <Select.Option key='' value=''>Total fee</Select.Option>
+                            <Select.Option key='true' value='true'>Paid online</Select.Option>
+                            <Select.Option key='false' value='false'>Paid offline</Select.Option>
                         </Select>
                         <Select onChange={handlePeriodChange} value={period} defaultValue={'daily'}>
-                            <Select.Option key='daily' value='daily'>Dziennie</Select.Option>
-                            <Select.Option key='weekly' value='weekly'>Tygodniowo</Select.Option>
-                            <Select.Option key='monthly' value='monthly'>Miesięcznie</Select.Option>
+                            <Select.Option key='daily' value='daily'>Daily</Select.Option>
+                            <Select.Option key='weekly' value='weekly'>Weekly</Select.Option>
+                            <Select.Option key='monthly' value='monthly'>Monthly</Select.Option>
                         </Select>
                         <Button className="w-full" onClick={() => {
                             setDateRange([dayjs().startOf("month"), dayjs().endOf("day")]);
@@ -166,30 +166,30 @@ const Statistics = () => {
                             setSelectedType('');
                             setPeriod('daily');
                             setPaidOnline('');
-                        }}>Resetuj</Button>
+                        }}>Reset</Button>
                     </div>
                 </div>
                 {!loading
                     ? <>
                         <div className="px-4">
-                            <Title level={4}>Łączne dochody</Title>
-                            <p>Całkowity przychód: <strong>{totalRevenue.total_revenue?.toFixed(2)} zł</strong></p>
+                            <Title level={4}>Total revenue</Title>
+                            <p>Total revenue: <strong>{totalRevenue.total_revenue?.toFixed(2)} zł</strong></p>
                             {selectedCategory === ''
                                 ?
                                 <>
-                                    <p>Przychód z opłat
-                                        kartą: <strong>{totalRevenue.card_revenue?.toFixed(2)} zł</strong></p>
-                                    <p>Przychód z opłat
-                                        gotówką: <strong>{totalRevenue.cash_revenue?.toFixed(2)} zł</strong></p>
+                                    <p>Revenue from card
+                                        payments: <strong>{totalRevenue.card_revenue?.toFixed(2)} zł</strong></p>
+                                    <p>Revenue from cash
+                                        payments: <strong>{totalRevenue.cash_revenue?.toFixed(2)} zł</strong></p>
                                 </>
                                 : ''
                             }
-                            <p>Całkowity koszt: <strong>{totalRevenue.total_cost?.toFixed(2)} zł</strong></p>
-                            <p>Całkowity zysk: <strong>{totalRevenue.total_profit?.toFixed(2)} zł</strong></p>
+                            <p>Total cost: <strong>{totalRevenue.total_cost?.toFixed(2)} zł</strong></p>
+                            <p>Total profit: <strong>{totalRevenue.total_profit?.toFixed(2)} zł</strong></p>
                         </div>
                         <div className="px-4">
                             <Title className="p-0 m-0" level={4}>
-                                Dochody {period === 'daily' ? 'dzienne' : period === 'weekly' ? 'tygodniowe' : 'miesięczne'}
+                                {period === 'daily' ? 'Daily' : period === 'weekly' ? 'Weekly' : 'Monthly'} income
                             </Title>
                             <ResponsiveContainer width="100%" height={350}>
                                 <LineChart data={dailyRevenue} margin={{bottom: 30}}>
@@ -199,11 +199,11 @@ const Statistics = () => {
                                     <Tooltip
                                         formatter={(value, name) => {
                                             const labels = {
-                                                total_revenue: "Przychód",
-                                                card_revenue: "Przychód (karta)",
-                                                cash_revenue: "Przychód (gotówka)",
-                                                total_cost: "Koszt",
-                                                total_profit: "Zysk",
+                                                total_revenue: "Income",
+                                                card_revenue: "Income (Card)",
+                                                cash_revenue: "Income (Cash)",
+                                                total_cost: "Cost",
+                                                total_profit: "Profit",
                                             };
                                             return [value.toFixed(2), labels[name] || name];
                                         }}
@@ -220,10 +220,10 @@ const Statistics = () => {
                                                     {selectedCategory === ''
                                                         ?
                                                         <>
-                                                            <p style={{color: "#8884d8"}}>Przychód
-                                                                (karta): {payload[0].payload.card_revenue?.toFixed(2) || "0.00"} zł</p>
-                                                            <p style={{color: "#8884d8"}}>Przychód
-                                                                (gotówka): {payload[0].payload.cash_revenue?.toFixed(2) || "0.00"} zł</p>
+                                                            <p style={{color: "#8884d8"}}>Income
+                                                                (Card): {payload[0].payload.card_revenue?.toFixed(2) || "0.00"} zł</p>
+                                                            <p style={{color: "#8884d8"}}>Income
+                                                                (Cash): {payload[0].payload.cash_revenue?.toFixed(2) || "0.00"} zł</p>
                                                         </>
                                                         : ''
                                                     }

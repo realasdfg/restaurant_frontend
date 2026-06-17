@@ -11,8 +11,8 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
         if (menuItemData) {
             const formData = {
                 ...menuItemData,
-                price: menuItemData.price? parseFloat(menuItemData.price) : '',
-                cost: menuItemData.cost? parseFloat(menuItemData.cost) : ''
+                price: menuItemData.price ? parseFloat(menuItemData.price) : '',
+                cost: menuItemData.cost ? parseFloat(menuItemData.cost) : ''
             };
             if (isEditing && menuItemData.image) {
                 formData.image = [
@@ -47,27 +47,32 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
         >
             <Form.Item
                 name="name"
-                label="Nazwa"
-                rules={[{required: true, min: 1, max: 50, message: 'Nazwa musi zawierać od 1 do 50 znaków!'}]}
+                label="Name"
+                rules={[{
+                    required: true,
+                    min: 1,
+                    max: 50,
+                    message: 'The name must be between 1 and 50 characters long!'
+                }]}
             >
                 <Input/>
             </Form.Item>
 
             <Form.Item
                 name="description"
-                label="Opis"
-                rules={[{max: 256, message: 'Opis może zawierać maksymalnie 256 znaków!'}]}
+                label="Description"
+                rules={[{max: 256, message: 'The description can be up to 256 characters long!'}]}
             >
                 <Input.TextArea rows={3}/>
             </Form.Item>
 
             {menuItemData.image &&
-                <img src={new URL(menuItemData.image, window.location.origin).pathname} alt="Zdjęcie pozycji"
+                <img src={new URL(menuItemData.image, window.location.origin).pathname} alt="Item photo"
                      className="w-2/5  rounded-lg aspect-square object-cover"/>
             }
             <Form.Item
                 name="newImage"
-                label="Zdjęcie"
+                label="Photo"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
             >
@@ -76,7 +81,7 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
                     listType="picture"
                 >
                     <Button icon={<UploadOutlined/>}>
-                        <div>Wgraj zdjęcie</div>
+                        <div>Upload a photo</div>
                     </Button>
                 </Upload>
             </Form.Item>
@@ -84,43 +89,48 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
 
             <Form.Item
                 name="price"
-                label="Cena"
-                rules={[{required: true, type: 'number', min: 0.01, message: 'Cena musi być większa 0!'}]}
+                label="Price"
+                rules={[{required: true, type: 'number', min: 0.01, message: 'The price must be greater than 0!'}]}
             >
                 <InputNumber className="w-full"/>
             </Form.Item>
 
             <Form.Item
                 name="cost"
-                label="Koszt"
-                rules={[{required: true, type: 'number', min: 0.01, message: 'Koszt musi być większy 0!'}]}
+                label="Cost"
+                rules={[{required: true, type: 'number', min: 0.01, message: 'The cost must be greater than 0!'}]}
             >
                 <InputNumber className="w-full"/>
             </Form.Item>
 
             <Form.Item
                 name="type"
-                label="Typ"
-                rules={[{required: true, message: 'Wybierz typ pozycji!'}]}
+                label="Type"
+                rules={[{required: true, message: 'Select the item type!'}]}
             >
                 <Select>
-                    <Option value="by_weight">Wagowa</Option>
-                    <Option value="by_quantity">Ilościowa</Option>
+                    <Option value="by_weight">By Weight</Option>
+                    <Option value="by_quantity">By Quantity</Option>
                 </Select>
             </Form.Item>
 
             <Form.Item
                 name="weight"
-                label="Waga"
-                rules={[{required: true, type: 'number', min: 1, message: 'Waga musi być większa lub równa 1!'}]}
+                label="Weight"
+                rules={[{
+                    required: true,
+                    type: 'number',
+                    min: 1,
+                    message: 'The weight must be greater than or equal to 1!'
+                }]}
             >
                 <InputNumber className="w-full"/>
             </Form.Item>
 
             <Form.Item
                 name="available"
-                label="Dostępność"
-                rules={[{required: true, message: 'Wybierz dostępność!'}]}
+                label="Available"
+                rules={[{required: true, message: 'Select availability!'}]}
             >
                 <Select>
                     <Option value={true}>Tak</Option>
@@ -130,8 +140,8 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
 
             <Form.Item
                 name="category_id"
-                label="Kategoria"
-                rules={[{required: true, message: 'Wybierz kategorię!'}]}
+                label="Category"
+                rules={[{required: true, message: 'Select a category!'}]}
             >
                 <Select>
                     {categories.map((category) => (
@@ -142,7 +152,7 @@ const MenuItemForm = ({isEditing = false, menuItemData = {}, onSubmit, categorie
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" className="w-full">
-                    {isEditing ? 'Zachowaj' : 'Utwórz'}
+                    {isEditing ? 'Save' : 'Create'}
                 </Button>
             </Form.Item>
         </Form>

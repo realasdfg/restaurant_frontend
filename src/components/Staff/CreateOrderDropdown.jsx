@@ -14,7 +14,7 @@ const CreateOrderDropdown = () => {
             const response = await createOrder({type: "togo"});
             navigate(`/staff/orders/${response.data.id}`);
         } catch (error) {
-            message.error("Błąd podczas tworzenia zamówienia");
+            message.error("Error while creating an order");
             console.error(error);
         }
     };
@@ -26,19 +26,19 @@ const CreateOrderDropdown = () => {
             setIsModalOpen(false);
             navigate(`/staff/orders/${response.data.id}`);
         } catch (error) {
-            message.error("Błąd podczas tworzenia zamówienia");
+            message.error("Error while creating an order");
             console.error(error);
         }
     };
 
     const dropdownItems = [
         {
-            label: "W restauracji",
+            label: "Dine in",
             key: "dinein",
             onClick: () => setIsModalOpen(true),
         },
         {
-            label: "Na wynos",
+            label: "To go",
             key: "togo",
             onClick: handleCreateTogoOrder,
         },
@@ -48,7 +48,7 @@ const CreateOrderDropdown = () => {
         <>
             <Dropdown menu={{items: dropdownItems}}>
                 <Button color="primary" variant="outlined">
-                    Nowe <DownOutlined/>
+                    New <DownOutlined/>
                 </Button>
             </Dropdown>
             <TableListModal

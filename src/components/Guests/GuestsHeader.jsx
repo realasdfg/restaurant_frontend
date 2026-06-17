@@ -22,7 +22,7 @@ const GuestsHeader = ({categories, onCategoryClick, isMenu}) => {
                             className="lg:hidden"
                         />
                     }
-                    <div className="text-white text-3xl font-bold">Restauracja</div>
+                    <div className="text-white text-3xl font-bold">Restaurant</div>
                 </div>
                 <div className="text-white font-bold">+48 123-123-123</div>
             </Header>
