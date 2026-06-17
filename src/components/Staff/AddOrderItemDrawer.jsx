@@ -72,7 +72,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
     return (
         <>
             <Drawer
-                title="Dodaj pozycję"
+                title="Add an item"
                 placement="bottom"
                 open={visible}
                 onClose={onClose}
@@ -85,7 +85,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                 <div className="flex flex-col items-center">
                     <div className="w-full lg:w-3/6 xl:w-2/5">
                         <Input
-                            placeholder="Wyszukaj pozycję..."
+                            placeholder="Search for an item..."
                             value={searchQuery}
                             onChange={(e) => {
                                 setSearchQuery(e.target.value);
@@ -142,7 +142,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
 
 
             <Modal
-                title="Podaj wagę (g)"
+                title="Enter the weight (g)"
                 centered
                 open={weightModalVisible}
                 onCancel={() => setWeightModalVisible(false)}
@@ -153,8 +153,8 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                         <OkBtn/>
                     </div>
                 )}
-                okText="Dodaj"
-                cancelText="Anuluj"
+                okText="Add"
+                cancelText="Cancel"
             >
                 <InputNumber
                     ref={weightInputRef}
@@ -162,7 +162,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                     value={weight}
                     onChange={(value) => setWeight(value)}
                     onPressEnter={handleConfirmWeight}
-                    placeholder="Wprowadź wagę w gramach"
+                    placeholder="Enter the weight in grams"
                     min={1}
                     max={9999999}
                     className="w-full"

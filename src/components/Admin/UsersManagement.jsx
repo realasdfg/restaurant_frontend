@@ -174,7 +174,7 @@ const UsersManagement = () => {
             <div className="bg-gray-100 rounded-lg shadow w-full lg:w-3/5 flex flex-col gap-3 pb-4">
                 <Title level={2} className="text-center">Users</Title>
                 <Search
-                    placeholder="Wyszukaj użytkowników..."
+                    placeholder="Search for users..."
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     enterButton
