@@ -136,7 +136,7 @@ const OnlineMenu = () => {
                                                     <div
                                                         className="text-blue-600 font-bold mt-2 m-1 flex justify-between">
                                                         <div>
-                                                            {item.price} zł {item.type === 'by_weight' ? `za ${item.weight}g` : ''}
+                                                            {item.price} $ {item.type === 'by_weight' ? `za ${item.weight}g` : ''}
                                                         </div>
                                                         {item.type === 'by_quantity' && <div>{item.weight}g</div>}
                                                     </div>

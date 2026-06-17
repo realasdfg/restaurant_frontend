@@ -281,8 +281,8 @@ const OrderDetails = () => {
                                         <span> ({userPaid?.id})</span> <br/>
                                     </span>
                                 <span>
-                                    <strong>By card: {order.paid_by_card} zł</strong> <br/>
-                                    <strong>by cash: {order.paid_by_cash} zł</strong><br/>
+                                    <strong>By card: {order.paid_by_card} $</strong> <br/>
+                                    <strong>by cash: {order.paid_by_cash} $</strong><br/>
                                     <strong>Online: {order.paid_online ? "Yes" : "No"} </strong>
                                     </span>
                             </Tag>
@@ -305,7 +305,7 @@ const OrderDetails = () => {
                         ? <>
                             {order.paid_online
                                 ? <div className="hidden sm:flex justify-end items-center">
-                                    <span className="font-bold text-xl text-white">Suma: {totalAmount} zł</span>
+                                    <span className="font-bold text-xl text-white">Suma: {totalAmount} $</span>
                                     <Tag color="green" className="mx-2">paid online</Tag>
                                     <Button color="primary" variant="outlined"
                                             className="w-24 h-10 font-bold text-base shadow"
@@ -323,7 +323,7 @@ const OrderDetails = () => {
                                         </Button>
                                     </div>
                                     <div>
-                                        <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                                        <span className="font-bold text-xl text-white">{totalAmount} $</span>
                                         <Button color="primary" variant="outlined"
                                                 disabled={parseFloat(totalAmount) === 0}
                                                 className="w-24 h-10 font-bold text-base shadow ml-2"
@@ -335,7 +335,7 @@ const OrderDetails = () => {
                             }
                         </>
                         : <div className="hidden sm:flex justify-end items-center">
-                            <span className="font-bold text-xl text-white">Suma: {totalAmount} zł</span>
+                            <span className="font-bold text-xl text-white">Suma: {totalAmount} $</span>
                         </div>
                     }
                 </div>
@@ -345,7 +345,7 @@ const OrderDetails = () => {
                     {!order.paid
                         ? <> {order.paid_online
                             ? <div className="flex justify-end items-center">
-                                <span className="font-bold text-xl text-white ">Suma: {totalAmount} zł</span>
+                                <span className="font-bold text-xl text-white ">Suma: {totalAmount} $</span>
                                 <Tag color="green" className="mx-2">paid online</Tag>
                                 <Button color="primary" variant="outlined"
                                         className="w-24 h-10 font-bold text-base shadow ml-2 mr-6"
@@ -363,7 +363,7 @@ const OrderDetails = () => {
                                     </Button>
                                 </div>
                                 <div className="mr-6">
-                                    <span className="font-bold text-xl text-white">{totalAmount} zł</span>
+                                    <span className="font-bold text-xl text-white">{totalAmount} $</span>
                                     <Button color="primary" variant="outlined" disabled={parseFloat(totalAmount) === 0}
                                             className="w-24 h-10 font-bold text-base shadow ml-2"
                                             onClick={() => setIsModalOpen(true)}>
@@ -374,7 +374,7 @@ const OrderDetails = () => {
                         }
                         </>
                         : <div className="flex justify-end items-center">
-                            <span className="font-bold text-xl text-white mr-6">Suma: {totalAmount} zł</span>
+                            <span className="font-bold text-xl text-white mr-6">Suma: {totalAmount} $</span>
                         </div>
                     }
                 </div>
