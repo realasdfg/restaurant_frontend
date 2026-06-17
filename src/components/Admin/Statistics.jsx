@@ -232,9 +232,9 @@ const Statistics = () => {
                                         }}
                                     />
                                     <Legend verticalAlign="bottom" height={36}/>
-                                    <Line type="monotone" dataKey="total_revenue" stroke="#8884d8" name="Przychód"/>
-                                    <Line type="monotone" dataKey="total_cost" stroke="#82ca9d" name="Koszt"/>
-                                    <Line type="monotone" dataKey="total_profit" stroke="#ff7300" name="Zysk"/>
+                                    <Line type="monotone" dataKey="total_revenue" stroke="#8884d8" name="Revenue"/>
+                                    <Line type="monotone" dataKey="total_cost" stroke="#82ca9d" name="Cost"/>
+                                    <Line type="monotone" dataKey="total_profit" stroke="#ff7300" name="Profit"/>
                                 </LineChart>
                             </ResponsiveContainer>
 

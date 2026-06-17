@@ -70,14 +70,14 @@ const OrderItemsTable = ({
             ),
         },
         {
-            title: <div className="justify-self-end">Cena</div>,
+            title: <div className="justify-self-end">Price</div>,
             dataIndex: "menuItem",
             key: "price",
             className: "w-1 bg-white",
             render: (menuItem) => <div className="justify-self-end">{menuItem.price}</div>,
         },
         {
-            title: <div className="justify-self-end">Value</div>,
+            title: <div className="justify-self-end">Total</div>,
             key: "total",
             className: "bg-white w-1",
             render: (_, record) => (
@@ -118,7 +118,7 @@ const OrderItemsTable = ({
             ),
         },
         {
-            label: "Cena",
+            label: "Price",
             value: <>{selectedItem.menuItem.price} $ {selectedItem.menuItem.type === "by_weight" ? '/ 100 g' : ''}</>
         },
         {

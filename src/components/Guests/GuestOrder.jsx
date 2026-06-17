@@ -81,14 +81,14 @@ const OnlineMenu = () => {
             ),
         },
         {
-            title: <div className="justify-self-end">Cena</div>,
+            title: <div className="justify-self-end">Price</div>,
             dataIndex: "price",
             key: "price",
             className: "w-1 bg-white",
             render: (price) => <div className="justify-self-end">{price}</div>,
         },
         {
-            title: <div className="justify-self-end">Value</div>,
+            title: <div className="justify-self-end">Total</div>,
             key: "total",
             className: "bg-white w-1",
             render: (_, record) => (

@@ -92,7 +92,7 @@ const MenuManagement = () => {
             render: (weight) => <div className="text-center">{weight}</div>,
         },
         {
-            title: <div className="justify-self-end">Cena</div>,
+            title: <div className="justify-self-end">Price</div>,
             dataIndex: "price",
             key: "price",
             className: "bg-white w-1",
