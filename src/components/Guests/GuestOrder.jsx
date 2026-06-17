@@ -140,7 +140,7 @@ const OnlineMenu = () => {
                             }
                             <div className="flex items-center justify-end bg-blue-300 p-3">
                                 <div className="font-mono font-semibold text-xl">
-                                    Suma: {totalAmount} zł
+                                    Suma: {totalAmount} $
                                 </div>
                                 <Button color="primary" variant="solid" disabled={totalAmount <= 0}
                                         className={"w-24 h-10 font-bold text-base shadow ml-2 " + (order.paid_online ? "hidden" : "")}

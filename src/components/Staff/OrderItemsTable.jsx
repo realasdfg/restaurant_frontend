@@ -119,13 +119,13 @@ const OrderItemsTable = ({
         },
         {
             label: "Cena",
-            value: <>{selectedItem.menuItem.price} zł {selectedItem.menuItem.type === "by_weight" ? '/ 100 g' : ''}</>
+            value: <>{selectedItem.menuItem.price} $ {selectedItem.menuItem.type === "by_weight" ? '/ 100 g' : ''}</>
         },
         {
             label: "Value",
             value: selectedItem.menuItem.type === "by_quantity"
-                ? `${(selectedItem.quantity * selectedItem.menuItem.price).toFixed(2)} zł`
-                : `${(selectedItem.quantity / 100 * selectedItem.menuItem.price).toFixed(2)} zł`
+                ? `${(selectedItem.quantity * selectedItem.menuItem.price).toFixed(2)} $`
+                : `${(selectedItem.quantity / 100 * selectedItem.menuItem.price).toFixed(2)} $`
         },
     ];
 

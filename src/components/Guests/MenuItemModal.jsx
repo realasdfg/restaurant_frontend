@@ -15,7 +15,7 @@ const MenuItemModal = ({ selectedItem, onClose }) => (
                 <div className="mt-4 text-lg font-semibold">{selectedItem.name}</div>
                 <div className="mt-2 text-gray-600">{selectedItem.description}</div>
                 <div className="mt-2 text-blue-600 font-bold">
-                    {selectedItem.price} zł {selectedItem.type === 'by_weight' ? 'za 100g' : ''}
+                    {selectedItem.price} $ {selectedItem.type === 'by_weight' ? 'za 100g' : ''}
                 </div>
             </div>
         )}

@@ -130,7 +130,7 @@ const AddOrderItemDrawer = ({visible, onClose, onAddItem}) => {
                                         <List.Item onClick={() => handleAddItem(item)}
                                                    className="cursor-pointer bg-gray-50">
                                             <span>{item.name}</span>
-                                            <span className="text-gray-600">{item.price} zł</span>
+                                            <span className="text-gray-600">{item.price} $</span>
                                         </List.Item>
                                     )}
                                 />

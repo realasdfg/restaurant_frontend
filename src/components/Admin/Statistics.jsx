@@ -173,19 +173,19 @@ const Statistics = () => {
                     ? <>
                         <div className="px-4">
                             <Title level={4}>Total revenue</Title>
-                            <p>Total revenue: <strong>{totalRevenue.total_revenue?.toFixed(2)} zł</strong></p>
+                            <p>Total revenue: <strong>{totalRevenue.total_revenue?.toFixed(2)} $</strong></p>
                             {selectedCategory === ''
                                 ?
                                 <>
                                     <p>Revenue from card
-                                        payments: <strong>{totalRevenue.card_revenue?.toFixed(2)} zł</strong></p>
+                                        payments: <strong>{totalRevenue.card_revenue?.toFixed(2)} $</strong></p>
                                     <p>Revenue from cash
-                                        payments: <strong>{totalRevenue.cash_revenue?.toFixed(2)} zł</strong></p>
+                                        payments: <strong>{totalRevenue.cash_revenue?.toFixed(2)} $</strong></p>
                                 </>
                                 : ''
                             }
-                            <p>Total cost: <strong>{totalRevenue.total_cost?.toFixed(2)} zł</strong></p>
-                            <p>Total profit: <strong>{totalRevenue.total_profit?.toFixed(2)} zł</strong></p>
+                            <p>Total cost: <strong>{totalRevenue.total_cost?.toFixed(2)} $</strong></p>
+                            <p>Total profit: <strong>{totalRevenue.total_profit?.toFixed(2)} $</strong></p>
                         </div>
                         <div className="px-4">
                             <Title className="p-0 m-0" level={4}>
@@ -214,16 +214,16 @@ const Statistics = () => {
                                                     <p className="font-bold">{payload[0].payload.date}</p>
                                                     {payload.map((entry, index) => (
                                                         <p key={index} style={{color: entry.color}}>
-                                                            {entry.name}: {entry.value.toFixed(2)} zł
+                                                            {entry.name}: {entry.value.toFixed(2)} $
                                                         </p>
                                                     ))}
                                                     {selectedCategory === ''
                                                         ?
                                                         <>
                                                             <p style={{color: "#8884d8"}}>Income
-                                                                (Card): {payload[0].payload.card_revenue?.toFixed(2) || "0.00"} zł</p>
+                                                                (Card): {payload[0].payload.card_revenue?.toFixed(2) || "0.00"} $</p>
                                                             <p style={{color: "#8884d8"}}>Income
-                                                                (Cash): {payload[0].payload.cash_revenue?.toFixed(2) || "0.00"} zł</p>
+                                                                (Cash): {payload[0].payload.cash_revenue?.toFixed(2) || "0.00"} $</p>
                                                         </>
                                                         : ''
                                                     }
